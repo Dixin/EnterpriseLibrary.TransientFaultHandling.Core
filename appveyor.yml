@@ -1,0 +1,13 @@
+version: '1.0.{build}'
+configuration:
+- Debug
+- Release
+platform: Any CPU
+before_build:
+- appveyor-retry dotnet restore -v Minimal
+build_script:
+- dotnet build "EnterpriseLibrary.TransientFaultHandling.Core" -c %CONFIGURATION%
+after_build:
+- dotnet pack "EnterpriseLibrary.TransientFaultHandling.Core" -c %CONFIGURATION% --no-build
+cache:
+- '%USERPROFILE%\.nuget\packages'
