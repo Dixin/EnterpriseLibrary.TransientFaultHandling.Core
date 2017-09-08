@@ -104,7 +104,6 @@
                 return runningTask;
             }
 
-            TimeSpan zero;
             Exception innerException = runningTask.Exception.InnerException;
 #pragma warning disable 618
             if (innerException is RetryLimitExceededException)
@@ -123,7 +122,7 @@
                 return taskCompletionSource.Task;
             }
 
-            if (!this.isTransient(innerException) || !this.shouldRetry(this.retryCount++, innerException, out zero))
+            if (!this.isTransient(innerException) || !this.shouldRetry(this.retryCount++, innerException, out TimeSpan zero))
             {
                 return runningTask;
             }

@@ -59,8 +59,7 @@
                                                                  where !string.IsNullOrWhiteSpace(x.Value)
                                                                  select x)
                 {
-                    RetryStrategy value;
-                    if (!this.retryStrategies.TryGetValue(current.Value, out value))
+                    if (!this.retryStrategies.TryGetValue(current.Value, out RetryStrategy value))
                     {
                         throw new ArgumentOutOfRangeException(
                             nameof(defaultRetryStrategyNamesMap),
@@ -95,10 +94,7 @@
         /// </summary>
         public string DefaultRetryStrategyName
         {
-            get
-            {
-                return this.defaultRetryStrategyName;
-            }
+            get => this.defaultRetryStrategyName;
 
             set
             {
@@ -108,8 +104,7 @@
                     return;
                 }
 
-                RetryStrategy retryStrategy;
-                if (this.retryStrategies.TryGetValue(value, out retryStrategy))
+                if (this.retryStrategies.TryGetValue(value, out RetryStrategy retryStrategy))
                 {
                     this.defaultRetryStrategyName = value;
                     this.defaultStrategy = retryStrategy;
@@ -176,8 +171,7 @@
         public virtual RetryStrategy GetRetryStrategy(string retryStrategyName)
         {
             Guard.ArgumentNotNullOrEmptyString(retryStrategyName, "retryStrategyName");
-            RetryStrategy result;
-            if (!this.retryStrategies.TryGetValue(retryStrategyName, out result))
+            if (!this.retryStrategies.TryGetValue(retryStrategyName, out RetryStrategy result))
             {
                 throw new ArgumentOutOfRangeException(
                     string.Format(CultureInfo.CurrentCulture, Resources.RetryStrategyNotFound, new object[] { retryStrategyName }));
@@ -194,8 +188,7 @@
         public virtual RetryStrategy GetDefaultRetryStrategy(string technology)
         {
             Guard.ArgumentNotNullOrEmptyString(technology, nameof(technology));
-            RetryStrategy retryStrategy;
-            if (!this.defaultRetryStrategiesMap.TryGetValue(technology, out retryStrategy))
+            if (!this.defaultRetryStrategiesMap.TryGetValue(technology, out RetryStrategy retryStrategy))
             {
                 retryStrategy = this.defaultStrategy;
             }

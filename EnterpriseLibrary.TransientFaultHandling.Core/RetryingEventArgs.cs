@@ -13,7 +13,6 @@
         public int CurrentRetryCount
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -22,7 +21,6 @@
         public TimeSpan Delay
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -31,7 +29,6 @@
         public Exception LastException
         {
             get;
-            private set;
         }
 
         /// <summary>

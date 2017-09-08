@@ -1,10 +1,10 @@
-﻿using System;
-using System.Globalization;
-
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Globalization;
+
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
+
     /// <summary>
     /// Implements the common guard methods.
     /// </summary>
