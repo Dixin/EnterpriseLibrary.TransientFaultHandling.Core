@@ -1,9 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnterpriseLibrary.TransientFaultHandling.Core", "EnterpriseLibrary.TransientFaultHandling.Core\EnterpriseLibrary.TransientFaultHandling.Core.xproj", "{0E91D32F-0479-4688-89F0-9787343808B5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06C0CE15-BE6D-4031-9E5D-ED3162EF9EBA}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		LICENSE = LICENSE
+		Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.sln.DotSettings = Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.sln.DotSettings
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnterpriseLibrary.TransientFaultHandling.Core", "EnterpriseLibrary.TransientFaultHandling.Core\EnterpriseLibrary.TransientFaultHandling.Core.csproj", "{7FFC976B-2EB8-49FE-BA07-3C25BDEE37DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +20,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0E91D32F-0479-4688-89F0-9787343808B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E91D32F-0479-4688-89F0-9787343808B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E91D32F-0479-4688-89F0-9787343808B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E91D32F-0479-4688-89F0-9787343808B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FFC976B-2EB8-49FE-BA07-3C25BDEE37DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FFC976B-2EB8-49FE-BA07-3C25BDEE37DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FFC976B-2EB8-49FE-BA07-3C25BDEE37DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FFC976B-2EB8-49FE-BA07-3C25BDEE37DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {47ECE033-79D2-4389-8F84-E1F8954B7335}
 	EndGlobalSection
 EndGlobal

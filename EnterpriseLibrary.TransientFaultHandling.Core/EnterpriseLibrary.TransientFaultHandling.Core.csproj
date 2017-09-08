@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <Authors>Dixin Yan</Authors>
+    <Company>https://weblogs.asp.net/dixin</Company>
+    <Copyright>Initially ported from https://www.nuget.org/packages/EnterpriseLibrary.TransientFaultHandling</Copyright>
+    <PackageLicenseUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageProjectUrl>
+    <PackageIconUrl>http://nuget.org/Media/Default/Packages/Unity/2.0/entlib_new_icon_100x100.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core.git</RepositoryUrl>
+    <PackageTags>entlib enterprise library elazure retry retries transient fault exception handling failure network topaz async Transient Fault Application Block .NET Core .NETCore dotnet dotnetcore Standard .NETStandard dotnetstandard</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../Tools/Key.snk</AssemblyOriginatorKeyFile>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

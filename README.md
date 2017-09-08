@@ -7,6 +7,6 @@ Ported from Enterprise Library - Transient Fault Handling Application Block:
  - Introduction: http://msdn.microsoft.com/entlib
  - Nuget: https://www.nuget.org/packages/EnterpriseLibrary.TransientFaultHandling/
  
-Built for .NET Core / .NET Standard.
+Built for .NET Core / .NET Standard:
  - Source: https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core
  - Nuget: https://www.nuget.org/packages/EnterpriseLibrary.TransientFaultHandling.Core/
