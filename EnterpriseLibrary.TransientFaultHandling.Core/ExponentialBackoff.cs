@@ -73,14 +73,14 @@
         /// <returns>The ShouldRetry delegate.</returns>
         public override ShouldRetry GetShouldRetry()
         {
-            return delegate(int currentRetryCount, Exception lastException, out TimeSpan retryInterval)
-                {
-                    if (currentRetryCount < this.retryCount)
+            return delegate (int currentRetryCount, Exception lastException, out TimeSpan retryInterval)
+            {
+                if (currentRetryCount < this.retryCount)
                 {
                     Random random = new Random();
-                    int num = (int)((Math.Pow(2.0, currentRetryCount) - 1.0) * random.Next((int)(this.deltaBackoff.TotalMilliseconds * 0.8), (int)(this.deltaBackoff.TotalMilliseconds * 1.2)));
-                    int num2 = (int)Math.Min(this.minBackoff.TotalMilliseconds + num, this.maxBackoff.TotalMilliseconds);
-                    retryInterval = TimeSpan.FromMilliseconds(num2);
+                    int backoffMillisecond = (int)((Math.Pow(2.0, currentRetryCount) - 1.0) * random.Next((int)(this.deltaBackoff.TotalMilliseconds * 0.8), (int)(this.deltaBackoff.TotalMilliseconds * 1.2)));
+                    int retryIntervalMillisecond = (int)Math.Min(this.minBackoff.TotalMilliseconds + backoffMillisecond, this.maxBackoff.TotalMilliseconds);
+                    retryInterval = TimeSpan.FromMilliseconds(retryIntervalMillisecond);
                     return true;
                 }
 

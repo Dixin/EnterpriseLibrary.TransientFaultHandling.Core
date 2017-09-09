@@ -89,13 +89,20 @@
             return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func);
         }
 
+        /// <summary>
+        /// Create a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class with the specified number of retry attempts and parameters defining the progressive delay between retries.
+        /// </summary>
+        /// <param name="retryStrategy">The retry strategy.</param>
+        /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
+        /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
+        /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class with the specified number of retry attempts and parameters defining the progressive delay between retries.</returns>
         public static RetryPolicy CreateRetryPolicy(
             RetryStrategy retryStrategy = null,
             Func<Exception, bool> isTransient = null,
             EventHandler<RetryingEventArgs> retryingHandler = null)
         {
             RetryPolicy retryPolicy = new RetryPolicy(
-                new ExceptionDetection(isTransient), retryStrategy ?? RetryStrategy.DefaultFixed);
+                new ExceptionDetection(isTransient), retryStrategy ?? RetryStrategy.NoRetry);
             if (retryingHandler != null)
             {
                 retryPolicy.Retrying += retryingHandler;
