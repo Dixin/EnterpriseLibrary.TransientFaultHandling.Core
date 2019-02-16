@@ -12,6 +12,6 @@ after_build:
 test:
   assemblies:
     only:
-    - '**\*.Tests.Core.dll'
+    - '**\*Tests*.dll'
 cache:
 - '%USERPROFILE%\.nuget\packages'
