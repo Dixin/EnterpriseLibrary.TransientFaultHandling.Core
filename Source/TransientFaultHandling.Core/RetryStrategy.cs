@@ -78,22 +78,14 @@
         public static RetryStrategy DefaultExponential { get; } = new ExponentialBackoff(DefaultClientRetryCount, DefaultMinBackoff, DefaultMaxBackoff, DefaultClientBackoff);
 
         /// <summary>
-        /// Gets or sets a value indicating whether the first retry attempt will be made immediately,
-        /// whereas subsequent retries will remain subject to the retry interval.
+        /// Gets or sets a value indicating whether the first retry attempt will be made immediately, whereas subsequent retries will remain subject to the retry interval.
         /// </summary>
-        public bool FastFirstRetry
-        {
-            get;
-            set;
-        }
+        public bool FastFirstRetry { get; set; }
 
         /// <summary>
         /// Gets the name of the retry strategy.
         /// </summary>
-        public string Name
-        {
-            get;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Returns the corresponding ShouldRetry delegate.

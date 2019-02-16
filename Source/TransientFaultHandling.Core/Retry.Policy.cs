@@ -32,18 +32,20 @@
         /// <param name="retryStrategy">The retry strategy.</param>
         /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
         /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
-        public static RetryPolicy Catch(
-            this RetryStrategy retryStrategy,
-            Func<Exception, bool> isTransient = null)
+        public static RetryPolicy Catch(this RetryStrategy retryStrategy, Func<Exception, bool> isTransient = null)
         {
             Guard.ArgumentNotNull(retryStrategy, nameof(retryStrategy));
 
             return CreateRetryPolicy(retryStrategy, isTransient);
         }
 
-        public static RetryPolicy Catch(
-            this RetryPolicy retryPolicy,
-            Func<Exception, bool> isTransient = null)
+        /// <summary>
+        /// Create a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class with the specified retry policy.
+        /// </summary>
+        /// <param name="retryPolicy">The retry strategy.</param>
+        /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
+        /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
+        public static RetryPolicy Catch(this RetryPolicy retryPolicy, Func<Exception, bool> isTransient = null)
         {
             Guard.ArgumentNotNull(retryPolicy, nameof(retryPolicy));
 
@@ -93,6 +95,12 @@
                 retryPolicy.InvokeRetrying);
         }
 
+        /// <summary>
+        /// Create a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class based on the specified retry strategy.
+        /// </summary>
+        /// <param name="retryStrategy">The retry strategy.</param>
+        /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
+        /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
         public static RetryPolicy HandleWith(this RetryStrategy retryStrategy, EventHandler<RetryingEventArgs> retryingHandler)
         {
             Guard.ArgumentNotNull(retryStrategy, nameof(retryStrategy));
@@ -102,11 +110,11 @@
         }
 
         /// <summary>
-        /// 
+        /// Create a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class based on the specified retry policy.
         /// </summary>
-        /// <param name="retryPolicy"></param>
+        /// <param name="retryPolicy">The retry policy.</param>
         /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
-        /// <returns></returns>
+        /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
         public static RetryPolicy HandleWith(this RetryPolicy retryPolicy, EventHandler<RetryingEventArgs> retryingHandler)
         {
             Guard.ArgumentNotNull(retryPolicy, nameof(retryPolicy));

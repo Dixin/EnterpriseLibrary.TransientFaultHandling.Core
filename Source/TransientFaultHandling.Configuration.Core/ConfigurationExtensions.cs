@@ -5,11 +5,22 @@
     using System.Linq;
     using Microsoft.Extensions.Configuration;
 
+    /// <summary>
+    /// Provides the extension methods for <see cref="Microsoft.Extensions.Configuration.IConfigurationSection" />.
+    /// </summary>
     public static class ConfigurationExtensions
     {
         private static bool Has(this IConfigurationSection section, string key) =>
             section.GetSection(key).Exists();
 
+        /// <summary>
+        /// Gets the retry strategies from configuration section.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="getCustomRetryStrategy">The function to ger custom retry strategy from options.</param>
+        /// <returns>A dictionary where keys are the names of retry strategies and values are retry strategies.</returns>
+        [CLSCompliant(false)]
         public static Dictionary<string, RetryStrategy> GetRetryStrategies(this IConfiguration configuration, string key, Func<IConfigurationSection, RetryStrategy> getCustomRetryStrategy = null)
         {
             Guard.ArgumentNotNull(configuration, nameof(configuration));

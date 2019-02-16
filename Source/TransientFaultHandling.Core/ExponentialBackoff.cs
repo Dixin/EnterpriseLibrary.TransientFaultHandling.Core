@@ -26,7 +26,7 @@
         /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff" /> class with the specified retry settings.
         /// </summary>
         /// <param name="retryCount">The maximum number of retry attempts.</param>
-        /// <param name="minBackoff">The minimum backoff time</param>
+        /// <param name="minBackoff">The minimum backoff time.</param>
         /// <param name="maxBackoff">The maximum backoff time.</param>
         /// <param name="deltaBackoff">The value that will be used to calculate a random delta in the exponential delay between retries.</param>
         public ExponentialBackoff(int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff) : this(null, retryCount, minBackoff, maxBackoff, deltaBackoff, DefaultFirstFastRetry)
