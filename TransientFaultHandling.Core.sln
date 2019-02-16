@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		appveyor.yml = appveyor.yml
 		LICENSE = LICENSE
 		README.md = README.md
-		TransientFaultHandling.sln.DotSettings = TransientFaultHandling.sln.DotSettings
+		TransientFaultHandling.Core.sln.DotSettings = TransientFaultHandling.Core.sln.DotSettings
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{ECDC4704-C0BC-4D12-A2B5-00A78B29CA40}"

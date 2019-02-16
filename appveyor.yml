@@ -6,8 +6,8 @@ platform: Any CPU
 before_build:
 - appveyor-retry dotnet restore -v Minimal
 build_script:
-- dotnet build "TransientFaultHandling.Core" -c %CONFIGURATION%
+- dotnet build -c %CONFIGURATION%
 after_build:
-- dotnet pack "TransientFaultHandling.Core" -c %CONFIGURATION% --no-build
+- dotnet pack -c %CONFIGURATION% --no-build
 cache:
 - '%USERPROFILE%\.nuget\packages'
