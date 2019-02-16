@@ -10,6 +10,7 @@
 
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties {
     using System;
+    using System.Reflection;
     
     
     /// <summary>
@@ -40,7 +41,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Propertie
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties.Resources" +
-                            "", typeof(Resources).Assembly);
+                            "", typeof(Resources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

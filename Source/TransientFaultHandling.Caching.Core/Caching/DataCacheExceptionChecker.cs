@@ -57,7 +57,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching
                 }
             }
 
-            if (DataCacheExceptionType != null && DataCacheExceptionType.IsInstanceOfType(ex))
+            if (DataCacheExceptionType != null && DataCacheExceptionType.GetTypeInfo().IsInstanceOfType(ex))
             {
                 return errorCodes.Contains(GetErrorCode(ex));
             }
@@ -72,9 +72,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching
 
             if (DataCacheExceptionType == null)
             {
-                CheckIsCacheAssembly(type.Assembly);
+                CheckIsCacheAssembly(type.GetTypeInfo().Assembly);
 
-                var errorCodeProperty = type.GetProperty("ErrorCode");
+                var errorCodeProperty = type.GetTypeInfo().GetProperty("ErrorCode");
                 if (errorCodeProperty == null || errorCodeProperty.PropertyType != typeof(int))
                     throw new InvalidOperationException(Resources.TypeMismatchException);
 
