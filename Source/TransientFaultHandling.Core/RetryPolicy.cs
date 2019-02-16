@@ -259,8 +259,14 @@
         /// <param name="retryCount">The current retry attempt count.</param>
         /// <param name="lastError">The exception that caused the retry conditions to occur.</param>
         /// <param name="delay">The delay that indicates how long the current thread will be suspended before the next iteration is invoked.</param>
-        protected virtual void OnRetrying(int retryCount, Exception lastError, TimeSpan delay) => 
+        protected virtual void OnRetrying(int retryCount, Exception lastError, TimeSpan delay) =>
             this.Retrying?.Invoke(this, new RetryingEventArgs(retryCount, delay, lastError));
+
+        internal void InvokeRetrying(object sender, RetryingEventArgs args)
+        {
+            EventHandler<RetryingEventArgs> retrying = this.Retrying;
+            retrying?.Invoke(sender, args);
+        }
 
         /// <summary>
         /// Implements a strategy that ignores any transient errors.

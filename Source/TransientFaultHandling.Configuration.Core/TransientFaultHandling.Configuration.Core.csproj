@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>EnterpriseLibrary.TransientFaultHandling.Configuration.Core</PackageId>
+    <Version>1.3.0</Version>
+    <Authors>Dixin Yan</Authors>
+    <Company>https://DixinYan.com</Company>
+    <PackageLicenseUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageProjectUrl>
+    <PackageIconUrl>http://nuget.org/Media/Default/Packages/Unity/2.0/entlib_new_icon_100x100.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core.git</RepositoryUrl>
+    <PackageTags>entlib enterprise library azure retry retries transient fault exception handling failure network topaz async Transient Fault Application Block .NET Core .NETCore dotnet dotnetcore Standard .NETStandard dotnetstandard topaz</PackageTags>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../../Tools/Key.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
+    <AssemblyName>TransientFaultHandling.Configuration.Core</AssemblyName>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Tools\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\TransientFaultHandling.Core\Guard.cs" Link="Guard.cs" />
+    <Compile Include="..\TransientFaultHandling.Core\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\TransientFaultHandling.Core\Properties\Resources.resx" Link="Properties\Resources.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TransientFaultHandling.Core\TransientFaultHandling.Core.csproj" />
+    <ProjectReference Include="..\TransientFaultHandling.Data.Core\TransientFaultHandling.Data.Core.csproj" />
+  </ItemGroup>
+
+</Project>

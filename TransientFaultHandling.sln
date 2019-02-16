@@ -1,0 +1,81 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06C0CE15-BE6D-4031-9E5D-ED3162EF9EBA}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		LICENSE = LICENSE
+		README.md = README.md
+		TransientFaultHandling.sln.DotSettings = TransientFaultHandling.sln.DotSettings
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{ECDC4704-C0BC-4D12-A2B5-00A78B29CA40}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{67F0A79B-D6CB-4733-9989-F5CEBF433954}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Core", "Source\TransientFaultHandling.Core\TransientFaultHandling.Core.csproj", "{7D2CF4F6-4213-43E1-8879-F976C8D7D719}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Data.Core", "Source\TransientFaultHandling.Data.Core\TransientFaultHandling.Data.Core.csproj", "{C11996AC-C517-4DAF-8971-04CC34B8A596}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Caching.Core", "Source\TransientFaultHandling.Caching.Core\TransientFaultHandling.Caching.Core.csproj", "{57A99D8B-4167-46DF-92A1-774BB3758A7C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Tests.Core", "Tests\TransientFaultHandling.Tests.Core\TransientFaultHandling.Tests.Core.csproj", "{F2809FD3-B767-41B4-B0BA-ACE16C43D5FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{36EF0A81-D4C3-40CE-A2AA-42F8A14BC43B}"
+	ProjectSection(SolutionItems) = preProject
+		Tools\Key.snk = Tools\Key.snk
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Configuration.Core", "Source\TransientFaultHandling.Configuration.Core\TransientFaultHandling.Configuration.Core.csproj", "{C0A25494-07AA-4243-B770-D303AC153F67}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Configuration.Tests.Core", "Tests\TransientFaultHandling.Configuration.Tests.Core\TransientFaultHandling.Configuration.Tests.Core.csproj", "{4647CDA9-DE4C-4CEF-B1A8-46DA1FD706F2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D2CF4F6-4213-43E1-8879-F976C8D7D719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D2CF4F6-4213-43E1-8879-F976C8D7D719}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D2CF4F6-4213-43E1-8879-F976C8D7D719}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D2CF4F6-4213-43E1-8879-F976C8D7D719}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C11996AC-C517-4DAF-8971-04CC34B8A596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C11996AC-C517-4DAF-8971-04CC34B8A596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C11996AC-C517-4DAF-8971-04CC34B8A596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C11996AC-C517-4DAF-8971-04CC34B8A596}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57A99D8B-4167-46DF-92A1-774BB3758A7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57A99D8B-4167-46DF-92A1-774BB3758A7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57A99D8B-4167-46DF-92A1-774BB3758A7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57A99D8B-4167-46DF-92A1-774BB3758A7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2809FD3-B767-41B4-B0BA-ACE16C43D5FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2809FD3-B767-41B4-B0BA-ACE16C43D5FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2809FD3-B767-41B4-B0BA-ACE16C43D5FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2809FD3-B767-41B4-B0BA-ACE16C43D5FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0A25494-07AA-4243-B770-D303AC153F67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A25494-07AA-4243-B770-D303AC153F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A25494-07AA-4243-B770-D303AC153F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A25494-07AA-4243-B770-D303AC153F67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4647CDA9-DE4C-4CEF-B1A8-46DA1FD706F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4647CDA9-DE4C-4CEF-B1A8-46DA1FD706F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4647CDA9-DE4C-4CEF-B1A8-46DA1FD706F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4647CDA9-DE4C-4CEF-B1A8-46DA1FD706F2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7D2CF4F6-4213-43E1-8879-F976C8D7D719} = {67F0A79B-D6CB-4733-9989-F5CEBF433954}
+		{C11996AC-C517-4DAF-8971-04CC34B8A596} = {67F0A79B-D6CB-4733-9989-F5CEBF433954}
+		{57A99D8B-4167-46DF-92A1-774BB3758A7C} = {67F0A79B-D6CB-4733-9989-F5CEBF433954}
+		{F2809FD3-B767-41B4-B0BA-ACE16C43D5FF} = {ECDC4704-C0BC-4D12-A2B5-00A78B29CA40}
+		{C0A25494-07AA-4243-B770-D303AC153F67} = {67F0A79B-D6CB-4733-9989-F5CEBF433954}
+		{4647CDA9-DE4C-4CEF-B1A8-46DA1FD706F2} = {ECDC4704-C0BC-4D12-A2B5-00A78B29CA40}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {47ECE033-79D2-4389-8F84-E1F8954B7335}
+	EndGlobalSection
+EndGlobal

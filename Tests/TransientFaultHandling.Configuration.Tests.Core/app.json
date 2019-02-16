@@ -1,0 +1,22 @@
+{
+  "RetryStrategy": {
+    "name1": {
+      "fastFirstRetry": "true",
+      "retryCount": 5,
+      "retryInterval": "00:00:00.1"
+    },
+    "name2": {
+      "fastFirstRetry": "true",
+      "retryCount": 55,
+      "initialInterval": "00:00:00.2",
+      "increment": "00:00:00.3"
+    },
+    "name3": {
+      "fastFirstRetry": "true",
+      "retryCount": 555,
+      "minBackoff": "00:00:00.3",
+      "maxBackoff": "00:00:00.4",
+      "deltaBackoff": "00:00:00.5"
+    }
+  }
+}
