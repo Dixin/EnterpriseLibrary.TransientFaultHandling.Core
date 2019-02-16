@@ -9,5 +9,9 @@ build_script:
 - dotnet build -c %CONFIGURATION%
 after_build:
 - dotnet pack -c %CONFIGURATION% --no-build
+test:
+  assemblies:
+    only:
+    - '**\*.Tests.Core.dll'
 cache:
 - '%USERPROFILE%\.nuget\packages'
