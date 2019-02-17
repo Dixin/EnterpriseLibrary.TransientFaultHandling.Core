@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <retryStrategy name="name1">
+    <fastFirstRetry>true</fastFirstRetry>
+    <retryCount>5</retryCount>
+    <retryInterval>00:00:00.1</retryInterval>
+  </retryStrategy>
+  <retryStrategy name="name2">
+    <fastFirstRetry>true</fastFirstRetry>
+    <retryCount>55</retryCount>
+    <initialInterval>00:00:00.2</initialInterval>
+    <increment>00:00:00.3</increment>
+  </retryStrategy>
+  <retryStrategy name="name3">
+    <fastFirstRetry>true</fastFirstRetry>
+    <retryCount>555</retryCount>
+    <minBackoff>00:00:00.4</minBackoff>
+    <maxBackoff>00:00:00.5</maxBackoff>
+    <deltaBackoff>00:00:00.6</deltaBackoff>
+  </retryStrategy>
+</configuration>

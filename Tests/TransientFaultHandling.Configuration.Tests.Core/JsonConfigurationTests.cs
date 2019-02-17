@@ -1,4 +1,4 @@
-namespace TransientFaultHandling.Configuration.Tests.Core
+namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -9,10 +9,10 @@ namespace TransientFaultHandling.Configuration.Tests.Core
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class ConfigurationTests
+    public class JsonConfigurationTests
     {
         [TestMethod]
-        public void RetryStrategyTest()
+        public void JsonRetryStrategyTest()
         {
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile("app.json")
@@ -61,6 +61,20 @@ namespace TransientFaultHandling.Configuration.Tests.Core
             Assert.AreEqual(options3.GetValue<TimeSpan>(property.First().ToString().ToLower() + property.Substring(1)), strategy3.GetType().GetField("maxBackoff", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(strategy3));
             property = nameof(ExponentialBackoffOptions.DeltaBackOff);
             Assert.AreEqual(options3.GetValue<TimeSpan>(property.First().ToString().ToLower() + property.Substring(1)), strategy3.GetType().GetField("deltaBackoff", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(strategy3));
+
+            ExponentialBackoff strategy = configuration.GetRetryStrategies<ExponentialBackoff>(nameof(RetryStrategy)).Single().Value;
+
+            Assert.AreEqual(options3.Key, strategy.Name);
+            property = nameof(RetryStrategy.FastFirstRetry);
+            Assert.AreEqual(options3.GetValue<bool>(property.First().ToString().ToLower() + property.Substring(1)), strategy.FastFirstRetry);
+            property = nameof(ExponentialBackoffOptions.RetryCount);
+            Assert.AreEqual(options3.GetValue<int>(property.First().ToString().ToLower() + property.Substring(1)), strategy.GetType().GetField("retryCount", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(strategy));
+            property = nameof(ExponentialBackoffOptions.MinBackOff);
+            Assert.AreEqual(options3.GetValue<TimeSpan>(property.First().ToString().ToLower() + property.Substring(1)), strategy.GetType().GetField("minBackoff", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(strategy));
+            property = nameof(ExponentialBackoffOptions.MaxBackOff);
+            Assert.AreEqual(options3.GetValue<TimeSpan>(property.First().ToString().ToLower() + property.Substring(1)), strategy.GetType().GetField("maxBackoff", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(strategy));
+            property = nameof(ExponentialBackoffOptions.DeltaBackOff);
+            Assert.AreEqual(options3.GetValue<TimeSpan>(property.First().ToString().ToLower() + property.Substring(1)), strategy.GetType().GetField("deltaBackoff", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(strategy));
         }
     }
 }
