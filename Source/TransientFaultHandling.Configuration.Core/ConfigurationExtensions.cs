@@ -18,11 +18,14 @@
         /// Gets the retry strategies from configuration section.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="key">The key.</param>
+        /// <param name="key">The key to the retry strategy configuration section.</param>
         /// <param name="getCustomRetryStrategy">The function to ger custom retry strategy from options.</param>
         /// <returns>A dictionary where keys are the names of retry strategies and values are retry strategies.</returns>
         [CLSCompliant(false)]
-        public static Dictionary<string, RetryStrategy> GetRetryStrategies(this IConfiguration configuration, string key, Func<IConfigurationSection, RetryStrategy> getCustomRetryStrategy = null)
+        public static IDictionary<string, RetryStrategy> GetRetryStrategies(
+            this IConfiguration configuration,
+            string key = nameof(RetryStrategy),
+            Func<IConfigurationSection, RetryStrategy> getCustomRetryStrategy = null)
         {
             Guard.ArgumentNotNull(configuration, nameof(configuration));
 
@@ -69,12 +72,14 @@
         /// Gets the retry strategies from configuration section.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="key">The key.</param>
+        /// <param name="key">The key to the retry strategy configuration section.</param>
         /// <param name="getCustomRetryStrategy">The function to ger custom retry strategy from options.</param>
         /// <returns>A dictionary where keys are the names of retry strategies and values are retry strategies.</returns>
         [CLSCompliant(false)]
-        public static Dictionary<string, TRetryStrategy> GetRetryStrategies<TRetryStrategy>(this IConfiguration configuration,
-            string key, Func<IConfigurationSection, TRetryStrategy> getCustomRetryStrategy = null)
+        public static IDictionary<string, TRetryStrategy> GetRetryStrategies<TRetryStrategy>(
+            this IConfiguration configuration,
+            string key = nameof(RetryStrategy),
+            Func<IConfigurationSection, TRetryStrategy> getCustomRetryStrategy = null)
             where TRetryStrategy : RetryStrategy
         {
             Guard.ArgumentNotNull(configuration, nameof(configuration));

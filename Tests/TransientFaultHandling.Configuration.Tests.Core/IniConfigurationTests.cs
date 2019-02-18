@@ -17,7 +17,7 @@
                 .AddIniFile("app.ini")
                 .Build();
 
-            Dictionary<string, RetryStrategy> retryStrategies = configuration.GetRetryStrategies(nameof(RetryStrategy));
+            IDictionary<string, RetryStrategy> retryStrategies = configuration.GetRetryStrategies();
             Assert.AreEqual(configuration.GetSection(nameof(RetryStrategy)).GetChildren().Count(), retryStrategies.Count);
 
             string property;

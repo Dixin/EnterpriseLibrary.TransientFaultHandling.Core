@@ -1,5 +1,5 @@
 {
-  "RetryStrategy": {
+  "retryStrategy": {
     "name1": {
       "fastFirstRetry": "true",
       "retryCount": 5,

@@ -1,3 +1,9 @@
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
+
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
 {
     using System;
@@ -15,10 +21,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
         public void JsonRetryStrategyTest()
         {
             IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("app.json")
+                .AddJsonFile("app.json") // or AddXml("app.xml") or AddIni("app.ini")
                 .Build();
 
-            Dictionary<string, RetryStrategy> retryStrategies = configuration.GetRetryStrategies(nameof(RetryStrategy));
+            IDictionary<string, RetryStrategy> retryStrategies = configuration.GetRetryStrategies();
+            // or retryStrategies = configuration.GetRetryStrategies("yourConfigurationSectionKey");
+            // The default configuration section key is "retryStrategy".
+
             Assert.AreEqual(configuration.GetSection(nameof(RetryStrategy)).GetChildren().Count(), retryStrategies.Count);
 
             string property;
@@ -62,7 +71,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
             property = nameof(ExponentialBackoffOptions.DeltaBackOff);
             Assert.AreEqual(options3.GetValue<TimeSpan>(property.First().ToString().ToLower() + property.Substring(1)), strategy3.GetType().GetField("deltaBackoff", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(strategy3));
 
-            ExponentialBackoff strategy = configuration.GetRetryStrategies<ExponentialBackoff>(nameof(RetryStrategy)).Single().Value;
+            IDictionary<string, ExponentialBackoff> strategies = configuration.GetRetryStrategies<ExponentialBackoff>();
+            ExponentialBackoff strategy = strategies.Single().Value;
 
             Assert.AreEqual(options3.Key, strategy.Name);
             property = nameof(RetryStrategy.FastFirstRetry);
