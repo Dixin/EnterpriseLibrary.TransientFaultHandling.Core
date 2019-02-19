@@ -24,12 +24,6 @@
 
   <ItemGroup>
     <Compile Include="..\..\Tools\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\TransientFaultHandling.Core\Guard.cs" Link="Guard.cs" />
-    <Compile Include="..\TransientFaultHandling.Core\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\TransientFaultHandling.Core\Properties\Resources.resx" Link="Properties\Resources.resx" />
   </ItemGroup>
 
   <ItemGroup>
