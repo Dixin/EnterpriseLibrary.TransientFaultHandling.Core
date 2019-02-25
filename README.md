@@ -70,15 +70,15 @@ It can be installed through NuGet using .NET CLI:
 
 ```
 dotnet add package EnterpriseLibrary.TransientFaultHandling.Core
-dotnet add package TransientFaultHandling.Caching.Core
-dotnet add package TransientFaultHandling.Configuration.Core
-dotnet add package TransientFaultHandling.Data.Core
+dotnet add package TransientFaultHandling.Caching
+dotnet add package TransientFaultHandling.Configuration
+dotnet add package TransientFaultHandling.Data
 ```
 Or in Visual Studio NuGet Package Manager Console:
 
 ```
 Install-Package EnterpriseLibrary.TransientFaultHandling.Core
-Install-Package TransientFaultHandling.Caching.Core
-Install-Package TransientFaultHandling.Configuration.Core
-Install-Package TransientFaultHandling.Data.Core
+Install-Package TransientFaultHandling.Caching
+Install-Package TransientFaultHandling.Configuration
+Install-Package TransientFaultHandling.Data
 ```
