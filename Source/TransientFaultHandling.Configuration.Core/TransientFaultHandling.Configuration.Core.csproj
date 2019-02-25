@@ -7,6 +7,7 @@
     <Version>2.0.0</Version>
     <Authors>Dixin Yan</Authors>
     <Company>https://DixinYan.com</Company>
+    <PackageDescription>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageDescription>
     <PackageLicenseUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageProjectUrl>
     <PackageIconUrl>http://nuget.org/Media/Default/Packages/Unity/2.0/entlib_new_icon_100x100.png</PackageIconUrl>
