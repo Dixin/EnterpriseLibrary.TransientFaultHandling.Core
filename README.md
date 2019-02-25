@@ -35,9 +35,8 @@ Retry
     .Catch<WebException>(exception =>
         exception.Response is HttpWebResponse response && response.StatusCode == HttpStatusCode.RequestTimeout)
     .ExecuteAction(() => webClient.DownloadString("https://DixinYan.com"));
-
-Retry.WIthFixedInterval().Catch<OperationCancelledExsception>
 ```
+
 It also supports JSON/XML/INI configuration:
 ```js
 {
