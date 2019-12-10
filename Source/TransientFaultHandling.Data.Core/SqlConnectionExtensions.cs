@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
     /// <summary>
-    /// Provides a set of extension methods that add retry capabilities to the standard <see cref="System.Data.SqlClient.SqlConnection"/> implementation.
+    /// Provides a set of extension methods that add retry capabilities to the standard <see cref="Microsoft.Data.SqlClient.SqlConnection"/> implementation.
     /// </summary>
     public static class SqlConnectionExtensions
     {

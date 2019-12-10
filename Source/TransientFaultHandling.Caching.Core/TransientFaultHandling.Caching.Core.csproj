@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.5</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>TransientFaultHandling.Caching.Core</AssemblyName>
     <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
     <LangVersion>latest</LangVersion>

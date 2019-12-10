@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
+using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Xml;
 
@@ -416,7 +416,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <summary>
         /// Creates and returns a SqlCommand object that is associated with the underlying SqlConnection.
         /// </summary>
-        /// <returns>A System.Data.SqlClient.SqlCommand object that is associated with the underlying connection.</returns>
+        /// <returns>A Microsoft.Data.SqlClient.SqlCommand object that is associated with the underlying connection.</returns>
         public SqlCommand CreateCommand()
         {
             return this.underlyingConnection.CreateCommand();
@@ -426,7 +426,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// Creates and returns an object that implements the IDbCommand interface that is associated 
         /// with the underlying SqlConnection.
         /// </summary>
-        /// <returns>A System.Data.SqlClient.SqlCommand object that is associated with the underlying connection.</returns>
+        /// <returns>A Microsoft.Data.SqlClient.SqlCommand object that is associated with the underlying connection.</returns>
         IDbCommand IDbConnection.CreateCommand()
         {
             return this.underlyingConnection.CreateCommand();

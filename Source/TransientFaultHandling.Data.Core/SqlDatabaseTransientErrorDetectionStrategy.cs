@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
-using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
+using System;
+using System.Data;
 
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
@@ -216,8 +216,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandl
 
 namespace System.Data
 {
-    using System.Runtime.Serialization;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
+    using System.Runtime.Serialization;
 
     /// <summary>Represents Entity Framework-related errors that occur in the <see langword="EntityClient" /> namespace. The <see langword="EntityException" /> is the base class for all Entity Framework exceptions thrown by the <see langword="EntityClient" />.</summary>
     [Serializable]
