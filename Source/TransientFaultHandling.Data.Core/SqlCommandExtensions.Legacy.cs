@@ -2,8 +2,8 @@
 
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Xml;
-using Microsoft.Data.SqlClient;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
 
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
@@ -19,6 +19,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>The number of rows affected.</returns>
+        [Obsolete("Use ExecuteNonQueryWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static int ExecuteNonQueryWithRetry(this SqlCommand command)
         {
             return ExecuteNonQueryWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
@@ -30,6 +31,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>The number of rows affected.</returns>
+        [Obsolete("Use ExecuteNonQueryWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
         {
             return ExecuteNonQueryWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
@@ -43,6 +45,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>The number of rows affected.</returns>
+        [Obsolete("Use ExecuteNonQueryWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
         {
             GuardConnectionIsNotNull(command);
@@ -75,6 +78,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
+        [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command)
         {
             return ExecuteReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
@@ -87,6 +91,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
+        [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
         {
             return ExecuteReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
@@ -101,6 +106,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
+        [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
         {
             GuardConnectionIsNotNull(command);
@@ -133,6 +139,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="behavior">One of the enumeration values that specifies the command behavior.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
+        [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior)
         {
             return ExecuteReaderWithRetry(command, behavior, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
@@ -146,6 +153,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="behavior">One of the enumeration values that specifies the command behavior.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
+        [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy retryPolicy)
         {
             return ExecuteReaderWithRetry(command, behavior, retryPolicy, RetryPolicy.NoRetry);
@@ -161,6 +169,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
+        [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
         {
             GuardConnectionIsNotNull(command);
@@ -184,7 +193,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                     throw;
                 }
             });
-        } 
+        }
         #endregion
 
         #region ExecuteScalarWithRetry method implementations
@@ -194,6 +203,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
+        [Obsolete("Use ExecuteScalarWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static object ExecuteScalarWithRetry(this SqlCommand command)
         {
             return ExecuteScalarWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
@@ -206,6 +216,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
+        [Obsolete("Use ExecuteScalarWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
         {
             return ExecuteScalarWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
@@ -219,6 +230,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
+        [Obsolete("Use ExecuteScalarWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
         {
             GuardConnectionIsNotNull(command);
@@ -250,6 +262,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>An System.Xml.XmlReader object.</returns>
+        [Obsolete("Use ExecuteXmlReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command)
         {
             return ExecuteXmlReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
@@ -262,6 +275,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>An System.Xml.XmlReader object.</returns>
+        [Obsolete("Use ExecuteXmlReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
         {
             return ExecuteXmlReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
@@ -275,6 +289,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>An System.Xml.XmlReader object.</returns>
+        [Obsolete("Use ExecuteXmlReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
         public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
         {
             GuardConnectionIsNotNull(command);

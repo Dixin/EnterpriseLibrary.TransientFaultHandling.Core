@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using Microsoft.Data.SqlClient;
+using System;
+using System.Data.SqlClient;
 
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
@@ -14,6 +15,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// Uses the default retry policy when opening the connection.
         /// </summary>
         /// <param name="connection">The connection object that is required for the extension method declaration.</param>
+        [Obsolete("Use OpenWithRetry for Microsoft.Data.SqlClient.SqlConnection in Microsoft.Data.SqlClient.")]
         public static void OpenWithRetry(this SqlConnection connection)
         {
             OpenWithRetry(connection, RetryManager.Instance.GetDefaultSqlConnectionRetryPolicy());
@@ -25,6 +27,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="connection">The connection object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that defines whether to retry a request if the connection fails.</param>
+        [Obsolete("Use OpenWithRetry for Microsoft.Data.SqlClient.SqlConnection in Microsoft.Data.SqlClient.")]
         public static void OpenWithRetry(this SqlConnection connection, RetryPolicy retryPolicy)
         {
             // Check if retry policy was specified, if not, use the default retry policy.

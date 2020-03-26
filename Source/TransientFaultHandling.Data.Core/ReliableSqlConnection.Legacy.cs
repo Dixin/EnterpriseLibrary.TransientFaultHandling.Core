@@ -2,9 +2,9 @@
 
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Xml;
-using Microsoft.Data.SqlClient;
 
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
@@ -12,7 +12,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
     /// Provides a reliable way of opening connections to, and executing commands against, the SQL Database 
     /// databases taking potential network unreliability and connection retry requirements into account.
     /// </summary>
-    public sealed class ReliableSqlConnection : IDbConnection, ICloneable
+    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ReliableSqlConnection with Microsoft.Data.SqlClient.")]
+    public sealed class ReliableSqlConnectionLegacy : IDbConnection, ICloneable
     {
         private readonly SqlConnection underlyingConnection;
         private readonly RetryPolicy connectionRetryPolicy;
@@ -26,7 +27,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// retry policy for connections and commands unless retry settings are provided in the connection string.
         /// </summary>
         /// <param name="connectionString">The connection string used to open the SQL Database.</param>
-        public ReliableSqlConnection(string connectionString)
+        public ReliableSqlConnectionLegacy(string connectionString)
             : this(connectionString, RetryManager.Instance.GetDefaultSqlConnectionRetryPolicy())
         {
         }
@@ -38,7 +39,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="connectionString">The connection string used to open the SQL Database.</param>
         /// <param name="retryPolicy">The retry policy that defines whether to retry a request if a connection or command fails.</param>
-        public ReliableSqlConnection(string connectionString, RetryPolicy retryPolicy)
+        public ReliableSqlConnectionLegacy(string connectionString, RetryPolicy retryPolicy)
             : this(connectionString, retryPolicy, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy() ?? retryPolicy)
         {
         }
@@ -51,7 +52,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="connectionString">The connection string used to open the SQL Database.</param>
         /// <param name="connectionRetryPolicy">The retry policy that defines whether to retry a request if a connection fails to be established.</param>
         /// <param name="commandRetryPolicy">The retry policy that defines whether to retry a request if a command fails to be executed.</param>
-        public ReliableSqlConnection(string connectionString, RetryPolicy connectionRetryPolicy, RetryPolicy commandRetryPolicy)
+        public ReliableSqlConnectionLegacy(string connectionString, RetryPolicy connectionRetryPolicy, RetryPolicy commandRetryPolicy)
         {
             this.connectionString = connectionString;
             this.underlyingConnection = new SqlConnection(connectionString);
@@ -63,7 +64,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             this.connectionStringFailoverPolicy = new RetryPolicy<NetworkConnectivityErrorDetectionStrategy>(1, TimeSpan.FromMilliseconds(1));
         }
 
-#region Public properties
+        #region Public properties
         /// <summary>
         /// Gets or sets the connection string for opening a connection to the SQL Database.
         /// </summary>
@@ -156,9 +157,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         {
             get { return this.underlyingConnection.State; }
         }
-#endregion
+        #endregion
 
-#region Public methods
+        #region Public methods
         /// <summary>
         /// Opens a database connection with the settings specified by the ConnectionString and ConnectionRetryPolicy properties.
         /// </summary>
@@ -178,12 +179,12 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             // Check if retry policy was specified, if not, disable retries by executing the Open method using RetryPolicy.NoRetry.
             (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
                 this.connectionStringFailoverPolicy.ExecuteAction(() =>
+                {
+                    if (this.underlyingConnection.State != ConnectionState.Open)
                     {
-                        if (this.underlyingConnection.State != ConnectionState.Open)
-                        {
-                            this.underlyingConnection.Open();
-                        }
-                    }));
+                        this.underlyingConnection.Open();
+                    }
+                }));
 
             return this.underlyingConnection;
         }
@@ -365,9 +366,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 
             return result.RecordsAffected;
         }
-#endregion
+        #endregion
 
-#region IDbConnection implementation
+        #region IDbConnection implementation
         /// <summary>
         /// Begins a database transaction with the specified System.Data.IsolationLevel value.
         /// </summary>
@@ -431,9 +432,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         {
             return this.underlyingConnection.CreateCommand();
         }
-#endregion
+        #endregion
 
-#region ICloneable implementation
+        #region ICloneable implementation
         /// <summary>
         /// Creates a new connection that is a copy of the current instance, including the connection
         /// string, connection retry policy, and command retry policy.
@@ -443,9 +444,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         {
             return new ReliableSqlConnection(this.ConnectionString, this.ConnectionRetryPolicy, this.CommandRetryPolicy);
         }
-#endregion
+        #endregion
 
-#region IDisposable implementation
+        #region IDisposable implementation
         /// <summary>
         /// Performs application-defined tasks that are associated with freeing, releasing, or
         /// resetting managed and unmanaged resources.
@@ -473,9 +474,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 this.underlyingConnection.Dispose();
             }
         }
-#endregion
+        #endregion
 
-#region Private helper classes
+        #region Private helper classes
         /// <summary>
         /// This helpers class is intended to be used exclusively for fetching the number of affected records when executing a command by using ExecuteNonQuery.
         /// </summary>
@@ -483,7 +484,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         {
             public int RecordsAffected { get; set; }
         }
-#endregion
+        #endregion
 
         /// <summary>
         /// Implements a strategy that detects network connectivity errors such as "host not found".

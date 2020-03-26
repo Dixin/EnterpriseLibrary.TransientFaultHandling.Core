@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Data.SqlClient;
 
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
 {
@@ -126,7 +126,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
     /// Implements an object that holds the decoded reason code returned from SQL Database when throttling conditions are encountered.
     /// </summary>
     [Serializable]
-    public class ThrottlingCondition
+    public partial class ThrottlingCondition
     {
         /// <summary>
         /// Gets the error number that corresponds to the throttling conditions reported by SQL Database.
