@@ -39,62 +39,54 @@
             this.cancellationToken = cancellationToken;
         }
 
-        internal Task<TResult> ExecuteAsync()
-        {
-            return this.ExecuteAsyncImpl(null);
-        }
+        internal Task<TResult> ExecuteAsync() => this.ExecuteAsyncImpl(null);
 
         private Task<TResult> ExecuteAsyncImpl(Task ignore)
         {
             if (this.cancellationToken.IsCancellationRequested)
             {
-                if (this.previousTask != null)
+                if (this.previousTask is not null)
                 {
                     return this.previousTask;
                 }
 
-                TaskCompletionSource<TResult> taskCompletionSource = new TaskCompletionSource<TResult>();
+                TaskCompletionSource<TResult> taskCompletionSource = new();
                 taskCompletionSource.TrySetCanceled();
                 return taskCompletionSource.Task;
             }
-            else
+
+            Task<TResult> task;
+            try
             {
-                Task<TResult> task;
-                try
-                {
-                    task = this.taskFunc();
-                }
-                catch (Exception ex)
-                {
-                    if (!this.isTransient(ex))
-                    {
-                        throw;
-                    }
-
-                    TaskCompletionSource<TResult> taskCompletionSource2 = new TaskCompletionSource<TResult>();
-                    taskCompletionSource2.TrySetException(ex);
-                    task = taskCompletionSource2.Task;
-                }
-
-                if (task == null)
-                {
-                    throw new ArgumentException(
-                        string.Format(CultureInfo.InvariantCulture, Resources.TaskCannotBeNull, new object[] { "taskFunc" }), "taskFunc");
-                }
-
-                if (task.Status == TaskStatus.RanToCompletion)
-                {
-                    return task;
-                }
-
-                if (task.Status == TaskStatus.Created)
-                {
-                    throw new ArgumentException(
-                        string.Format(CultureInfo.InvariantCulture, Resources.TaskMustBeScheduled, new object[] { "taskFunc" }), "taskFunc");
-                }
-
-                return task.ContinueWith(this.ExecuteAsyncContinueWith, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default).Unwrap();
+                task = this.taskFunc();
             }
+            catch (Exception ex)
+            {
+                if (!this.isTransient(ex))
+                {
+                    throw;
+                }
+
+                TaskCompletionSource<TResult> taskCompletionSource = new();
+                taskCompletionSource.TrySetException(ex);
+                task = taskCompletionSource.Task;
+            }
+
+            if (task is null)
+            {
+                throw new ArgumentException(
+                    string.Format(CultureInfo.InvariantCulture, Resources.TaskCannotBeNull, "taskFunc"), "taskFunc");
+            }
+
+            return task.Status switch
+            {
+                TaskStatus.RanToCompletion => task,
+                TaskStatus.Created => throw new ArgumentException(
+                    string.Format(CultureInfo.InvariantCulture, Resources.TaskMustBeScheduled, "taskFunc"), "taskFunc"),
+                _ => task
+                    .ContinueWith(this.ExecuteAsyncContinueWith, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default)
+                    .Unwrap()
+            };
         }
 
         private Task<TResult> ExecuteAsyncContinueWith(Task<TResult> runningTask)
@@ -109,8 +101,8 @@
             if (innerException is RetryLimitExceededException)
 #pragma warning restore 618
             {
-                TaskCompletionSource<TResult> taskCompletionSource = new TaskCompletionSource<TResult>();
-                if (innerException.InnerException != null)
+                TaskCompletionSource<TResult> taskCompletionSource = new();
+                if (innerException.InnerException is not null)
                 {
                     taskCompletionSource.TrySetException(innerException.InnerException);
                 }

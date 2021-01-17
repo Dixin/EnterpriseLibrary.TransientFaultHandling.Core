@@ -1,13 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Data;
-using System.Xml;
-using Microsoft.Data.SqlClient;
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Data;
+    using System.Xml;
+    using Microsoft.Data.SqlClient;
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
+
     /// <summary>
     /// Provides a set of extension methods that add retry capabilities to the standard System.Data.SqlClient.SqlCommand implementation.
     /// </summary>
@@ -19,10 +17,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQueryWithRetry(this SqlCommand command)
-        {
-            return ExecuteNonQueryWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-        }
+        public static int ExecuteNonQueryWithRetry(this SqlCommand command) => 
+            ExecuteNonQueryWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
 
         /// <summary>
         /// Executes a Transact-SQL statement against the connection and returns the number of rows affected. Uses the specified retry policy when executing the command.
@@ -30,10 +26,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
-        {
-            return ExecuteNonQueryWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
-        }
+        public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
+            ExecuteNonQueryWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Executes a Transact-SQL statement against the connection and returns the number of rows affected. Uses the specified retry policies when executing the command
@@ -50,7 +44,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             // Check if retry policy was specified, if not, use the default retry policy.
             return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
             {
-                var hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
+                bool hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
 
                 try
                 {
@@ -58,7 +52,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 }
                 finally
                 {
-                    if (hasOpenConnection && command.Connection != null && command.Connection.State == ConnectionState.Open)
+                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
                     {
                         command.Connection.Close();
                     }
@@ -75,10 +69,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command)
-        {
-            return ExecuteReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-        }
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command) => 
+            ExecuteReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
 
         /// <summary>
         /// Sends the specified command to the connection and builds a SqlDataReader object that contains the results.
@@ -87,10 +79,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
-        {
-            return ExecuteReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
-        }
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
+            ExecuteReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Sends the specified command to the connection and builds a SqlDataReader object that contains the results.
@@ -108,7 +98,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             // Check if retry policy was specified, if not, use the default retry policy.
             return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
             {
-                var hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
+                bool hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
 
                 try
                 {
@@ -116,7 +106,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 }
                 catch (Exception)
                 {
-                    if (hasOpenConnection && command.Connection != null && command.Connection.State == ConnectionState.Open)
+                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
                     {
                         command.Connection.Close();
                     }
@@ -133,10 +123,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="behavior">One of the enumeration values that specifies the command behavior.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior)
-        {
-            return ExecuteReaderWithRetry(command, behavior, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-        }
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior) => 
+            ExecuteReaderWithRetry(command, behavior, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
 
         /// <summary>
         /// Sends the specified command to the connection and builds a SqlDataReader object by using the specified
@@ -146,10 +134,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="behavior">One of the enumeration values that specifies the command behavior.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy retryPolicy)
-        {
-            return ExecuteReaderWithRetry(command, behavior, retryPolicy, RetryPolicy.NoRetry);
-        }
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy retryPolicy) => 
+            ExecuteReaderWithRetry(command, behavior, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Sends the specified command to the connection and builds a SqlDataReader object by using the specified
@@ -168,7 +154,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             // Check if retry policy was specified, if not, use the default retry policy.
             return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
             {
-                var hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
+                bool hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
 
                 try
                 {
@@ -176,7 +162,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 }
                 catch (Exception)
                 {
-                    if (hasOpenConnection && command.Connection != null && command.Connection.State == ConnectionState.Open)
+                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
                     {
                         command.Connection.Close();
                     }
@@ -194,10 +180,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
-        public static object ExecuteScalarWithRetry(this SqlCommand command)
-        {
-            return ExecuteScalarWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-        }
+        public static object ExecuteScalarWithRetry(this SqlCommand command) => 
+            ExecuteScalarWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
@@ -206,10 +190,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
-        public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
-        {
-            return ExecuteScalarWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
-        }
+        public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
+            ExecuteScalarWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
@@ -226,7 +208,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             // Check if retry policy was specified, if not, use the default retry policy.
             return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
             {
-                var hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
+                bool hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
 
                 try
                 {
@@ -234,7 +216,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 }
                 finally
                 {
-                    if (hasOpenConnection && command.Connection != null && command.Connection.State == ConnectionState.Open)
+                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
                     {
                         command.Connection.Close();
                     }
@@ -250,10 +232,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>An System.Xml.XmlReader object.</returns>
-        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command)
-        {
-            return ExecuteXmlReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-        }
+        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command) => 
+            ExecuteXmlReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
 
         /// <summary>
         /// Sends the specified command to the connection and builds an XmlReader object that contains the results.
@@ -262,10 +242,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>An System.Xml.XmlReader object.</returns>
-        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy)
-        {
-            return ExecuteXmlReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
-        }
+        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
+            ExecuteXmlReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Sends the specified command to the connection and builds an XmlReader object that contains the results.
@@ -282,7 +260,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             // Check if retry policy was specified, if not, use the default retry policy.
             return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
             {
-                var hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
+                bool hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
 
                 try
                 {
@@ -290,7 +268,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 }
                 catch (Exception)
                 {
-                    if (hasOpenConnection && command.Connection != null && command.Connection.State == ConnectionState.Open)
+                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
                     {
                         command.Connection.Close();
                     }
@@ -303,7 +281,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 
         private static void GuardConnectionIsNotNull(SqlCommand command)
         {
-            if (command.Connection == null)
+            if (command.Connection is null)
             {
                 throw new InvalidOperationException(Resources.ConnectionHasNotBeenInitialized);
             }
@@ -311,7 +289,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 
         private static bool EnsureValidConnection(SqlCommand command, RetryPolicy retryPolicy)
         {
-            if (command != null)
+            if (command is not null)
             {
                 GuardConnectionIsNotNull(command);
 

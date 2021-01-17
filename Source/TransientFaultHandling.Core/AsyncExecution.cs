@@ -15,7 +15,8 @@
     {
         private static Task<bool> cachedBoolTask;
 
-        public AsyncExecution(Func<Task> taskAction, ShouldRetry shouldRetry, Func<Exception, bool> isTransient, Action<int, Exception, TimeSpan> onRetrying, bool fastFirstRetry, CancellationToken cancellationToken) : base(() => StartAsGenericTask(taskAction), shouldRetry, isTransient, onRetrying, fastFirstRetry, cancellationToken)
+        public AsyncExecution(Func<Task> taskAction, ShouldRetry shouldRetry, Func<Exception, bool> isTransient, Action<int, Exception, TimeSpan> onRetrying, bool fastFirstRetry, CancellationToken cancellationToken) : 
+            base(() => StartAsGenericTask(taskAction), shouldRetry, isTransient, onRetrying, fastFirstRetry, cancellationToken)
         {
         }
 
@@ -27,10 +28,10 @@
         private static Task<bool> StartAsGenericTask(Func<Task> taskAction)
         {
             Task task = taskAction();
-            if (task == null)
+            if (task is null)
             {
                 throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, Resources.TaskCannotBeNull, new object[] { "taskAction" }), nameof(taskAction));
+                    string.Format(CultureInfo.InvariantCulture, Resources.TaskCannotBeNull, nameof(taskAction)), nameof(taskAction));
             }
 
             if (task.Status == TaskStatus.RanToCompletion)
@@ -41,36 +42,36 @@
             if (task.Status == TaskStatus.Created)
             {
                 throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, Resources.TaskMustBeScheduled, new object[] { "taskAction" }), nameof(taskAction));
+                    string.Format(CultureInfo.InvariantCulture, Resources.TaskMustBeScheduled, nameof(taskAction)), nameof(taskAction));
             }
 
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            TaskCompletionSource<bool> taskCompletionSource = new();
             task.ContinueWith(
                 t =>
+                {
+                    if (t.IsFaulted)
                     {
-                        if (t.IsFaulted)
-                        {
-                            tcs.TrySetException(t.Exception.InnerExceptions);
-                            return;
-                        }
+                        taskCompletionSource.TrySetException(t.Exception.InnerExceptions);
+                        return;
+                    }
 
-                        if (t.IsCanceled)
-                        {
-                            tcs.TrySetCanceled();
-                            return;
-                        }
+                    if (t.IsCanceled)
+                    {
+                        taskCompletionSource.TrySetCanceled();
+                        return;
+                    }
 
-                        tcs.TrySetResult(true);
-                    },
+                    taskCompletionSource.TrySetResult(true);
+                },
                 TaskContinuationOptions.ExecuteSynchronously);
-            return tcs.Task;
+            return taskCompletionSource.Task;
         }
 
         private static Task<bool> GetCachedTask()
         {
-            if (cachedBoolTask == null)
+            if (cachedBoolTask is null)
             {
-                TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+                TaskCompletionSource<bool> taskCompletionSource = new();
                 taskCompletionSource.TrySetResult(true);
                 cachedBoolTask = taskCompletionSource.Task;
             }

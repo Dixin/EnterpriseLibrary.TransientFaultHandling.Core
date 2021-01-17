@@ -13,9 +13,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
         [TestMethod]
         public void ExponentialBackoffWithoutResultTest()
         {
-            const int retryCount = 5;
+            const int RetryCount = 5;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             Retry.ExponentialBackoff(
@@ -24,7 +24,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                     retryFuncCount++;
                     counter.Increase();
                 },
-                retryCount,
+                RetryCount,
                 exception => exception is InvalidOperationException,
                 (sender, e) =>
                 {
@@ -35,33 +35,33 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                 },
                 maxBackoff: maxBackoff,
                 firstFastRetry: false);
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
 
         [TestMethod]
         public void ExponentialBackoffWithResultTest()
         {
-            const int retryCount = 5;
-            const int result = 1;
+            const int RetryCount = 5;
+            const int Result = 1;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             Assert.AreEqual(
-                result,
+                Result,
                 Retry.ExponentialBackoff(
                     () =>
                     {
                         retryFuncCount++;
                         counter.Increase();
-                        return result;
+                        return Result;
                     },
-                    retryCount,
+                    RetryCount,
                     exception => exception is InvalidOperationException,
                     (sender, e) =>
                     {
@@ -72,20 +72,20 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                     },
                     maxBackoff: maxBackoff,
                     firstFastRetry: false));
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
 
         [TestMethod]
         public async Task ExponentialBackoffAsyncWithoutResultTest()
         {
-            const int retryCount = 5;
+            const int RetryCount = 5;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             await Retry.ExponentialBackoffAsync(
@@ -95,7 +95,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                     counter.Increase();
                     await Task.Yield();
                 },
-                retryCount,
+                RetryCount,
                 exception => exception is InvalidOperationException,
                 (sender, e) =>
                 {
@@ -106,34 +106,34 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                 },
                 maxBackoff: maxBackoff,
                 firstFastRetry: false);
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
 
         [TestMethod]
         public async Task ExponentialBackoffAsyncWithResultTest()
         {
-            const int retryCount = 5;
-            const int result = 1;
+            const int RetryCount = 5;
+            const int Result = 1;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             Assert.AreEqual(
-                result,
+                Result,
                 await Retry.ExponentialBackoffAsync(
                     async () =>
                     {
                         retryFuncCount++;
                         counter.Increase();
                         await Task.Yield();
-                        return result;
+                        return Result;
                     },
-                    retryCount,
+                    RetryCount,
                     exception => exception is InvalidOperationException,
                     (sender, e) =>
                     {
@@ -144,24 +144,24 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                     },
                     maxBackoff: maxBackoff,
                     firstFastRetry: false));
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
 
         [TestMethod]
         public void FluentExponentialBackoffWithoutResultTest()
         {
-            const int retryCount = 5;
+            const int RetryCount = 5;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             Retry
-                .WithExponentialBackoff(retryCount, maxBackoff: maxBackoff, firstFastRetry: false)
+                .WithExponentialBackoff(RetryCount, maxBackoff: maxBackoff, firstFastRetry: false)
                 .Catch(exception => exception is InvalidOperationException)
                 .HandleWith((sender, e) =>
                 {
@@ -175,27 +175,27 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                     retryFuncCount++;
                     counter.Increase();
                 });
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
 
         [TestMethod]
         public void FluentExponentialBackoffWithResultTest()
         {
-            const int retryCount = 5;
-            const int result = 1;
+            const int RetryCount = 5;
+            const int Result = 1;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             Assert.AreEqual(
-                result,
+                Result,
                 Retry
-                    .WithExponentialBackoff(retryCount, maxBackoff: maxBackoff, firstFastRetry: false)
+                    .WithExponentialBackoff(RetryCount, maxBackoff: maxBackoff, firstFastRetry: false)
                     .Catch<InvalidOperationException>()
                     .HandleWith((sender, e) =>
                     {
@@ -208,26 +208,26 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                     {
                         retryFuncCount++;
                         counter.Increase();
-                        return result;
+                        return Result;
                     }));
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
 
         [TestMethod]
         public async Task FluentExponentialBackoffAsyncWithoutResultTest()
         {
-            const int retryCount = 5;
+            const int RetryCount = 5;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             await Retry
-                .WithExponentialBackoff(retryCount, maxBackoff: maxBackoff, firstFastRetry: false)
+                .WithExponentialBackoff(RetryCount, maxBackoff: maxBackoff, firstFastRetry: false)
                 .HandleWith((sender, e) =>
                 {
                     Assert.IsInstanceOfType(e.LastException, typeof(InvalidOperationException));
@@ -242,27 +242,27 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                     counter.Increase();
                     await Task.Yield();
                 });
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
 
         [TestMethod]
         public async Task FluentExponentialBackoffAsyncWithResultTest()
         {
-            const int retryCount = 5;
-            const int result = 1;
+            const int RetryCount = 5;
+            const int Result = 1;
             TimeSpan maxBackoff = TimeSpan.FromSeconds(5);
-            Counter<InvalidOperationException> counter = new Counter<InvalidOperationException>(retryCount);
+            Counter<InvalidOperationException> counter = new(RetryCount);
             int retryFuncCount = 0;
             int retryHandlerCount = 0;
             Assert.AreEqual(
-                result,
+                Result,
                 await Retry
-                    .WithExponentialBackoff(retryCount, maxBackoff: maxBackoff, firstFastRetry: false)
+                    .WithExponentialBackoff(RetryCount, maxBackoff: maxBackoff, firstFastRetry: false)
                     .Catch(exception => exception is InvalidOperationException)
                     .HandleWith((sender, e) =>
                     {
@@ -276,13 +276,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                         retryFuncCount++;
                         counter.Increase();
                         await Task.Yield();
-                        return result;
+                        return Result;
                     }));
-            Assert.AreEqual(retryCount, retryFuncCount);
-            Assert.AreEqual(retryCount - 1, retryHandlerCount);
-            Assert.AreEqual(retryCount, counter.Time.Count);
+            Assert.AreEqual(RetryCount, retryFuncCount);
+            Assert.AreEqual(RetryCount - 1, retryHandlerCount);
+            Assert.AreEqual(RetryCount, counter.Time.Count);
             TimeSpan[] intervals = counter.Time.Take(counter.Time.Count - 1).Zip(counter.Time.Skip(1), (a, b) => b - a).ToArray();
-            Assert.AreEqual(retryCount - 1, intervals.Length);
+            Assert.AreEqual(RetryCount - 1, intervals.Length);
             intervals.ForEach((interval, index) => Assert.IsTrue(interval >= RetryStrategy.DefaultMinBackoff && interval <= maxBackoff + TimeSpan.FromTicks(TimeSpanHelper.Delta)));
         }
     }

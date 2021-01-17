@@ -1,15 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching
 {
+    using System;
+    using System.Globalization;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
+
     /// <summary>
     /// Checks whether an <see cref="Exception"/> is of the Microsoft.ApplicationServer.Caching.DataCacheException type,
     /// and if so, checks the error code and status code to determine if it is transient.
@@ -19,18 +16,18 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching
     internal static class DataCacheExceptionChecker
     {
         // PublicKeyToken = 31bf3856ad364e35
-        private static readonly byte[] CachePublicKeyToken = new byte[] { 0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35 };
+        private static readonly byte[] CachePublicKeyToken = { 0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35 };
 
-        private static Type DataCacheExceptionType;
-        private static Func<Exception, int> GetErrorCode;
+        private static Type dataCacheExceptionType;
+        private static Func<Exception, int> getErrorCode;
 
-        private static int[] errorCodes = new int[]
-            {
-                16, //DataCacheErrorCode.ConnectionTerminated,
-                17, //DataCacheErrorCode.RetryLater,
-                18, //DataCacheErrorCode.Timeout,
-                17016, //DataCacheErrorCode.ServiceAccessError,
-            };
+        private static readonly int[] ErrorCodes =
+        {
+            16, //DataCacheErrorCode.ConnectionTerminated,
+            17, //DataCacheErrorCode.RetryLater,
+            18, //DataCacheErrorCode.Timeout,
+            17016, //DataCacheErrorCode.ServiceAccessError,
+        };
 
         /// <summary>
         /// Checks whether <paramref name="ex"/> is a transient DataCacheException.
@@ -43,23 +40,23 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching
         /// </returns>
         public static bool? IsTransientDataCacheException(Exception ex)
         {
-            if (ex == null)
+            if (ex is null)
             {
                 return null;
             }
 
-            if (DataCacheExceptionType == null)
+            if (dataCacheExceptionType is null)
             {
-                var exceptionType = ex.GetType();
+                Type exceptionType = ex.GetType();
                 if (exceptionType.FullName == "Microsoft.ApplicationServer.Caching.DataCacheException")
                 {
                     InitializeTypeAccesors(exceptionType);
                 }
             }
 
-            if (DataCacheExceptionType != null && DataCacheExceptionType.GetTypeInfo().IsInstanceOfType(ex))
+            if (dataCacheExceptionType is not null && dataCacheExceptionType.GetTypeInfo().IsInstanceOfType(ex))
             {
-                return errorCodes.Contains(GetErrorCode(ex));
+                return ErrorCodes.Contains(getErrorCode(ex));
             }
 
             return null;
@@ -70,38 +67,40 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching
             // this creates the following function from the reflected type (DataCacheException):
             //GetErrorCode = i => ((DataCacheException)i).ErrorCode;
 
-            if (DataCacheExceptionType == null)
+            if (dataCacheExceptionType is null)
             {
                 CheckIsCacheAssembly(type.GetTypeInfo().Assembly);
 
-                var errorCodeProperty = type.GetTypeInfo().GetProperty("ErrorCode");
-                if (errorCodeProperty == null || errorCodeProperty.PropertyType != typeof(int))
+                PropertyInfo errorCodeProperty = type.GetTypeInfo().GetProperty("ErrorCode");
+                if (errorCodeProperty is null || errorCodeProperty.PropertyType != typeof(int))
+                {
                     throw new InvalidOperationException(Resources.TypeMismatchException);
+                }
 
-                var parameter = Expression.Parameter(typeof(Exception), "i");
+                ParameterExpression parameter = Expression.Parameter(typeof(Exception), "i");
 
                 // (DataCacheException)i
-                var cast = Expression.TypeAs(parameter, type);
+                UnaryExpression cast = Expression.TypeAs(parameter, type);
 
                 // ((DataCacheException)i).ErrorCode
-                GetErrorCode = Expression.Lambda<Func<Exception, int>>(
+                getErrorCode = Expression.Lambda<Func<Exception, int>>(
                     Expression.Property(
                         cast,
                         errorCodeProperty),
                     parameter).Compile();
 
-                DataCacheExceptionType = type;
+                dataCacheExceptionType = type;
             }
         }
 
         private static void CheckIsCacheAssembly(Assembly assembly)
         {
             // should we also filter by version to support only 1.0.0.0 and 101.0.0.0?
-            var assemblyName = assembly.GetName();
-            if (assemblyName != null && assemblyName.Name == "Microsoft.ApplicationServer.Caching.Core")
+            AssemblyName assemblyName = assembly.GetName();
+            if (assemblyName?.Name == "Microsoft.ApplicationServer.Caching.Core")
             {
-                var token = assemblyName.GetPublicKeyToken();
-                if (token != null && CachePublicKeyToken.SequenceEqual(token))
+                byte[] token = assemblyName.GetPublicKeyToken();
+                if (token is not null && CachePublicKeyToken.SequenceEqual(token))
                 {
                     return;
                 }

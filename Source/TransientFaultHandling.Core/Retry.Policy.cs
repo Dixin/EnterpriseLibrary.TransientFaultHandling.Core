@@ -16,9 +16,8 @@
             Func<Exception, bool> isTransient = null,
             EventHandler<RetryingEventArgs> retryingHandler = null)
         {
-            RetryPolicy retryPolicy = new RetryPolicy(
-                new ExceptionDetection(isTransient), retryStrategy ?? RetryStrategy.NoRetry);
-            if (retryingHandler != null)
+            RetryPolicy retryPolicy = new(new ExceptionDetection(isTransient), retryStrategy ?? RetryStrategy.NoRetry);
+            if (retryingHandler is not null)
             {
                 retryPolicy.Retrying += retryingHandler;
             }
@@ -67,8 +66,8 @@
 
             return CreateRetryPolicy(
                 retryStrategy,
-                isTransient == null
-                    ? new Func<Exception, bool>(exception => exception is TException)
+                isTransient is null
+                    ? exception => exception is TException
                     : exception => exception is TException specifiedException && isTransient(specifiedException));
         }
 
@@ -87,9 +86,9 @@
 
             return CreateRetryPolicy(
                 retryPolicy.RetryStrategy,
-                isTransient == null
-                    ? new Func<Exception, bool>(exception => retryPolicy.ErrorDetectionStrategy.IsTransient(exception)
-                        || exception is TException)
+                isTransient is null
+                    ? exception => retryPolicy.ErrorDetectionStrategy.IsTransient(exception)
+                        || exception is TException
                     : exception => retryPolicy.ErrorDetectionStrategy.IsTransient(exception)
                         || exception is TException specifiedException && isTransient(specifiedException),
                 retryPolicy.InvokeRetrying);

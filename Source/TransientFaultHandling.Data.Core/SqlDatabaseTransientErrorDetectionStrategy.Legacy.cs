@@ -1,13 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Data;
-using System.Data.SqlClient;
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data;
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Data;
+    using System.Data.SqlClient;
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data;
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
+
     /// <summary>
     /// Provides the transient error detection logic for transient faults that are specific to SQL Database.
     /// </summary>
@@ -71,9 +69,6 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         #endregion
         // this is a specific error class we need to look for see http://technet.microsoft.com/en-us/library/aa937483(v=SQL.80).aspx
 
-
-
-
         #region ITransientErrorDetectionStrategy implementation
 
         /// <summary>
@@ -83,10 +78,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <returns>true if the specified exception is considered as transient; otherwise, false.</returns>
         public bool IsTransient(Exception ex)
         {
-            if (ex != null)
+            if (ex is not null)
             {
-                SqlException sqlException;
-                if ((sqlException = ex as SqlException) != null)
+                if (ex is SqlException sqlException)
                 {
                     // Enumerate through all errors found in the exception.
                     foreach (SqlError err in sqlException.Errors)
@@ -97,7 +91,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                             // The service is currently busy. Retry the request after 10 seconds. Code: (reason code to be decoded).
                             case ThrottlingCondition.ThrottlingErrorNumber:
                                 // Decode the reason code from the error message to determine the grounds for throttling.
-                                var condition = ThrottlingCondition.FromError(err);
+                                ThrottlingCondition condition = ThrottlingCondition.FromError(err);
 
                                 // Attach the decoded values as additional attributes to the original SQL exception.
                                 sqlException.Data[condition.ThrottlingMode.GetType().Name] =
@@ -106,7 +100,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 
                                 return true;
                             case 0:
-                                if ((err.Class == 20 || err.Class == 11) && err.State == 0 && err.Server != null && ex.InnerException == null)
+                                if ((err.Class == 20 || err.Class == 11) && err.State == 0 && err.Server is not null && ex.InnerException is null)
                                 {
                                     if (string.Equals(err.Message, Resources.SQL_SevereError, StringComparison.CurrentCultureIgnoreCase))
                                     {
@@ -175,8 +169,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 }
                 else
                 {
-                    EntityException entityException;
-                    if ((entityException = ex as EntityException) != null)
+                    if (ex is EntityException entityException)
                     {
                         return this.IsTransient(entityException.InnerException);
                     }
@@ -192,6 +185,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 
 namespace Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandling.SqlAzure
 {
+    using System;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
     /// <summary>
@@ -201,16 +195,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandl
     [Obsolete("Use SqlDatabaseTransientErrorDetectionStrategy for Microsoft.Data.SqlClient.", false)]
     public class SqlAzureTransientErrorDetectionStrategyLegacy : ITransientErrorDetectionStrategy
     {
-        private SqlDatabaseTransientErrorDetectionStrategyLegacy inner = new SqlDatabaseTransientErrorDetectionStrategyLegacy();
+        private readonly SqlDatabaseTransientErrorDetectionStrategyLegacy inner = new();
 
         /// <summary>
         /// Determines whether the specified exception represents a transient failure that can be compensated by a retry.
         /// </summary>
         /// <param name="ex">The exception object to be verified.</param>
         /// <returns>true if the specified exception is considered transient; otherwise, false.</returns>
-        public bool IsTransient(Exception ex)
-        {
-            return this.inner.IsTransient(ex);
-        }
+        public bool IsTransient(Exception ex) => this.inner.IsTransient(ex);
     }
 }

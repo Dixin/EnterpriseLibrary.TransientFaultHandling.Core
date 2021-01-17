@@ -58,7 +58,7 @@
                         return options.Get<ExponentialBackoffOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).Strategy(options.Key);
                     }
 
-                    if (getCustomRetryStrategy != null)
+                    if (getCustomRetryStrategy is not null)
                     {
                         return getCustomRetryStrategy(options);
                     }
@@ -86,7 +86,7 @@
 
             Func<IConfigurationSection, RetryStrategy> covariant = getCustomRetryStrategy;
             return GetRetryStrategies(configuration, key, covariant)
-                .Where(pair => pair.Value != null && pair.Value is TRetryStrategy).ToDictionary(pair => pair.Key, pair => (TRetryStrategy)pair.Value);
+                .Where(pair => pair.Value is not null and TRetryStrategy).ToDictionary(pair => pair.Key, pair => (TRetryStrategy)pair.Value);
         }
     }
 }

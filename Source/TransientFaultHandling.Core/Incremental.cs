@@ -51,9 +51,10 @@
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
         public Incremental(string name, int retryCount, TimeSpan initialInterval, TimeSpan increment, bool firstFastRetry) : base(name, firstFastRetry)
         {
-            Guard.ArgumentNotNegativeValue(retryCount, "retryCount");
-            Guard.ArgumentNotNegativeValue(initialInterval.Ticks, "initialInterval");
-            Guard.ArgumentNotNegativeValue(increment.Ticks, "increment");
+            Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
+            Guard.ArgumentNotNegativeValue(initialInterval.Ticks, nameof(initialInterval));
+            Guard.ArgumentNotNegativeValue(increment.Ticks, nameof(increment));
+
             this.retryCount = retryCount;
             this.initialInterval = initialInterval;
             this.increment = increment;
@@ -66,17 +67,17 @@
         public override ShouldRetry GetShouldRetry()
         {
             return (int currentRetryCount, Exception lastException, out TimeSpan retryInterval) =>
+            {
+                if (currentRetryCount < this.retryCount)
                 {
-                    if (currentRetryCount < this.retryCount)
-                    {
-                        retryInterval = TimeSpan.FromMilliseconds(
-                            this.initialInterval.TotalMilliseconds + this.increment.TotalMilliseconds * currentRetryCount);
-                        return true;
-                    }
+                    retryInterval = TimeSpan.FromMilliseconds(
+                        this.initialInterval.TotalMilliseconds + this.increment.TotalMilliseconds * currentRetryCount);
+                    return true;
+                }
 
-                    retryInterval = TimeSpan.Zero;
-                    return false;
-                };
+                retryInterval = TimeSpan.Zero;
+                return false;
+            };
         }
     }
 }

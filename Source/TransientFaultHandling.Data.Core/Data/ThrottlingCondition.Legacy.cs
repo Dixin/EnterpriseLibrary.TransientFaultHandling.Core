@@ -1,10 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Data.SqlClient;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
 {
+    using System;
+    using System.Data.SqlClient;
+    using System.Text.RegularExpressions;
+
     /// <summary>
     /// Implements an object that holds the decoded reason code returned from SQL Database when throttling conditions are encountered.
     /// </summary>
@@ -18,7 +17,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         [Obsolete("Use FromException for Microsoft.Data.SqlClient.SqlException in Microsoft.Data.SqlClient.", false)]
         public static ThrottlingCondition FromException(SqlException ex)
         {
-            if (ex != null)
+            if (ex is not null)
             {
                 foreach (SqlError error in ex.Errors)
                 {
@@ -40,12 +39,11 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         [Obsolete("Use FromError for Microsoft.Data.SqlClient.SqlError in Microsoft.Data.SqlClient.", false)]
         public static ThrottlingCondition FromError(SqlError error)
         {
-            if (error != null)
+            if (error is not null)
             {
-                var match = sqlErrorCodeRegEx.Match(error.Message);
-                int reasonCode;
+                Match match = SqlErrorCodeRegEx.Match(error.Message);
 
-                if (match.Success && int.TryParse(match.Groups[1].Value, out reasonCode))
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int reasonCode))
                 {
                     return FromReasonCode(reasonCode);
                 }

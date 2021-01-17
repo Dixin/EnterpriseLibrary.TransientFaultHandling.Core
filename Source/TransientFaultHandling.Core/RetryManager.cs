@@ -16,8 +16,6 @@
 
         private readonly IDictionary<string, RetryStrategy> defaultRetryStrategiesMap;
 
-        private readonly IDictionary<string, string> defaultRetryStrategyNamesMap;
-
         private readonly IDictionary<string, RetryStrategy> retryStrategies;
 
         private string defaultRetryStrategyName;
@@ -25,45 +23,26 @@
         private RetryStrategy defaultStrategy;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryManager" /> class.
-        /// </summary>
-        /// <param name="retryStrategies">The complete set of retry strategies.</param>
-        public RetryManager(IEnumerable<RetryStrategy> retryStrategies) : this(retryStrategies, null, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryManager" /> class with the specified retry strategies and default retry strategy name.
-        /// </summary>
-        /// <param name="retryStrategies">The complete set of retry strategies.</param>
-        /// <param name="defaultRetryStrategyName">The default retry strategy.</param>
-        public RetryManager(IEnumerable<RetryStrategy> retryStrategies, string defaultRetryStrategyName) : this(retryStrategies, defaultRetryStrategyName, null)
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryManager" /> class with the specified retry strategies and defaults.
         /// </summary>
         /// <param name="retryStrategies">The complete set of retry strategies.</param>
         /// <param name="defaultRetryStrategyName">The default retry strategy.</param>
         /// <param name="defaultRetryStrategyNamesMap">The names of the default strategies for different technologies.</param>
-        public RetryManager(IEnumerable<RetryStrategy> retryStrategies, string defaultRetryStrategyName, IDictionary<string, string> defaultRetryStrategyNamesMap)
+        public RetryManager(IEnumerable<RetryStrategy> retryStrategies, string defaultRetryStrategyName = null, IDictionary<string, string> defaultRetryStrategyNamesMap = null)
         {
             this.retryStrategies = retryStrategies.ToDictionary(p => p.Name);
-            this.defaultRetryStrategyNamesMap = defaultRetryStrategyNamesMap;
             this.DefaultRetryStrategyName = defaultRetryStrategyName;
             this.defaultRetryStrategiesMap = new Dictionary<string, RetryStrategy>();
-            if (this.defaultRetryStrategyNamesMap != null)
+            if (defaultRetryStrategyNamesMap is not null)
             {
-                foreach (KeyValuePair<string, string> current in from x in this.defaultRetryStrategyNamesMap
-                                                                 where !string.IsNullOrWhiteSpace(x.Value)
-                                                                 select x)
+                foreach (KeyValuePair<string, string> current in defaultRetryStrategyNamesMap
+                    .Where(pair => !string.IsNullOrWhiteSpace(pair.Value)))
                 {
                     if (!this.retryStrategies.TryGetValue(current.Value, out RetryStrategy value))
                     {
                         throw new ArgumentOutOfRangeException(
                             nameof(defaultRetryStrategyNamesMap),
-                            string.Format(CultureInfo.CurrentCulture, Resources.DefaultRetryStrategyMappingNotFound, new object[] { current.Key, current.Value }));
+                            string.Format(CultureInfo.CurrentCulture, Resources.DefaultRetryStrategyMappingNotFound, current.Key, current.Value));
                     }
 
                     this.defaultRetryStrategiesMap.Add(current.Key, value);
@@ -80,7 +59,7 @@
             get
             {
                 RetryManager retryManager = defaultRetryManager;
-                if (retryManager == null)
+                if (retryManager is null)
                 {
                     throw new InvalidOperationException(Resources.ExceptionRetryManagerNotSet);
                 }
@@ -113,7 +92,7 @@
 
                 throw new ArgumentOutOfRangeException(
                     nameof(value),
-                    string.Format(CultureInfo.CurrentCulture, Resources.RetryStrategyNotFound, new object[] { value }));
+                    string.Format(CultureInfo.CurrentCulture, Resources.RetryStrategyNotFound, value));
             }
         }
 
@@ -125,7 +104,7 @@
         /// <exception cref="T:System.InvalidOperationException">The singleton is already set and <paramref name="throwIfSet" /> is true.</exception>
         public static void SetDefault(RetryManager retryManager, bool throwIfSet = true)
         {
-            if (defaultRetryManager != null && throwIfSet && retryManager != defaultRetryManager)
+            if (defaultRetryManager is not null && throwIfSet && retryManager != defaultRetryManager)
             {
                 throw new InvalidOperationException(Resources.ExceptionRetryManagerAlreadySet);
             }
@@ -138,10 +117,8 @@
         /// </summary>
         /// <typeparam name="T">The type that implements the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> interface that is responsible for detecting transient conditions.</typeparam>
         /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
-        public virtual RetryPolicy<T> GetRetryPolicy<T>() where T : ITransientErrorDetectionStrategy, new()
-        {
-            return new RetryPolicy<T>(this.GetRetryStrategy());
-        }
+        public virtual RetryPolicy<T> GetRetryPolicy<T>() where T : ITransientErrorDetectionStrategy, new() => 
+            new(this.GetRetryStrategy());
 
         /// <summary>
         /// Returns a retry policy with the specified error detection strategy and retry strategy.
@@ -149,19 +126,14 @@
         /// <typeparam name="T">The type that implements the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> interface that is responsible for detecting transient conditions.</typeparam>
         /// <param name="retryStrategyName">The retry strategy name, as defined in the configuration.</param>
         /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
-        public virtual RetryPolicy<T> GetRetryPolicy<T>(string retryStrategyName) where T : ITransientErrorDetectionStrategy, new()
-        {
-            return new RetryPolicy<T>(this.GetRetryStrategy(retryStrategyName));
-        }
+        public virtual RetryPolicy<T> GetRetryPolicy<T>(string retryStrategyName) where T : ITransientErrorDetectionStrategy, new() => 
+            new(this.GetRetryStrategy(retryStrategyName));
 
         /// <summary>
         /// Returns the default retry strategy defined in the configuration.
         /// </summary>
         /// <returns>The retry strategy that matches the default strategy.</returns>
-        public virtual RetryStrategy GetRetryStrategy()
-        {
-            return this.defaultStrategy;
-        }
+        public virtual RetryStrategy GetRetryStrategy() => this.defaultStrategy;
 
         /// <summary>
         /// Returns the retry strategy that matches the specified name.
@@ -170,11 +142,11 @@
         /// <returns>The retry strategy that matches the specified name.</returns>
         public virtual RetryStrategy GetRetryStrategy(string retryStrategyName)
         {
-            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, "retryStrategyName");
+            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
             if (!this.retryStrategies.TryGetValue(retryStrategyName, out RetryStrategy result))
             {
                 throw new ArgumentOutOfRangeException(
-                    string.Format(CultureInfo.CurrentCulture, Resources.RetryStrategyNotFound, new object[] { retryStrategyName }));
+                    string.Format(CultureInfo.CurrentCulture, Resources.RetryStrategyNotFound, retryStrategyName));
             }
 
             return result;
@@ -193,10 +165,10 @@
                 retryStrategy = this.defaultStrategy;
             }
 
-            if (retryStrategy == null)
+            if (retryStrategy is null)
             {
                 throw new ArgumentOutOfRangeException(
-                    string.Format(CultureInfo.CurrentCulture, Resources.DefaultRetryStrategyNotFound, new object[] { technology }));
+                    string.Format(CultureInfo.CurrentCulture, Resources.DefaultRetryStrategyNotFound, technology));
             }
 
             return retryStrategy;

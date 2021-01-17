@@ -1,15 +1,14 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using Microsoft.Data.SqlClient;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Linq;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using Microsoft.Data.SqlClient;
+
     /// <summary>
     /// Defines the possible throttling modes in SQL Database.
     /// </summary>
@@ -87,13 +86,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         /// <summary>
         /// Corresponds to the "Transaction Log Write IO Delay" resource, which may be subject to throttling.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Io", Justification = "As designed")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Io", Justification = "As designed")]
         LogWriteIoDelay = 2,
 
         /// <summary>
         /// Corresponds to the "Database Read IO Delay" resource, which may be subject to throttling.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Io", Justification = "As designed")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Io", Justification = "As designed")]
         DataReadIoDelay = 3,
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         /// <summary>
         /// Provides a compiled regular expression used to extract the reason code from the error message.
         /// </summary>
-        private static readonly Regex sqlErrorCodeRegEx = new Regex(@"Code:\s*(\d+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex SqlErrorCodeRegEx = new(@"Code:\s*(\d+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// Gets an unknown throttling condition in the event that the actual throttling condition cannot be determined.
@@ -150,7 +149,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         {
             get
             {
-                var unknownCondition = new ThrottlingCondition { ThrottlingMode = ThrottlingMode.Unknown };
+                ThrottlingCondition unknownCondition = new() { ThrottlingMode = ThrottlingMode.Unknown };
                 unknownCondition.throttledResources.Add(Tuple.Create(ThrottledResourceType.Unknown, ThrottlingType.Unknown));
 
                 return unknownCondition;
@@ -165,75 +164,49 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         /// <summary>
         /// Gets a list of the resources in the SQL Database that were subject to throttling conditions.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "As designed")]
-        public IEnumerable<Tuple<ThrottledResourceType, ThrottlingType>> ThrottledResources
-        {
-            get { return this.throttledResources; }
-        }
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "As designed")]
+        public IEnumerable<Tuple<ThrottledResourceType, ThrottlingType>> ThrottledResources => this.throttledResources;
 
         /// <summary>
         /// Gets a value that indicates whether physical data file space throttling was reported by SQL Database.
         /// </summary>
-        public bool IsThrottledOnDataSpace
-        {
-            get { return this.throttledResources.Where(x => x.Item1 == ThrottledResourceType.PhysicalDatabaseSpace).Any(); }
-        }
+        public bool IsThrottledOnDataSpace => this.throttledResources.Any(x => x.Item1 == ThrottledResourceType.PhysicalDatabaseSpace);
 
         /// <summary>
         /// Gets a value that indicates whether physical log space throttling was reported by SQL Database.
         /// </summary>
-        public bool IsThrottledOnLogSpace
-        {
-            get { return this.throttledResources.Where(x => x.Item1 == ThrottledResourceType.PhysicalLogSpace).Any(); }
-        }
+        public bool IsThrottledOnLogSpace => this.throttledResources.Any(x => x.Item1 == ThrottledResourceType.PhysicalLogSpace);
 
         /// <summary>
         /// Gets a value that indicates whether transaction activity throttling was reported by SQL Database.
         /// </summary>
-        public bool IsThrottledOnLogWrite
-        {
-            get { return this.throttledResources.Where(x => x.Item1 == ThrottledResourceType.LogWriteIoDelay).Any(); }
-        }
+        public bool IsThrottledOnLogWrite => this.throttledResources.Any(x => x.Item1 == ThrottledResourceType.LogWriteIoDelay);
 
         /// <summary>
         /// Gets a value that indicates whether data read activity throttling was reported by SQL Database.
         /// </summary>
-        public bool IsThrottledOnDataRead
-        {
-            get { return this.throttledResources.Where(x => x.Item1 == ThrottledResourceType.DataReadIoDelay).Any(); }
-        }
+        public bool IsThrottledOnDataRead => this.throttledResources.Any(x => x.Item1 == ThrottledResourceType.DataReadIoDelay);
 
         /// <summary>
         /// Gets a value that indicates whether CPU throttling was reported by SQL Database.
         /// </summary>
-        public bool IsThrottledOnCpu
-        {
-            get { return this.throttledResources.Where(x => x.Item1 == ThrottledResourceType.Cpu).Any(); }
-        }
+        public bool IsThrottledOnCpu => this.throttledResources.Any(x => x.Item1 == ThrottledResourceType.Cpu);
 
         /// <summary>
         /// Gets a value that indicates whether database size throttling was reported by SQL Database.
         /// </summary>
         public bool IsThrottledOnDatabaseSize
-        {
-            get { return this.throttledResources.Where(x => x.Item1 == ThrottledResourceType.DatabaseSize).Any(); }
-        }
+        => this.throttledResources.Any(x => x.Item1 == ThrottledResourceType.DatabaseSize);
 
         /// <summary>
         /// Gets a value that indicates whether concurrent requests throttling was reported by SQL Database.
         /// </summary>
-        public bool IsThrottledOnWorkerThreads
-        {
-            get { return this.throttledResources.Where(x => x.Item1 == ThrottledResourceType.WorkerThreads).Any(); }
-        }
+        public bool IsThrottledOnWorkerThreads => this.throttledResources.Any(x => x.Item1 == ThrottledResourceType.WorkerThreads);
 
         /// <summary>
         /// Gets a value that indicates whether throttling conditions were not determined with certainty.
         /// </summary>
-        public bool IsUnknown
-        {
-            get { return this.ThrottlingMode == ThrottlingMode.Unknown; }
-        }
+        public bool IsUnknown => this.ThrottlingMode == ThrottlingMode.Unknown;
 
         /// <summary>
         /// Determines throttling conditions from the specified SQL exception.
@@ -242,14 +215,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         /// <returns>An instance of the object that holds the decoded reason codes returned from SQL Database when throttling conditions were encountered.</returns>
         public static ThrottlingCondition FromException(SqlException ex)
         {
-            if (ex != null)
+            if (ex is not null)
             {
-                foreach (SqlError error in ex.Errors)
+                foreach (SqlError error in ex.Errors
+                    .Cast<SqlError>()
+                    .Where(error => error.Number == ThrottlingErrorNumber))
                 {
-                    if (error.Number == ThrottlingErrorNumber)
-                    {
-                        return FromError(error);
-                    }
+                    return FromError(error);
                 }
             }
 
@@ -263,12 +235,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         /// <returns>An instance of the object that holds the decoded reason codes returned from SQL Database when throttling conditions were encountered.</returns>
         public static ThrottlingCondition FromError(SqlError error)
         {
-            if (error != null)
+            if (error is not null)
             {
-                var match = sqlErrorCodeRegEx.Match(error.Message);
-                int reasonCode;
-
-                if (match.Success && int.TryParse(match.Groups[1].Value, out reasonCode))
+                Match match = SqlErrorCodeRegEx.Match(error.Message);
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int reasonCode))
                 {
                     return FromReasonCode(reasonCode);
                 }
@@ -287,12 +257,12 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
             if (reasonCode > 0)
             {
                 // Decode throttling mode from the last 2 bits.
-                var throttlingMode = (ThrottlingMode)(reasonCode & 3);
+                ThrottlingMode throttlingMode = (ThrottlingMode)(reasonCode & 3);
 
-                var condition = new ThrottlingCondition { ThrottlingMode = throttlingMode };
+                ThrottlingCondition condition = new() { ThrottlingMode = throttlingMode };
 
                 // Shift 8 bits to truncate throttling mode.
-                var groupCode = reasonCode >> 8;
+                int groupCode = reasonCode >> 8;
 
                 // Determine throttling type for all well-known resources that may be subject to throttling conditions.
                 condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.PhysicalDatabaseSpace, (ThrottlingType)(groupCode & 3)));
@@ -317,15 +287,14 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data
         /// <returns>A string that represents the current ThrottlingCondition object.</returns>
         public override string ToString()
         {
-            var result = new StringBuilder();
+            StringBuilder result = new();
 
             result.AppendFormat(CultureInfo.CurrentCulture, "Mode: {0} | ", this.ThrottlingMode);
 
-            var resources =
-                this.throttledResources
-                    .Where(x => x.Item1 != ThrottledResourceType.Internal)
-                    .Select(x => string.Format(CultureInfo.CurrentCulture, "{0}: {1}", x.Item1, x.Item2))
-                    .OrderBy(x => x).ToArray();
+            string[] resources = this.throttledResources
+                .Where(x => x.Item1 != ThrottledResourceType.Internal)
+                .Select(x => string.Format(CultureInfo.CurrentCulture, "{0}: {1}", x.Item1, x.Item2))
+                .OrderBy(x => x).ToArray();
 
             result.Append(string.Join(", ", resources));
 

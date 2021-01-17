@@ -140,7 +140,7 @@
             TimeSpan? initialInterval =null, 
             TimeSpan? increment = null,
             bool? firstFastRetry = null,
-            string name = null) => new Incremental(
+            string name = null) => new(
                 name,
                 retryCount ?? RetryStrategy.DefaultClientRetryCount,
                 initialInterval ?? RetryStrategy.DefaultRetryInterval,

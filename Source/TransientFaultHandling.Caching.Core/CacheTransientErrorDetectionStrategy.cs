@@ -1,13 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Net.Sockets;
-using System.ServiceModel;
-
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Net.Sockets;
+    using System.ServiceModel;
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Caching;
+
     /// <summary>
     /// Provides the transient error detection logic that can recognize transient faults when dealing with Windows Azure Caching.
     /// </summary>
@@ -20,7 +17,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <returns>true if the specified exception belongs to the category of transient errors; otherwise, false.</returns>
         public bool IsTransient(Exception ex)
         {
-            if (ex == null)
+            if (ex is null)
             {
                 return false;
             }
@@ -30,25 +27,19 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                 return true;
             }
 
-            var socketFault = ex as SocketException;
-            if (socketFault != null)
+            if (ex is SocketException socketFault)
             {
                 return socketFault.SocketErrorCode == SocketError.TimedOut;
             }
 
-            var dataCacheExceptionResult = DataCacheExceptionChecker.IsTransientDataCacheException(ex);
+            bool? dataCacheExceptionResult = DataCacheExceptionChecker.IsTransientDataCacheException(ex);
             if (dataCacheExceptionResult.HasValue)
             {
                 return dataCacheExceptionResult.Value;
             }
 
             // Some transient exceptions may be wrapped into an outer exception, hence we should also inspect any inner exceptions.
-            if (ex != null && ex.InnerException != null)
-            {
-                return this.IsTransient(ex.InnerException);
-            }
-
-            return false;
+            return ex.InnerException is not null && this.IsTransient(ex.InnerException);
         }
     }
 }

@@ -54,8 +54,9 @@
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
         public FixedInterval(string name, int retryCount, TimeSpan retryInterval, bool firstFastRetry) : base(name, firstFastRetry)
         {
-            Guard.ArgumentNotNegativeValue(retryCount, "retryCount");
-            Guard.ArgumentNotNegativeValue(retryInterval.Ticks, "retryInterval");
+            Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
+            Guard.ArgumentNotNegativeValue(retryInterval.Ticks, nameof(retryInterval));
+
             this.retryCount = retryCount;
             this.retryInterval = retryInterval;
         }
@@ -69,23 +70,23 @@
             if (this.retryCount == 0)
             {
                 return (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
-                    {
-                        interval = TimeSpan.Zero;
-                        return false;
-                    };
-            }
-
-            return (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
                 {
-                    if (currentRetryCount < this.retryCount)
-                    {
-                        interval = this.retryInterval;
-                        return true;
-                    }
-
                     interval = TimeSpan.Zero;
                     return false;
                 };
+            }
+
+            return (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
+            {
+                if (currentRetryCount < this.retryCount)
+                {
+                    interval = this.retryInterval;
+                    return true;
+                }
+
+                interval = TimeSpan.Zero;
+                return false;
+            };
         }
     }
 }

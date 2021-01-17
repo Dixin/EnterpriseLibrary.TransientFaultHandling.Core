@@ -1,13 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Globalization;
-using System.Xml;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Data;
+    using System.Data.SqlClient;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Xml;
+
     /// <summary>
     /// Provides a reliable way of opening connections to, and executing commands against, the SQL Database 
     /// databases taking potential network unreliability and connection retry requirements into account.
@@ -15,9 +14,6 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
     [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ReliableSqlConnection with Microsoft.Data.SqlClient.")]
     public sealed class ReliableSqlConnectionLegacy : IDbConnection, ICloneable
     {
-        private readonly SqlConnection underlyingConnection;
-        private readonly RetryPolicy connectionRetryPolicy;
-        private readonly RetryPolicy commandRetryPolicy;
         private readonly RetryPolicy connectionStringFailoverPolicy;
 
         private string connectionString;
@@ -55,9 +51,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         public ReliableSqlConnectionLegacy(string connectionString, RetryPolicy connectionRetryPolicy, RetryPolicy commandRetryPolicy)
         {
             this.connectionString = connectionString;
-            this.underlyingConnection = new SqlConnection(connectionString);
-            this.connectionRetryPolicy = connectionRetryPolicy;
-            this.commandRetryPolicy = commandRetryPolicy;
+            this.Current = new SqlConnection(connectionString);
+            this.ConnectionRetryPolicy = connectionRetryPolicy;
+            this.CommandRetryPolicy = commandRetryPolicy;
 
             // Configure a special retry policy that enables detecting network connectivity errors to be able to determine whether we need to failover
             // to the original connection string containing the DNS name of the SQL Database server.
@@ -70,15 +66,12 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         public string ConnectionString
         {
-            get
-            {
-                return this.connectionString;
-            }
+            get => this.connectionString;
 
             set
             {
                 this.connectionString = value;
-                this.underlyingConnection.ConnectionString = value;
+                this.Current.ConnectionString = value;
             }
         }
 
@@ -86,43 +79,32 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// Gets the policy that determines whether to retry a connection request, based on how many 
         /// times the request has been made and the reason for the last failure. 
         /// </summary>
-        public RetryPolicy ConnectionRetryPolicy
-        {
-            get { return this.connectionRetryPolicy; }
-        }
+        public RetryPolicy ConnectionRetryPolicy { get; }
 
         /// <summary>
         /// Gets the policy that determines whether to retry a command, based on how many 
         /// times the request has been made and the reason for the last failure. 
         /// </summary>
-        public RetryPolicy CommandRetryPolicy
-        {
-            get { return this.commandRetryPolicy; }
-        }
+        public RetryPolicy CommandRetryPolicy { get; }
 
         /// <summary>
         /// Gets an instance of the SqlConnection object that represents the connection to a SQL Database instance.
         /// </summary>
-        public SqlConnection Current
-        {
-            get { return this.underlyingConnection; }
-        }
+        public SqlConnection Current { get; }
 
         /// <summary>
         /// Gets the CONTEXT_INFO value that was set for the current session. This value can be used to trace query execution problems. 
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "As designed")]
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "As designed")]
         public Guid SessionTracingId
         {
             get
             {
                 try
                 {
-                    using (var query = SqlCommandFactory.CreateGetContextInfoCommand(this.Current))
-                    {
-                        // Execute the query in retry-aware fashion, retry if necessary.
-                        return this.ExecuteCommand<Guid>(query);
-                    }
+                    using IDbCommand query = SqlCommandFactory.CreateGetContextInfoCommand(this.Current);
+                    // Execute the query in retry-aware fashion, retry if necessary.
+                    return this.ExecuteCommand<Guid>(query);
                 }
                 catch
                 {
@@ -136,27 +118,19 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// Gets a value that specifies the time to wait while trying to establish a connection before terminating
         /// the attempt and generating an error.
         /// </summary>
-        public int ConnectionTimeout
-        {
-            get { return this.underlyingConnection.ConnectionTimeout; }
-        }
+        public int ConnectionTimeout => this.Current.ConnectionTimeout;
 
         /// <summary>
         /// Gets the name of the current database or the database to be used after a
         /// connection is opened.
         /// </summary>
-        public string Database
-        {
-            get { return this.underlyingConnection.Database; }
-        }
+        public string Database => this.Current.Database;
 
         /// <summary>
         /// Gets the current state of the connection.
         /// </summary>
-        public ConnectionState State
-        {
-            get { return this.underlyingConnection.State; }
-        }
+        public ConnectionState State => this.Current.State;
+
         #endregion
 
         #region Public methods
@@ -164,10 +138,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// Opens a database connection with the settings specified by the ConnectionString and ConnectionRetryPolicy properties.
         /// </summary>
         /// <returns>An object that represents the open connection.</returns>
-        public SqlConnection Open()
-        {
-            return this.Open(this.ConnectionRetryPolicy);
-        }
+        public SqlConnection Open() => this.Open(this.ConnectionRetryPolicy);
 
         /// <summary>
         /// Opens a database connection with the settings specified by the connection string and the specified retry policy.
@@ -180,13 +151,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
                 this.connectionStringFailoverPolicy.ExecuteAction(() =>
                 {
-                    if (this.underlyingConnection.State != ConnectionState.Open)
+                    if (this.Current.State != ConnectionState.Open)
                     {
-                        this.underlyingConnection.Open();
+                        this.Current.Open();
                     }
                 }));
 
-            return this.underlyingConnection;
+            return this.Current;
         }
 
         /// <summary>
@@ -196,10 +167,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <typeparam name="T">IDataReader, XmlReader, or any other .NET Framework type that defines the type of result to be returned.</typeparam>
         /// <param name="command">The SQL command to be executed.</param>
         /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Framework object that contains the result.</returns>
-        public T ExecuteCommand<T>(IDbCommand command)
-        {
-            return this.ExecuteCommand<T>(command, this.CommandRetryPolicy, CommandBehavior.Default);
-        }
+        public T ExecuteCommand<T>(IDbCommand command) => this.ExecuteCommand<T>(command, this.CommandRetryPolicy, CommandBehavior.Default);
 
         /// <summary>
         /// Executes a SQL command and returns a result that is defined by the specified type <typeparamref name="T"/>. This method uses the retry policy specified when 
@@ -209,10 +177,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The SQL command to be executed.</param>
         /// <param name="behavior">A description of the results of the query and its effect on the database.</param>
         /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Frameork object that contains the result.</returns>
-        public T ExecuteCommand<T>(IDbCommand command, CommandBehavior behavior)
-        {
-            return this.ExecuteCommand<T>(command, this.CommandRetryPolicy, behavior);
-        }
+        public T ExecuteCommand<T>(IDbCommand command, CommandBehavior behavior) => this.ExecuteCommand<T>(command, this.CommandRetryPolicy, behavior);
 
         /// <summary>
         /// Executes a SQL command by using the specified retry policy, and returns a result that is defined by the specified type <typeparamref name="T"/>
@@ -221,10 +186,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="command">The SQL command to be executed.</param>
         /// <param name="retryPolicy">The retry policy that defines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Frameork object that contains the result.</returns>
-        public T ExecuteCommand<T>(IDbCommand command, RetryPolicy retryPolicy)
-        {
-            return this.ExecuteCommand<T>(command, retryPolicy, CommandBehavior.Default);
-        }
+        public T ExecuteCommand<T>(IDbCommand command, RetryPolicy retryPolicy) => this.ExecuteCommand<T>(command, retryPolicy, CommandBehavior.Default);
 
         /// <summary>
         /// Executes a SQL command by using the specified retry policy, and returns a result that is defined by the specified type <typeparamref name="T"/>
@@ -234,16 +196,16 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="retryPolicy">The retry policy that defines whether to retry a command if a connection fails while executing the command.</param>
         /// <param name="behavior">A description of the results of the query and its effect on the database.</param>
         /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Frameork object that contains the result.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by client code")]
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by client code")]
         public T ExecuteCommand<T>(IDbCommand command, RetryPolicy retryPolicy, CommandBehavior behavior)
         {
-            var actionResult = default(T);
+            T actionResult = default;
 
-            var resultType = typeof(T);
+            Type resultType = typeof(T);
 
-            var hasOpenedConnection = false;
+            bool hasOpenedConnection = false;
 
-            var closeOpenedConnectionOnSuccess = false;
+            bool closeOpenedConnectionOnSuccess = false;
 
             try
             {
@@ -252,7 +214,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                     actionResult = this.connectionStringFailoverPolicy.ExecuteAction(() =>
                     {
                         // Make sure the command has been associated with a valid connection. If not, associate it with an opened SQL connection.
-                        if (command.Connection == null)
+                        if (command.Connection is null)
                         {
                             // Open a new connection and assign it to the command object.
                             command.Connection = this.Open();
@@ -279,7 +241,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                             if (command is SqlCommand)
                             {
                                 object result;
-                                var xmlReader = (command as SqlCommand).ExecuteXmlReader();
+                                XmlReader xmlReader = (command as SqlCommand).ExecuteXmlReader();
 
                                 closeOpenedConnectionOnSuccess = false;
 
@@ -302,7 +264,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 
                         if (resultType == typeof(NonQueryResult))
                         {
-                            var result = new NonQueryResult { RecordsAffected = command.ExecuteNonQuery() };
+                            NonQueryResult result = new() { RecordsAffected = command.ExecuteNonQuery() };
 
                             closeOpenedConnectionOnSuccess = true;
 
@@ -310,22 +272,22 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
                         }
                         else
                         {
-                            var result = command.ExecuteScalar();
+                            object result = command.ExecuteScalar();
 
                             closeOpenedConnectionOnSuccess = true;
 
-                            if (result != null)
+                            if (result is not null)
                             {
                                 return (T)Convert.ChangeType(result, resultType, CultureInfo.InvariantCulture);
                             }
 
-                            return default(T);
+                            return default;
                         }
                     });
                 });
 
                 if (hasOpenedConnection && closeOpenedConnectionOnSuccess &&
-                   command.Connection != null && command.Connection.State == ConnectionState.Open)
+                   command.Connection is not null && command.Connection.State == ConnectionState.Open)
                 {
                     command.Connection.Close();
                 }
@@ -333,7 +295,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             catch (Exception)
             {
                 if (hasOpenedConnection &&
-                   command.Connection != null && command.Connection.State == ConnectionState.Open)
+                   command.Connection is not null && command.Connection.State == ConnectionState.Open)
                 {
                     command.Connection.Close();
                 }
@@ -349,10 +311,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="command">The SQL command to be executed.</param>
         /// <returns>The number of rows affected.</returns>
-        public int ExecuteCommand(IDbCommand command)
-        {
-            return this.ExecuteCommand(command, this.CommandRetryPolicy);
-        }
+        public int ExecuteCommand(IDbCommand command) => this.ExecuteCommand(command, this.CommandRetryPolicy);
 
         /// <summary>
         /// Executes a SQL command and returns the number of rows affected.
@@ -362,7 +321,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <returns>The number of rows affected.</returns>
         public int ExecuteCommand(IDbCommand command, RetryPolicy retryPolicy)
         {
-            var result = this.ExecuteCommand<NonQueryResult>(command, retryPolicy);
+            NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command, retryPolicy);
 
             return result.RecordsAffected;
         }
@@ -374,64 +333,44 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="il">One of the enumeration values that specifies the isolation level for the transaction.</param>
         /// <returns>An object that represents the new transaction.</returns>
-        public IDbTransaction BeginTransaction(IsolationLevel il)
-        {
-            return this.underlyingConnection.BeginTransaction(il);
-        }
+        public IDbTransaction BeginTransaction(IsolationLevel il) => this.Current.BeginTransaction(il);
 
         /// <summary>
         /// Begins a database transaction.
         /// </summary>
         /// <returns>An object that represents the new transaction.</returns>
-        public IDbTransaction BeginTransaction()
-        {
-            return this.underlyingConnection.BeginTransaction();
-        }
+        public IDbTransaction BeginTransaction() => this.Current.BeginTransaction();
 
         /// <summary>
         /// Changes the current database for an open Connection object.
         /// </summary>
         /// <param name="databaseName">The name of the database to use in place of the current database.</param>
-        public void ChangeDatabase(string databaseName)
-        {
-            this.underlyingConnection.ChangeDatabase(databaseName);
-        }
+        public void ChangeDatabase(string databaseName) => this.Current.ChangeDatabase(databaseName);
 
         /// <summary>
         /// Opens a database connection with the settings specified by the ConnectionString
         /// property of the provider-specific Connection object.
         /// </summary>
-        void IDbConnection.Open()
-        {
-            this.Open();
-        }
+        void IDbConnection.Open() => this.Open();
 
         /// <summary>
         /// Closes the connection to the database.
         /// </summary>
-        public void Close()
-        {
-            this.underlyingConnection.Close();
-        }
+        public void Close() => this.Current.Close();
 
         /// <summary>
         /// Creates and returns a SqlCommand object that is associated with the underlying SqlConnection.
         /// </summary>
         /// <returns>A System.Data.SqlClient.SqlCommand object that is associated with the underlying connection.</returns>
-        public SqlCommand CreateCommand()
-        {
-            return this.underlyingConnection.CreateCommand();
-        }
+        public SqlCommand CreateCommand() => this.Current.CreateCommand();
 
         /// <summary>
         /// Creates and returns an object that implements the IDbCommand interface that is associated 
         /// with the underlying SqlConnection.
         /// </summary>
         /// <returns>A System.Data.SqlClient.SqlCommand object that is associated with the underlying connection.</returns>
-        IDbCommand IDbConnection.CreateCommand()
-        {
-            return this.underlyingConnection.CreateCommand();
-        }
+        IDbCommand IDbConnection.CreateCommand() => this.Current.CreateCommand();
+
         #endregion
 
         #region ICloneable implementation
@@ -440,10 +379,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// string, connection retry policy, and command retry policy.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
-        object ICloneable.Clone()
-        {
-            return new ReliableSqlConnection(this.ConnectionString, this.ConnectionRetryPolicy, this.CommandRetryPolicy);
-        }
+        object ICloneable.Clone() => 
+            new ReliableSqlConnection(this.ConnectionString, this.ConnectionRetryPolicy, this.CommandRetryPolicy);
+
         #endregion
 
         #region IDisposable implementation
@@ -466,12 +404,12 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         {
             if (disposing)
             {
-                if (this.underlyingConnection.State == ConnectionState.Open)
+                if (this.Current.State == ConnectionState.Open)
                 {
-                    this.underlyingConnection.Close();
+                    this.Current.Close();
                 }
 
-                this.underlyingConnection.Dispose();
+                this.Current.Dispose();
             }
         }
         #endregion
@@ -489,14 +427,12 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <summary>
         /// Implements a strategy that detects network connectivity errors such as "host not found".
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated through generics")]
+        [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated through generics")]
         private sealed class NetworkConnectivityErrorDetectionStrategy : ITransientErrorDetectionStrategy
         {
             public bool IsTransient(Exception ex)
             {
-                SqlException sqlException;
-
-                if (ex != null && (sqlException = ex as SqlException) != null)
+                if (ex is not null and SqlException sqlException)
                 {
                     switch (sqlException.Number)
                     {

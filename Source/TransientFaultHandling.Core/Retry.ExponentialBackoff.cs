@@ -150,7 +150,7 @@
             TimeSpan? maxBackoff = null, 
             TimeSpan? deltaBackoff = null, 
             bool? firstFastRetry = null, 
-            string name = null) => new ExponentialBackoff(
+            string name = null) => new(
                 name,
                 retryCount ?? RetryStrategy.DefaultClientRetryCount,
                 minBackoff ?? RetryStrategy.DefaultMinBackoff,

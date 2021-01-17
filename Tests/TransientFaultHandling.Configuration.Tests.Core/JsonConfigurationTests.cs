@@ -1,9 +1,3 @@
-using System.Diagnostics;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-
 namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
 {
     using System;

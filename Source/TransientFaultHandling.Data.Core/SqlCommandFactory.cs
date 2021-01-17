@@ -1,13 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Data;
-using System.Globalization;
-
-using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Data;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
+
     /// <summary>
     /// Provides factory methods for instantiating SQL commands.
     /// </summary>
@@ -28,7 +27,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <returns>A new SQL command that is initialized with the Stored Procedure command type and initial settings.</returns>
         public static IDbCommand CreateCommand(IDbConnection connection)
         {
-            if (connection == null) throw new ArgumentNullException("connection");
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
 
             IDbCommand command = connection.CreateCommand();
 
@@ -44,11 +46,18 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="connection">The database connection object to be associated with the new command.</param>
         /// <param name="commandText">The text of the command to run against the data source.</param>
         /// <returns>A new SQL command that is initialized with the Stored Procedure command type, specified text, and initial settings.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
+        [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
         public static IDbCommand CreateCommand(IDbConnection connection, string commandText)
         {
-            if (commandText == null) throw new ArgumentNullException("commandText");
-            if (string.IsNullOrWhiteSpace(commandText))  throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.StringCannotBeEmpty, "commandText"), "commandText");
+            if (commandText is null)
+            {
+                throw new ArgumentNullException(nameof(commandText));
+            }
+
+            if (string.IsNullOrWhiteSpace(commandText))
+            {
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.StringCannotBeEmpty, "commandText"), nameof(commandText));
+            }
 
             IDbCommand command = CreateCommand(connection);
             try
@@ -70,10 +79,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="connection">The database connection object to be associated with the new command.</param>
         /// <returns>A new SQL command that is initialized with the specified connection.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
+        [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
         public static IDbCommand CreateGetContextInfoCommand(IDbConnection connection)
         {
-            if (connection == null) throw new ArgumentNullException("connection");
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
 
             IDbCommand command = CreateCommand(connection);
             try

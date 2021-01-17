@@ -2,7 +2,6 @@
 {
     using System;
     using System.Globalization;
-
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
 
     /// <summary>
@@ -21,8 +20,7 @@
             ArgumentNotNull(argumentValue, argumentName);
             if (argumentValue.Length == 0)
             {
-                throw new ArgumentException(
-                    string.Format(CultureInfo.CurrentCulture, Resources.StringCannotBeEmpty, new object[] { argumentName }));
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.StringCannotBeEmpty, argumentName));
             }
 
             return true;
@@ -36,7 +34,7 @@
         /// <returns>The return value should be ignored. It is intended to be used only when validating arguments during instance creation (for example, when calling the base constructor).</returns>
         public static bool ArgumentNotNull(object argumentValue, string argumentName)
         {
-            if (argumentValue == null)
+            if (argumentValue is null)
             {
                 throw new ArgumentNullException(argumentName);
             }
@@ -56,7 +54,7 @@
                 throw new ArgumentOutOfRangeException(
                     argumentName,
                     argumentValue,
-                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeNegative, new object[] { argumentName }));
+                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeNegative, argumentName));
             }
         }
 
@@ -72,7 +70,7 @@
                 throw new ArgumentOutOfRangeException(
                     argumentName,
                     argumentValue,
-                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeNegative, new object[] { argumentName }));
+                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeNegative, argumentName));
             }
         }
 
@@ -89,7 +87,7 @@
                 throw new ArgumentOutOfRangeException(
                     argumentName,
                     argumentValue,
-                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeGreaterThanBaseline, new object[] { argumentName, ceilingValue }));
+                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeGreaterThanBaseline, argumentName, ceilingValue));
             }
         }
     }

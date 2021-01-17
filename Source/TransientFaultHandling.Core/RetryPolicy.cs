@@ -16,10 +16,11 @@
         /// <param name="retryStrategy">The strategy to use for this retry policy.</param>
         public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, RetryStrategy retryStrategy)
         {
-            Guard.ArgumentNotNull(errorDetectionStrategy, "errorDetectionStrategy");
-            Guard.ArgumentNotNull(retryStrategy, "retryPolicy");
+            Guard.ArgumentNotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
+            Guard.ArgumentNotNull(retryStrategy, nameof(retryStrategy));
+
             this.ErrorDetectionStrategy = errorDetectionStrategy;
-            if (errorDetectionStrategy == null)
+            if (errorDetectionStrategy is null)
             {
                 throw new InvalidOperationException("The error detection strategy type must implement the ITransientErrorDetectionStrategy interface.");
             }
@@ -32,7 +33,8 @@
         /// </summary>
         /// <param name="errorDetectionStrategy">The <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> that is responsible for detecting transient conditions.</param>
         /// <param name="retryCount">The number of retry attempts.</param>
-        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount) : this(errorDetectionStrategy, new FixedInterval(retryCount))
+        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount) : 
+            this(errorDetectionStrategy, new FixedInterval(retryCount))
         {
         }
 
@@ -42,7 +44,8 @@
         /// <param name="errorDetectionStrategy">The <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> that is responsible for detecting transient conditions.</param>
         /// <param name="retryCount">The number of retry attempts.</param>
         /// <param name="retryInterval">The interval between retries.</param>
-        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan retryInterval) : this(errorDetectionStrategy, new FixedInterval(retryCount, retryInterval))
+        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan retryInterval) : 
+            this(errorDetectionStrategy, new FixedInterval(retryCount, retryInterval))
         {
         }
 
@@ -54,7 +57,8 @@
         /// <param name="minBackoff">The minimum backoff time.</param>
         /// <param name="maxBackoff">The maximum backoff time.</param>
         /// <param name="deltaBackoff">The time value that will be used to calculate a random delta in the exponential delay between retries.</param>
-        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff) : this(errorDetectionStrategy, new ExponentialBackoff(retryCount, minBackoff, maxBackoff, deltaBackoff))
+        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff) : 
+            this(errorDetectionStrategy, new ExponentialBackoff(retryCount, minBackoff, maxBackoff, deltaBackoff))
         {
         }
 
@@ -65,7 +69,8 @@
         /// <param name="retryCount">The number of retry attempts.</param>
         /// <param name="initialInterval">The initial interval that will apply for the first retry.</param>
         /// <param name="increment">The incremental time value that will be used to calculate the progressive delay between retries.</param>
-        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan initialInterval, TimeSpan increment) : this(errorDetectionStrategy, new Incremental(retryCount, initialInterval, increment))
+        public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, int retryCount, TimeSpan initialInterval, TimeSpan increment) : 
+            this(errorDetectionStrategy, new Incremental(retryCount, initialInterval, increment))
         {
         }
 
@@ -77,41 +82,35 @@
         /// <summary>
         /// Returns a default policy that performs no retries, but invokes the action only once.
         /// </summary>
-        public static RetryPolicy NoRetry { get; } = new RetryPolicy(new TransientErrorIgnoreStrategy(), RetryStrategy.NoRetry);
+        public static RetryPolicy NoRetry { get; } = new(new TransientErrorIgnoreStrategy(), RetryStrategy.NoRetry);
 
         /// <summary>
         /// Returns a default policy that implements a fixed retry interval configured with the default <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval" /> retry strategy.
         /// The default retry policy treats all caught exceptions as transient errors.
         /// </summary>
-        public static RetryPolicy DefaultFixed { get; } = new RetryPolicy(new TransientErrorCatchAllStrategy(), RetryStrategy.DefaultFixed);
+        public static RetryPolicy DefaultFixed { get; } = new(new TransientErrorCatchAllStrategy(), RetryStrategy.DefaultFixed);
 
         /// <summary>
         /// Returns a default policy that implements a progressive retry interval configured with the default <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental" /> retry strategy.
         /// The default retry policy treats all caught exceptions as transient errors.
         /// </summary>
-        public static RetryPolicy DefaultProgressive { get; } = new RetryPolicy(new TransientErrorCatchAllStrategy(), RetryStrategy.DefaultProgressive);
+        public static RetryPolicy DefaultProgressive { get; } = new(new TransientErrorCatchAllStrategy(), RetryStrategy.DefaultProgressive);
 
         /// <summary>
         /// Returns a default policy that implements a random exponential retry interval configured with the default <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval" /> retry strategy.
         /// The default retry policy treats all caught exceptions as transient errors.
         /// </summary>
-        public static RetryPolicy DefaultExponential { get; } = new RetryPolicy(new TransientErrorCatchAllStrategy(), RetryStrategy.DefaultExponential);
+        public static RetryPolicy DefaultExponential { get; } = new(new TransientErrorCatchAllStrategy(), RetryStrategy.DefaultExponential);
 
         /// <summary>
         /// Gets the retry strategy.
         /// </summary>
-        public RetryStrategy RetryStrategy
-        {
-            get;
-        }
+        public RetryStrategy RetryStrategy { get; }
 
         /// <summary>
         /// Gets the instance of the error detection strategy.
         /// </summary>
-        public ITransientErrorDetectionStrategy ErrorDetectionStrategy
-        {
-            get;
-        }
+        public ITransientErrorDetectionStrategy ErrorDetectionStrategy { get; }
 
         /// <summary>
         /// Repetitively executes the specified action while it satisfies the current retry policy.
@@ -119,8 +118,9 @@
         /// <param name="action">A delegate that represents the executable action that doesn't return any results.</param>
         public virtual void ExecuteAction(Action action)
         {
-            Guard.ArgumentNotNull(action, "action");
-            this.ExecuteAction<object>(delegate
+            Guard.ArgumentNotNull(action, nameof(action));
+
+            this.ExecuteAction<object>(() =>
             {
                 action();
                 return null;
@@ -135,14 +135,14 @@
         /// <returns>The result from the action.</returns>
         public virtual TResult ExecuteAction<TResult>(Func<TResult> func)
         {
-            Guard.ArgumentNotNull(func, "func");
-            int num = 0;
+            Guard.ArgumentNotNull(func, nameof(func));
+            int retryCount = 0;
             ShouldRetry shouldRetry = this.RetryStrategy.GetShouldRetry();
             TResult result;
             while (true)
             {
-                Exception ex;
-                TimeSpan zero;
+                Exception exception;
+                TimeSpan delay;
                 try
                 {
                     result = func();
@@ -150,35 +150,35 @@
                 }
 
 #pragma warning disable 618
-                catch (RetryLimitExceededException ex2)
+                catch (RetryLimitExceededException retryLimitExceededException)
 #pragma warning restore 618
                 {
-                    if (ex2.InnerException != null)
+                    if (retryLimitExceededException.InnerException is not null)
                     {
-                        throw ex2.InnerException;
+                        throw retryLimitExceededException.InnerException;
                     }
 
-                    result = default(TResult);
+                    result = default;
                     break;
                 }
-                catch (Exception ex3)
+                catch (Exception ex)
                 {
-                    ex = ex3;
-                    if (!this.ErrorDetectionStrategy.IsTransient(ex) || !shouldRetry(num++, ex, out zero))
+                    exception = ex;
+                    if (!this.ErrorDetectionStrategy.IsTransient(exception) || !shouldRetry(retryCount++, exception, out delay))
                     {
                         throw;
                     }
                 }
 
-                if (zero.TotalMilliseconds < 0.0)
+                if (delay.TotalMilliseconds < 0.0)
                 {
-                    zero = TimeSpan.Zero;
+                    delay = TimeSpan.Zero;
                 }
 
-                this.OnRetrying(num, ex, zero);
-                if (num > 1 || !this.RetryStrategy.FastFirstRetry)
+                this.OnRetrying(retryCount, exception, delay);
+                if (retryCount > 1 || !this.RetryStrategy.FastFirstRetry)
                 {
-                    Task.Delay(zero).Wait();
+                    Task.Delay(delay).Wait();
                 }
             }
 
@@ -194,10 +194,7 @@
         /// first time or after retrying transient failures). If the task fails with a non-transient error or
         /// the retry limit is reached, the returned task will transition to a faulted state and the exception must be observed.
         /// </returns>
-        public Task ExecuteAsync(Func<Task> taskAction)
-        {
-            return this.ExecuteAsync(taskAction, default(CancellationToken));
-        }
+        public Task ExecuteAsync(Func<Task> taskAction) => this.ExecuteAsync(taskAction, default);
 
         /// <summary>
         /// Repetitively executes the specified asynchronous task while it satisfies the current retry policy.
@@ -211,7 +208,7 @@
         /// </returns>
         public Task ExecuteAsync(Func<Task> taskAction, CancellationToken cancellationToken)
         {
-            if (taskAction == null)
+            if (taskAction is null)
             {
                 throw new ArgumentNullException(nameof(taskAction));
             }
@@ -228,10 +225,8 @@
         /// first time or after retrying transient failures). If the task fails with a non-transient error or
         /// the retry limit is reached, the returned task will transition to a faulted state and the exception must be observed.
         /// </returns>
-        public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> taskFunc)
-        {
-            return this.ExecuteAsync(taskFunc, default(CancellationToken));
-        }
+        public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> taskFunc) =>
+            this.ExecuteAsync(taskFunc, default);
 
         /// <summary>
         /// Repeatedly executes the specified asynchronous task while it satisfies the current retry policy.
@@ -245,9 +240,9 @@
         /// </returns>
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> taskFunc, CancellationToken cancellationToken)
         {
-            if (taskFunc == null)
+            if (taskFunc is null)
             {
-                throw new ArgumentNullException(nameof(taskFunc));
+                throw new ArgumentNullException();
             }
 
             return new AsyncExecution<TResult>(taskFunc, this.RetryStrategy.GetShouldRetry(), this.ErrorDetectionStrategy.IsTransient, this.OnRetrying, this.RetryStrategy.FastFirstRetry, cancellationToken).ExecuteAsync();
@@ -278,10 +273,7 @@
             /// </summary>
             /// <param name="ex">The exception.</param>
             /// <returns>Always false.</returns>
-            public bool IsTransient(Exception ex)
-            {
-                return false;
-            }
+            public bool IsTransient(Exception ex) => false;
         }
 
         /// <summary>
@@ -294,10 +286,7 @@
             /// </summary>
             /// <param name="ex">The exception.</param>
             /// <returns>Always true.</returns>
-            public bool IsTransient(Exception ex)
-            {
-                return true;
-            }
+            public bool IsTransient(Exception ex) => true;
         }
     }
 }

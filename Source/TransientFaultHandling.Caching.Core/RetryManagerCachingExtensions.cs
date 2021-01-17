@@ -1,9 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
     using System;
-
     using System.ComponentModel;
 
     /// <summary>
@@ -24,7 +21,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static RetryStrategy GetDefaultAzureCachingRetryStrategy(this RetryManager retryManager)
         {
-            if (retryManager == null) throw new ArgumentNullException("retryManager");
+            if (retryManager is null)
+            {
+                throw new ArgumentNullException(nameof(retryManager));
+            }
 
             return retryManager.GetDefaultRetryStrategy(DefaultStrategyTechnologyName);
         }
@@ -36,7 +36,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         [Obsolete("Use GetDefaultCachingRetryPolicy instead.")]
         public static RetryPolicy GetDefaultAzureCachingRetryPolicy(this RetryManager retryManager)
         {
-            if (retryManager == null) throw new ArgumentNullException("retryManager");
+            if (retryManager is null)
+            {
+                throw new ArgumentNullException(nameof(retryManager));
+            }
 
             return new RetryPolicy(new CacheTransientErrorDetectionStrategy(), retryManager.GetDefaultCachingRetryStrategy());
         }
@@ -47,7 +50,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <returns>The default Windows Azure Caching retry strategy (or the default strategy if no default could be found for Windows Azure Caching).</returns>
         public static RetryStrategy GetDefaultCachingRetryStrategy(this RetryManager retryManager)
         {
-            if (retryManager == null) throw new ArgumentNullException("retryManager");
+            if (retryManager is null)
+            {
+                throw new ArgumentNullException(nameof(retryManager));
+            }
 
             return retryManager.GetDefaultRetryStrategy(DefaultStrategyTechnologyName);
         }
@@ -58,7 +64,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <returns>The retry policy for Windows Azure Caching with the corresponding default strategy (or the default strategy if no retry strategy definition for Windows Azure Caching was found).</returns>
         public static RetryPolicy GetDefaultCachingRetryPolicy(this RetryManager retryManager)
         {
-            if (retryManager == null) throw new ArgumentNullException("retryManager");
+            if (retryManager is null)
+            {
+                throw new ArgumentNullException(nameof(retryManager));
+            }
 
             return new RetryPolicy(new CacheTransientErrorDetectionStrategy(), retryManager.GetDefaultCachingRetryStrategy());
         }

@@ -56,11 +56,12 @@
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
         public ExponentialBackoff(string name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, bool firstFastRetry) : base(name, firstFastRetry)
         {
-            Guard.ArgumentNotNegativeValue(retryCount, "retryCount");
-            Guard.ArgumentNotNegativeValue(minBackoff.Ticks, "minBackoff");
-            Guard.ArgumentNotNegativeValue(maxBackoff.Ticks, "maxBackoff");
-            Guard.ArgumentNotNegativeValue(deltaBackoff.Ticks, "deltaBackoff");
-            Guard.ArgumentNotGreaterThan(minBackoff.TotalMilliseconds, maxBackoff.TotalMilliseconds, "minBackoff");
+            Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
+            Guard.ArgumentNotNegativeValue(minBackoff.Ticks, nameof(minBackoff));
+            Guard.ArgumentNotNegativeValue(maxBackoff.Ticks, nameof(maxBackoff));
+            Guard.ArgumentNotNegativeValue(deltaBackoff.Ticks, nameof(deltaBackoff));
+            Guard.ArgumentNotGreaterThan(minBackoff.TotalMilliseconds, maxBackoff.TotalMilliseconds, nameof(minBackoff));
+
             this.retryCount = retryCount;
             this.minBackoff = minBackoff;
             this.maxBackoff = maxBackoff;
@@ -77,7 +78,7 @@
             {
                 if (currentRetryCount < this.retryCount)
                 {
-                    Random random = new Random();
+                    Random random = new();
                     int backoffMillisecond = (int)((Math.Pow(2.0, currentRetryCount) - 1.0) * random.Next((int)(this.deltaBackoff.TotalMilliseconds * 0.8), (int)(this.deltaBackoff.TotalMilliseconds * 1.2)));
                     int retryIntervalMillisecond = (int)Math.Min(this.minBackoff.TotalMilliseconds + backoffMillisecond, this.maxBackoff.TotalMilliseconds);
                     retryInterval = TimeSpan.FromMilliseconds(retryIntervalMillisecond);

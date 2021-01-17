@@ -10,26 +10,17 @@
         /// <summary>
         /// Gets the current retry count.
         /// </summary>
-        public int CurrentRetryCount
-        {
-            get;
-        }
+        public int CurrentRetryCount { get; }
 
         /// <summary>
         /// Gets the delay that indicates how long the current thread will be suspended before the next iteration is invoked.
         /// </summary>
-        public TimeSpan Delay
-        {
-            get;
-        }
+        public TimeSpan Delay { get; }
 
         /// <summary>
         /// Gets the exception that caused the retry conditions to occur.
         /// </summary>
-        public Exception LastException
-        {
-            get;
-        }
+        public Exception LastException { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryingEventArgs" /> class.
@@ -39,7 +30,8 @@
         /// <param name="lastException">The exception that caused the retry conditions to occur.</param>
         public RetryingEventArgs(int currentRetryCount, TimeSpan delay, Exception lastException)
         {
-            Guard.ArgumentNotNull(lastException, "lastException");
+            Guard.ArgumentNotNull(lastException, nameof(lastException));
+
             this.CurrentRetryCount = currentRetryCount;
             this.Delay = delay;
             this.LastException = lastException;

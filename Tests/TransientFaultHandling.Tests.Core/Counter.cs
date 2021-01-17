@@ -9,7 +9,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
 
         internal Counter(int count) => this.count = count;
 
-        internal List<DateTime> Time { get; } = new List<DateTime>();
+        internal List<DateTime> Time { get; } = new();
 
         internal void Increase()
         {
@@ -27,7 +27,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
 
         internal Counter(int count) => this.count = count;
 
-        internal List<DateTime> Time { get; } = new List<DateTime>();
+        internal List<DateTime> Time { get; } = new();
 
         internal void Increase()
         {
@@ -38,10 +38,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
                 {
                     throw new TException1();
                 }
-                else
-                {
-                    throw new TException2();
-                }
+
+                throw new TException2();
             }
         }
     }

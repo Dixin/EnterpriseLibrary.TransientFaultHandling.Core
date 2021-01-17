@@ -1,10 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Data.SqlClient;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Data.SqlClient;
+
     /// <summary>
     /// Provides a set of extension methods that add retry capabilities to the standard <see cref="System.Data.SqlClient.SqlConnection"/> implementation.
     /// </summary>
@@ -16,10 +14,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         /// <param name="connection">The connection object that is required for the extension method declaration.</param>
         [Obsolete("Use OpenWithRetry for Microsoft.Data.SqlClient.SqlConnection in Microsoft.Data.SqlClient.")]
-        public static void OpenWithRetry(this SqlConnection connection)
-        {
+        public static void OpenWithRetry(this SqlConnection connection) => 
             OpenWithRetry(connection, RetryManager.Instance.GetDefaultSqlConnectionRetryPolicy());
-        }
 
         /// <summary>
         /// Opens a database connection with the connection settings specified in the ConnectionString property of the connection object.
@@ -28,13 +24,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <param name="connection">The connection object that is required for the extension method declaration.</param>
         /// <param name="retryPolicy">The retry policy that defines whether to retry a request if the connection fails.</param>
         [Obsolete("Use OpenWithRetry for Microsoft.Data.SqlClient.SqlConnection in Microsoft.Data.SqlClient.")]
-        public static void OpenWithRetry(this SqlConnection connection, RetryPolicy retryPolicy)
-        {
+        public static void OpenWithRetry(this SqlConnection connection, RetryPolicy retryPolicy) =>
             // Check if retry policy was specified, if not, use the default retry policy.
-            (retryPolicy != null ? retryPolicy : RetryPolicy.NoRetry).ExecuteAction(() =>
-            {
-                connection.Open();
-            });
-        }
+            (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(connection.Open);
     }
 }

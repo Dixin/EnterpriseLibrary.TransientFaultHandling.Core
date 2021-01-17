@@ -1,16 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
-using System.Transactions;
-
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
+    using System;
+    using System.Transactions;
+
     /// <summary>
     /// Provides support for retry policy-aware transactional scope.
     /// </summary>
     public sealed class TransactionRetryScope : IDisposable
     {
-        private readonly RetryPolicy retryPolicy;
         private readonly TransactionScopeInitializer transactionScopeInit;
         private readonly Action unitOfWork;
         private TransactionScope transactionScope;
@@ -71,13 +68,13 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         {
             this.transactionScopeInit = () =>
             {
-                var txOptions = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted, Timeout = scopeTimeout };
+                TransactionOptions txOptions = new() { IsolationLevel = IsolationLevel.ReadCommitted, Timeout = scopeTimeout };
 
                 return new TransactionScope(scopeOption, txOptions);
             };
 
             this.transactionScope = this.transactionScopeInit();
-            this.retryPolicy = retryPolicy;
+            this.RetryPolicy = retryPolicy;
             this.unitOfWork = unitOfWork;
 
             // Set up the callback method for the specified retry policy.
@@ -108,7 +105,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             this.transactionScopeInit = () => new TransactionScope(scopeOption, transactionOptions);
 
             this.transactionScope = this.transactionScopeInit();
-            this.retryPolicy = retryPolicy;
+            this.RetryPolicy = retryPolicy;
             this.unitOfWork = unitOfWork;
 
             // Set up the callback method for the specified retry policy.
@@ -150,7 +147,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             this.transactionScopeInit = () => new TransactionScope(tx);
 
             this.transactionScope = this.transactionScopeInit();
-            this.retryPolicy = retryPolicy;
+            this.RetryPolicy = retryPolicy;
             this.unitOfWork = unitOfWork;
 
             // Set up the callback method for the specified retry policy.
@@ -182,7 +179,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
             this.transactionScopeInit = () => new TransactionScope(tx, scopeTimeout);
 
             this.transactionScope = this.transactionScopeInit();
-            this.retryPolicy = retryPolicy;
+            this.RetryPolicy = retryPolicy;
             this.unitOfWork = unitOfWork;
 
             // Set up the callback method for the specified retry policy.
@@ -196,45 +193,29 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// <summary>
         /// Gets the policy that determines whether to retry the execution of the entire scope if a transient fault is encountered.
         /// </summary>
-        public RetryPolicy RetryPolicy
-        {
-            get { return this.retryPolicy; }
-        }
+        public RetryPolicy RetryPolicy { get; }
+
         #endregion
 
         #region Public methods
         /// <summary>
         /// Executes the underlying unit of work and retries as prescribed by the current retry policy.
         /// </summary>
-        public void InvokeUnitOfWork()
-        {
-            this.retryPolicy.ExecuteAction(this.unitOfWork);
-        }
+        public void InvokeUnitOfWork() => this.RetryPolicy.ExecuteAction(this.unitOfWork);
 
         /// <summary>
         /// Indicates that all operations within the scope have been completed successfully.
         /// </summary>
-        public void Complete()
-        {
-            // Invoke the main method to indicate that all operations within the scope are completed successfully.
-            if (this.transactionScope != null)
-            {
-                this.transactionScope.Complete();
-            }
-        }
+        public void Complete() => this.transactionScope?.Complete();
+
         #endregion
 
         #region IDisposable implementation
         /// <summary>
         /// Ends the transaction scope.
         /// </summary>
-        public void Dispose()
-        {
-            if (this.transactionScope != null)
-            {
-                this.transactionScope.Dispose();
-            }
-        }
+        public void Dispose() => this.transactionScope?.Dispose();
+
         #endregion
 
         #region Private methods
@@ -243,15 +224,12 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
         /// </summary>
         private void InitializeRetryPolicy()
         {
-            this.retryPolicy.Retrying += (sender, args) =>
+            this.RetryPolicy.Retrying += (sender, args) =>
             {
                 try
                 {
                     // Should recycle the scope upon failure. This will also rollback the entire transaction.
-                    if (this.transactionScope != null)
-                    {
-                        this.transactionScope.Dispose();
-                    }
+                    this.transactionScope?.Dispose();
                 }
                 catch (Exception ex)
                 {

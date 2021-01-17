@@ -130,7 +130,7 @@
             int? retryCount = null,
             TimeSpan? retryInterval = null,
             bool? firstFastRetry = null,
-            string name = null) => new FixedInterval(
+            string name = null) => new(
                 name,
                 retryCount ?? RetryStrategy.DefaultClientRetryCount,
                 retryInterval ?? RetryStrategy.DefaultRetryInterval,
