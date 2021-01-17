@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>TransientFaultHandling.Caching.Core</AssemblyName>
+    <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <PackageId>TransientFaultHandling.Caching</PackageId>
+    <Version>2.0.0</Version>
+    <Authors>Dixin Yan</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>https://DixinYan.com</Company>
+    <PackageDescription>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageDescription>
+    <PackageLicenseUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageProjectUrl>
+    <PackageIconUrl>http://nuget.org/Media/Default/Packages/Unity/2.0/entlib_new_icon_100x100.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core.git</RepositoryUrl>
+    <PackageTags>entlib enterprise library azure retry retries transient fault exception handling failure network topaz async Transient Fault Application Block .NET Core .NETCore dotnet dotnetcore Standard .NETStandard dotnetstandard cache caching</PackageTags>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../../Tools/Key.snk</AssemblyOriginatorKeyFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Tools\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\TransientFaultHandling.Caching.Core\CacheTransientErrorDetectionStrategy.cs" Link="CacheTransientErrorDetectionStrategy.cs" />
+    <Compile Include="..\TransientFaultHandling.Caching.Core\Caching\DataCacheExceptionChecker.cs" Link="Caching\DataCacheExceptionChecker.cs" />
+    <Compile Include="..\TransientFaultHandling.Caching.Core\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\TransientFaultHandling.Caching.Core\RetryManagerCachingExtensions.cs" Link="RetryManagerCachingExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\TransientFaultHandling.Caching.Core\Properties\Resources.resx" Link="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Caching\" />
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TransientFaultHandling.Core\TransientFaultHandling.Core.csproj" />
+  </ItemGroup>
+
+</Project>
