@@ -1,17 +1,12 @@
-version: '1.0.{build}'
+version: 2.0.{build}
+image: Visual Studio 2019
 configuration:
 - Debug
 - Release
-platform: Any CPU
-before_build:
-- appveyor-retry dotnet restore -v Minimal
-build_script:
-- dotnet build -c %CONFIGURATION%
-after_build:
-- dotnet pack -c %CONFIGURATION% --no-build
+build:
+  parallel: true
+  verbosity: normal
 test:
   assemblies:
     only:
-    - '**\*Tests*.dll'
-cache:
-- '%USERPROFILE%\.nuget\packages'
+    - '*.Tests.*'
