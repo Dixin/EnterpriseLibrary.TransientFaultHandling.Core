@@ -21,10 +21,7 @@
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static RetryStrategy GetDefaultAzureCachingRetryStrategy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             return retryManager.GetDefaultRetryStrategy(DefaultStrategyTechnologyName);
         }
@@ -36,10 +33,7 @@
         [Obsolete("Use GetDefaultCachingRetryPolicy instead.")]
         public static RetryPolicy GetDefaultAzureCachingRetryPolicy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             return new RetryPolicy(new CacheTransientErrorDetectionStrategy(), retryManager.GetDefaultCachingRetryStrategy());
         }
@@ -50,10 +44,7 @@
         /// <returns>The default Windows Azure Caching retry strategy (or the default strategy if no default could be found for Windows Azure Caching).</returns>
         public static RetryStrategy GetDefaultCachingRetryStrategy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             return retryManager.GetDefaultRetryStrategy(DefaultStrategyTechnologyName);
         }
@@ -64,10 +55,7 @@
         /// <returns>The retry policy for Windows Azure Caching with the corresponding default strategy (or the default strategy if no retry strategy definition for Windows Azure Caching was found).</returns>
         public static RetryPolicy GetDefaultCachingRetryPolicy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             return new RetryPolicy(new CacheTransientErrorDetectionStrategy(), retryManager.GetDefaultCachingRetryStrategy());
         }

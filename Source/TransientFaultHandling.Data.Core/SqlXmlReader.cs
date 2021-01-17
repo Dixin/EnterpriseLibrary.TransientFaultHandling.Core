@@ -23,6 +23,9 @@
         /// <param name="innerReader">The original XML reader that is to be wrapped by this instance.</param>
         public SqlXmlReader(IDbConnection connection, XmlReader innerReader)
         {
+            Guard.ArgumentNotNull(connection, nameof(connection));
+            Guard.ArgumentNotNull(innerReader, nameof(innerReader));
+
             this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
             this.innerReader = innerReader ?? throw new ArgumentNullException(nameof(innerReader));
         } 

@@ -23,10 +23,7 @@
         /// <returns>The default retry strategy for SQL commands (or the default strategy, if no default could be found).</returns>
         public static RetryStrategy GetDefaultSqlCommandRetryStrategy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             return retryManager.GetDefaultRetryStrategy(DefaultStrategyCommandTechnologyName);
         }
@@ -37,10 +34,7 @@
         /// <returns>The retry policy for SQL commands with the corresponding default strategy (or the default strategy, if no retry strategy assigned to SQL commands was found).</returns>
         public static RetryPolicy GetDefaultSqlCommandRetryPolicy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             return new RetryPolicy(new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.GetDefaultSqlCommandRetryStrategy());
         }
@@ -51,10 +45,7 @@
         /// <returns>The default retry strategy for SQL connections (or the default strategy, if no default could be found).</returns>
         public static RetryStrategy GetDefaultSqlConnectionRetryStrategy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             try
             {
@@ -72,10 +63,7 @@
         /// <returns>The retry policy for SQL connections with the corresponding default strategy (or the default strategy, if no retry strategy for SQL connections was found).</returns>
         public static RetryPolicy GetDefaultSqlConnectionRetryPolicy(this RetryManager retryManager)
         {
-            if (retryManager is null)
-            {
-                throw new ArgumentNullException(nameof(retryManager));
-            }
+            Guard.ArgumentNotNull(retryManager, nameof(retryManager));
 
             return new RetryPolicy(new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.GetDefaultSqlConnectionRetryStrategy());
         }

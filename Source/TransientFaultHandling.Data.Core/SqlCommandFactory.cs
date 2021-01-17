@@ -1,11 +1,7 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
-    using System;
     using System.Data;
     using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
-
-    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
 
     /// <summary>
     /// Provides factory methods for instantiating SQL commands.
@@ -27,16 +23,11 @@
         /// <returns>A new SQL command that is initialized with the Stored Procedure command type and initial settings.</returns>
         public static IDbCommand CreateCommand(IDbConnection connection)
         {
-            if (connection is null)
-            {
-                throw new ArgumentNullException(nameof(connection));
-            }
+            Guard.ArgumentNotNull(connection, nameof(connection));
 
             IDbCommand command = connection.CreateCommand();
-
             command.CommandType = CommandType.StoredProcedure;
             command.CommandTimeout = DefaultCommandTimeoutSeconds;
-
             return command;
         }
 
@@ -49,15 +40,8 @@
         [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
         public static IDbCommand CreateCommand(IDbConnection connection, string commandText)
         {
-            if (commandText is null)
-            {
-                throw new ArgumentNullException(nameof(commandText));
-            }
-
-            if (string.IsNullOrWhiteSpace(commandText))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.StringCannotBeEmpty, "commandText"), nameof(commandText));
-            }
+            Guard.ArgumentNotNull(connection, nameof(connection));
+            Guard.ArgumentNotNullOrEmptyString(commandText, nameof(commandText));
 
             IDbCommand command = CreateCommand(connection);
             try
@@ -82,17 +66,13 @@
         [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
         public static IDbCommand CreateGetContextInfoCommand(IDbConnection connection)
         {
-            if (connection is null)
-            {
-                throw new ArgumentNullException(nameof(connection));
-            }
+            Guard.ArgumentNotNull(connection, nameof(connection));
 
             IDbCommand command = CreateCommand(connection);
             try
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = "SELECT CONVERT(UNIQUEIDENTIFIER, CONVERT(NVARCHAR(36), CONTEXT_INFO()))";
-
                 return command;
             }
             catch

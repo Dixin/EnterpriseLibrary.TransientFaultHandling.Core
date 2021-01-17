@@ -75,14 +75,14 @@
             if (task is null)
             {
                 throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, Resources.TaskCannotBeNull, "taskFunc"), "taskFunc");
+                    string.Format(CultureInfo.InvariantCulture, Resources.TaskCannotBeNull, nameof(this.taskFunc)), nameof(this.taskFunc));
             }
 
             return task.Status switch
             {
                 TaskStatus.RanToCompletion => task,
                 TaskStatus.Created => throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, Resources.TaskMustBeScheduled, "taskFunc"), "taskFunc"),
+                    string.Format(CultureInfo.InvariantCulture, Resources.TaskMustBeScheduled, nameof(this.taskFunc)), nameof(this.taskFunc)),
                 _ => task
                     .ContinueWith(this.ExecuteAsyncContinueWith, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default)
                     .Unwrap()

@@ -208,10 +208,7 @@
         /// </returns>
         public Task ExecuteAsync(Func<Task> taskAction, CancellationToken cancellationToken)
         {
-            if (taskAction is null)
-            {
-                throw new ArgumentNullException(nameof(taskAction));
-            }
+            Guard.ArgumentNotNull(taskAction, nameof(taskAction));
 
             return new AsyncExecution(taskAction, this.RetryStrategy.GetShouldRetry(), this.ErrorDetectionStrategy.IsTransient, this.OnRetrying, this.RetryStrategy.FastFirstRetry, cancellationToken).ExecuteAsync();
         }
@@ -240,10 +237,7 @@
         /// </returns>
         public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> taskFunc, CancellationToken cancellationToken)
         {
-            if (taskFunc is null)
-            {
-                throw new ArgumentNullException();
-            }
+            Guard.ArgumentNotNull(taskFunc, nameof(taskFunc));
 
             return new AsyncExecution<TResult>(taskFunc, this.RetryStrategy.GetShouldRetry(), this.ErrorDetectionStrategy.IsTransient, this.OnRetrying, this.RetryStrategy.FastFirstRetry, cancellationToken).ExecuteAsync();
         }
