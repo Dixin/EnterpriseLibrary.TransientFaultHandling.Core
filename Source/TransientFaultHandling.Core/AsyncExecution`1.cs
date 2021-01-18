@@ -129,7 +129,7 @@
             if (zero > TimeSpan.Zero && (this.retryCount > 1 || !this.fastFirstRetry))
             {
                 return Task
-                    .Delay(zero)
+                    .Delay(zero, this.cancellationToken)
                     .ContinueWith(this.ExecuteAsyncImpl, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default)
                     .Unwrap();
             }

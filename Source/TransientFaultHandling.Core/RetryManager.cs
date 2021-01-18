@@ -73,6 +73,7 @@
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     this.defaultRetryStrategyName = null;
+                    this.defaultStrategy = null;
                     return;
                 }
 
