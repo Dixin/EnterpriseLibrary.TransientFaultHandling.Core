@@ -12,9 +12,9 @@
         /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
         /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class with the specified number of retry attempts and parameters defining the progressive delay between retries.</returns>
         public static RetryPolicy CreateRetryPolicy(
-            RetryStrategy retryStrategy = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null)
+            RetryStrategy? retryStrategy = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
             RetryPolicy retryPolicy = new(new ExceptionDetection(isTransient), retryStrategy ?? RetryStrategy.NoRetry);
             if (retryingHandler is not null)
@@ -31,7 +31,7 @@
         /// <param name="retryStrategy">The retry strategy.</param>
         /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
         /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
-        public static RetryPolicy Catch(this RetryStrategy retryStrategy, Func<Exception, bool> isTransient = null)
+        public static RetryPolicy Catch(this RetryStrategy retryStrategy, Func<Exception, bool>? isTransient = null)
         {
             Guard.ArgumentNotNull(retryStrategy, nameof(retryStrategy));
 
@@ -44,7 +44,7 @@
         /// <param name="retryPolicy">The retry strategy.</param>
         /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
         /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
-        public static RetryPolicy Catch(this RetryPolicy retryPolicy, Func<Exception, bool> isTransient = null)
+        public static RetryPolicy Catch(this RetryPolicy retryPolicy, Func<Exception, bool>? isTransient = null)
         {
             Guard.ArgumentNotNull(retryPolicy, nameof(retryPolicy));
 
@@ -60,7 +60,7 @@
         /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
         public static RetryPolicy Catch<TException>(
             this RetryStrategy retryStrategy,
-            Func<TException, bool> isTransient = null) where TException : Exception
+            Func<TException, bool>? isTransient = null) where TException : Exception
         {
             Guard.ArgumentNotNull(retryStrategy, nameof(retryStrategy));
 
@@ -80,7 +80,7 @@
         /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class.</returns>
         public static RetryPolicy Catch<TException>(
             this RetryPolicy retryPolicy,
-            Func<TException, bool> isTransient = null) where TException : Exception
+            Func<TException, bool>? isTransient = null) where TException : Exception
         {
             Guard.ArgumentNotNull(retryPolicy, nameof(retryPolicy));
 

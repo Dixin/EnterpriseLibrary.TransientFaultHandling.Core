@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
 
@@ -15,7 +16,7 @@
         /// <param name="argumentValue">The argument value to check.</param>
         /// <param name="argumentName">The name of the argument.</param>
         /// <returns>The return value should be ignored. It is intended to be used only when validating arguments during instance creation (for example, when calling the base constructor).</returns>
-        public static bool ArgumentNotNullOrEmptyString(string argumentValue, string argumentName)
+        public static bool ArgumentNotNullOrEmptyString([NotNull] string? argumentValue, string argumentName)
         {
             ArgumentNotNull(argumentValue, argumentName);
             if (argumentValue.Length == 0)
@@ -32,7 +33,7 @@
         /// <param name="argumentValue">The argument value to check.</param>
         /// <param name="argumentName">The name of the argument.</param>
         /// <returns>The return value should be ignored. It is intended to be used only when validating arguments during instance creation (for example, when calling the base constructor).</returns>
-        public static bool ArgumentNotNull<T>(T argumentValue, string argumentName) where T : class
+        public static bool ArgumentNotNull<T>([NotNull] T? argumentValue, string argumentName) where T : class
         {
             if (argumentValue is null)
             {

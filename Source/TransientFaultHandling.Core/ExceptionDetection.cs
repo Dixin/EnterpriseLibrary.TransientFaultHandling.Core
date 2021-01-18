@@ -13,7 +13,7 @@
         /// Initializes a new instance of the <see cref="ExceptionDetection"/> class.
         /// </summary>
         /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
-        public ExceptionDetection(Func<Exception, bool> isTransient = null) =>
+        public ExceptionDetection(Func<Exception, bool>? isTransient = null) =>
             this.isTransient = isTransient ?? (_ => true);
 
         /// <summary>

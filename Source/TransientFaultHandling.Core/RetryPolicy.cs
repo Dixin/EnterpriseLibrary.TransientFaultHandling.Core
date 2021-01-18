@@ -20,11 +20,6 @@
             Guard.ArgumentNotNull(retryStrategy, nameof(retryStrategy));
 
             this.ErrorDetectionStrategy = errorDetectionStrategy;
-            if (errorDetectionStrategy is null)
-            {
-                throw new InvalidOperationException("The error detection strategy type must implement the ITransientErrorDetectionStrategy interface.");
-            }
-
             this.RetryStrategy = retryStrategy;
         }
 
@@ -77,7 +72,7 @@
         /// <summary>
         /// An instance of a callback delegate that will be invoked whenever a retry condition is encountered.
         /// </summary>
-        public event EventHandler<RetryingEventArgs> Retrying;
+        public event EventHandler<RetryingEventArgs>? Retrying;
 
         /// <summary>
         /// Returns a default policy that performs no retries, but invokes the action only once.
@@ -120,7 +115,7 @@
         {
             Guard.ArgumentNotNull(action, nameof(action));
 
-            this.ExecuteAction<object>(() =>
+            this.ExecuteAction<object?>(() =>
             {
                 action();
                 return null;
@@ -133,7 +128,7 @@
         /// <typeparam name="TResult">The type of result expected from the executable action.</typeparam>
         /// <param name="func">A delegate that represents the executable action that returns the result of type <typeparamref name="TResult" />.</param>
         /// <returns>The result from the action.</returns>
-        public virtual TResult ExecuteAction<TResult>(Func<TResult> func)
+        public virtual TResult? ExecuteAction<TResult>(Func<TResult> func)
         {
             Guard.ArgumentNotNull(func, nameof(func));
             int retryCount = 0;
@@ -251,9 +246,9 @@
         protected virtual void OnRetrying(int retryCount, Exception lastError, TimeSpan delay) =>
             this.Retrying?.Invoke(this, new RetryingEventArgs(retryCount, delay, lastError));
 
-        internal void InvokeRetrying(object sender, RetryingEventArgs args)
+        internal void InvokeRetrying(object? sender, RetryingEventArgs args)
         {
-            EventHandler<RetryingEventArgs> retrying = this.Retrying;
+            EventHandler<RetryingEventArgs>? retrying = this.Retrying;
             retrying?.Invoke(sender, args);
         }
 

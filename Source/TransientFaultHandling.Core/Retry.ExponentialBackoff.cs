@@ -19,11 +19,11 @@
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
         /// <returns>The result from the action.</returns>
         /// <exception cref="ArgumentNullException">func</exception>
-        public static TResult ExponentialBackoff<TResult>(
+        public static TResult? ExponentialBackoff<TResult>(
             Func<TResult> func,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? minBackoff = null,
             TimeSpan? maxBackoff = null,
             TimeSpan? deltaBackoff = null,
@@ -53,8 +53,8 @@
         public static void ExponentialBackoff(
             Action action,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? minBackoff = null,
             TimeSpan? maxBackoff = null,
             TimeSpan? deltaBackoff = null,
@@ -86,8 +86,8 @@
         public static Task<TResult> ExponentialBackoffAsync<TResult>(
             Func<Task<TResult>> func,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? minBackoff = null,
             TimeSpan? maxBackoff = null,
             TimeSpan? deltaBackoff = null,
@@ -118,8 +118,8 @@
         public static Task ExponentialBackoffAsync(
             Func<Task> func,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? minBackoff = null,
             TimeSpan? maxBackoff = null,
             TimeSpan? deltaBackoff = null,
@@ -150,7 +150,7 @@
             TimeSpan? maxBackoff = null, 
             TimeSpan? deltaBackoff = null, 
             bool? firstFastRetry = null, 
-            string name = null) => new(
+            string? name = null) => new(
                 name,
                 retryCount ?? RetryStrategy.DefaultClientRetryCount,
                 minBackoff ?? RetryStrategy.DefaultMinBackoff,

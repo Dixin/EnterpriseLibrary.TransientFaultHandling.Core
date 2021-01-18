@@ -138,6 +138,9 @@
   <data name="RetryLimitExceeded" xml:space="preserve">
     <value>The action has exceeded its defined retry limit.</value>
   </data>
+  <data name="RetryStrategyNameCannotBeEmpty" xml:space="preserve">
+    <value>The retry strategy name must not be empty.</value>
+  </data>
   <data name="RetryStrategyNotFound" xml:space="preserve">
     <value>The retry strategy with name '{0}' cannot be found.</value>
   </data>

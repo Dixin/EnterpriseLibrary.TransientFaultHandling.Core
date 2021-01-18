@@ -31,7 +31,7 @@
         /// that is the cause of this exception.
         /// </summary>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public RetryLimitExceededException(Exception innerException) : 
+        public RetryLimitExceededException(Exception? innerException) : 
             base(innerException is not null ? innerException.Message : Resources.RetryLimitExceeded, innerException)
         {
         }

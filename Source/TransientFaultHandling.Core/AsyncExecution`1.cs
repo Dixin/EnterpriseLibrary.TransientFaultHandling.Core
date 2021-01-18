@@ -25,7 +25,7 @@
 
         private readonly CancellationToken cancellationToken;
 
-        private Task<TResult> previousTask;
+        private Task<TResult>? previousTask;
 
         private int retryCount;
 
@@ -41,7 +41,7 @@
 
         internal Task<TResult> ExecuteAsync() => this.ExecuteAsyncImpl(null);
 
-        private Task<TResult> ExecuteAsyncImpl(Task ignore)
+        private Task<TResult> ExecuteAsyncImpl(Task? ignore)
         {
             if (this.cancellationToken.IsCancellationRequested)
             {
@@ -96,7 +96,7 @@
                 return runningTask;
             }
 
-            Exception innerException = runningTask.Exception.InnerException;
+            Exception innerException = runningTask.Exception!.InnerException!;
 #pragma warning disable 618
             if (innerException is RetryLimitExceededException)
 #pragma warning restore 618
@@ -128,7 +128,10 @@
             this.previousTask = runningTask;
             if (zero > TimeSpan.Zero && (this.retryCount > 1 || !this.fastFirstRetry))
             {
-                return Task.Delay(zero).ContinueWith(this.ExecuteAsyncImpl, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default).Unwrap();
+                return Task
+                    .Delay(zero)
+                    .ContinueWith(this.ExecuteAsyncImpl, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default)
+                    .Unwrap();
             }
 
             return this.ExecuteAsyncImpl(null);

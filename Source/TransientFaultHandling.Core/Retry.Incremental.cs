@@ -18,11 +18,11 @@
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
         /// <returns>The result from the action.</returns>
         /// <exception cref="ArgumentNullException">func</exception>
-        public static TResult Incremental<TResult>(
+        public static TResult? Incremental<TResult>(
             Func<TResult> func,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
             bool? firstFastRetry = null)
@@ -50,8 +50,8 @@
         public static void Incremental(
             Action action,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
             bool? firstFastRetry = null)
@@ -81,8 +81,8 @@
         public static Task<TResult> IncrementalAsync<TResult>(
             Func<Task<TResult>> func,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
             bool? firstFastRetry = null)
@@ -111,8 +111,8 @@
         public static Task IncrementalAsync(
             Func<Task> func,
             int? retryCount = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
             bool? firstFastRetry = null)
@@ -140,7 +140,7 @@
             TimeSpan? initialInterval =null, 
             TimeSpan? increment = null,
             bool? firstFastRetry = null,
-            string name = null) => new(
+            string? name = null) => new(
                 name,
                 retryCount ?? RetryStrategy.DefaultClientRetryCount,
                 initialInterval ?? RetryStrategy.DefaultRetryInterval,

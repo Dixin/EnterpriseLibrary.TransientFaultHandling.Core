@@ -48,7 +48,7 @@
         /// </summary>
         /// <param name="name">The name of the retry strategy.</param>
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
-        protected RetryStrategy(string name, bool firstFastRetry)
+        protected RetryStrategy(string? name, bool firstFastRetry)
         {
             this.Name = name;
             this.FastFirstRetry = firstFastRetry;
@@ -85,7 +85,7 @@
         /// <summary>
         /// Gets the name of the retry strategy.
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
 
         /// <summary>
         /// Returns the corresponding ShouldRetry delegate.

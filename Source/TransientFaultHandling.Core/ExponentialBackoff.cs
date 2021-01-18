@@ -18,7 +18,8 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff" /> class. 
         /// </summary>
-        public ExponentialBackoff() : this(DefaultClientRetryCount, DefaultMinBackoff, DefaultMaxBackoff, DefaultClientBackoff)
+        public ExponentialBackoff() : 
+            this(DefaultClientRetryCount, DefaultMinBackoff, DefaultMaxBackoff, DefaultClientBackoff)
         {
         }
 
@@ -29,7 +30,8 @@
         /// <param name="minBackoff">The minimum backoff time.</param>
         /// <param name="maxBackoff">The maximum backoff time.</param>
         /// <param name="deltaBackoff">The value that will be used to calculate a random delta in the exponential delay between retries.</param>
-        public ExponentialBackoff(int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff) : this(null, retryCount, minBackoff, maxBackoff, deltaBackoff, DefaultFirstFastRetry)
+        public ExponentialBackoff(int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff) : 
+            this(null, retryCount, minBackoff, maxBackoff, deltaBackoff, DefaultFirstFastRetry)
         {
         }
 
@@ -41,7 +43,8 @@
         /// <param name="minBackoff">The minimum backoff time</param>
         /// <param name="maxBackoff">The maximum backoff time.</param>
         /// <param name="deltaBackoff">The value that will be used to calculate a random delta in the exponential delay between retries.</param>
-        public ExponentialBackoff(string name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff) : this(name, retryCount, minBackoff, maxBackoff, deltaBackoff, DefaultFirstFastRetry)
+        public ExponentialBackoff(string? name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff) : 
+            this(name, retryCount, minBackoff, maxBackoff, deltaBackoff, DefaultFirstFastRetry)
         {
         }
 
@@ -54,7 +57,8 @@
         /// <param name="maxBackoff">The maximum backoff time.</param>
         /// <param name="deltaBackoff">The value that will be used to calculate a random delta in the exponential delay between retries.</param>
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
-        public ExponentialBackoff(string name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, bool firstFastRetry) : base(name, firstFastRetry)
+        public ExponentialBackoff(string? name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, bool firstFastRetry) : 
+            base(name, firstFastRetry)
         {
             Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
             Guard.ArgumentNotNegativeValue(minBackoff.Ticks, nameof(minBackoff));
@@ -74,7 +78,7 @@
         /// <returns>The ShouldRetry delegate.</returns>
         public override ShouldRetry GetShouldRetry()
         {
-            return delegate (int currentRetryCount, Exception lastException, out TimeSpan retryInterval)
+            return (int currentRetryCount, Exception lastException, out TimeSpan retryInterval) =>
             {
                 if (currentRetryCount < this.retryCount)
                 {

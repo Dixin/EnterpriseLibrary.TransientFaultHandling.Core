@@ -31,7 +31,8 @@
         /// </summary>
         /// <param name="retryCount">The maximum number of retry attempts.</param>
         /// <param name="retryInterval">The time interval between retries.</param>
-        public FixedInterval(int retryCount, TimeSpan retryInterval) : this(null, retryCount, retryInterval, DefaultFirstFastRetry)
+        public FixedInterval(int retryCount, TimeSpan retryInterval) :
+            this(null, retryCount, retryInterval, DefaultFirstFastRetry)
         {
         }
 
@@ -41,7 +42,8 @@
         /// <param name="name">The retry strategy name.</param>
         /// <param name="retryCount">The maximum number of retry attempts.</param>
         /// <param name="retryInterval">The time interval between retries.</param>
-        public FixedInterval(string name, int retryCount, TimeSpan retryInterval) : this(name, retryCount, retryInterval, DefaultFirstFastRetry)
+        public FixedInterval(string? name, int retryCount, TimeSpan retryInterval) :
+            this(name, retryCount, retryInterval, DefaultFirstFastRetry)
         {
         }
 
@@ -52,7 +54,8 @@
         /// <param name="retryCount">The maximum number of retry attempts.</param>
         /// <param name="retryInterval">The time interval between retries.</param>
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
-        public FixedInterval(string name, int retryCount, TimeSpan retryInterval, bool firstFastRetry) : base(name, firstFastRetry)
+        public FixedInterval(string? name, int retryCount, TimeSpan retryInterval, bool firstFastRetry) :
+            base(name, firstFastRetry)
         {
             Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
             Guard.ArgumentNotNegativeValue(retryInterval.Ticks, nameof(retryInterval));

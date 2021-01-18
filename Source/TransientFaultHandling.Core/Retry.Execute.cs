@@ -18,11 +18,11 @@
         /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
         /// <returns>The result from the action.</returns>
         /// <exception cref="ArgumentNullException">func</exception>
-        public static TResult Execute<TResult>(
+        public static TResult? Execute<TResult>(
             Func<TResult> func,
-            RetryStrategy retryStrategy = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null)
+            RetryStrategy? retryStrategy = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
             Guard.ArgumentNotNull(func, nameof(func));
 
@@ -39,9 +39,9 @@
         /// <exception cref="ArgumentNullException">action</exception>
         public static void Execute(
             Action action,
-            RetryStrategy retryStrategy = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null)
+            RetryStrategy? retryStrategy = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
             Guard.ArgumentNotNull(action, nameof(action));
 
@@ -60,9 +60,9 @@
         /// <exception cref="ArgumentNullException">func</exception>
         public static Task<TResult> ExecuteAsync<TResult>(
             Func<Task<TResult>> func,
-            RetryStrategy retryStrategy = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null)
+            RetryStrategy? retryStrategy = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
             Guard.ArgumentNotNull(func, nameof(func));
 
@@ -80,9 +80,9 @@
         /// <exception cref="ArgumentNullException">func</exception>
         public static Task ExecuteAsync(
             Func<Task> func,
-            RetryStrategy retryStrategy = null,
-            Func<Exception, bool> isTransient = null,
-            EventHandler<RetryingEventArgs> retryingHandler = null)
+            RetryStrategy? retryStrategy = null,
+            Func<Exception, bool>? isTransient = null,
+            EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
             Guard.ArgumentNotNull(func, nameof(func));
 

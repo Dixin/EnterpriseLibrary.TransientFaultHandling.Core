@@ -13,7 +13,7 @@
     /// </summary>
     internal class AsyncExecution : AsyncExecution<bool>
     {
-        private static Task<bool> cachedBoolTask;
+        private static Task<bool>? cachedBoolTask;
 
         public AsyncExecution(Func<Task> taskAction, ShouldRetry shouldRetry, Func<Exception, bool> isTransient, Action<int, Exception, TimeSpan> onRetrying, bool fastFirstRetry, CancellationToken cancellationToken) : 
             base(() => StartAsGenericTask(taskAction), shouldRetry, isTransient, onRetrying, fastFirstRetry, cancellationToken)
@@ -47,15 +47,15 @@
 
             TaskCompletionSource<bool> taskCompletionSource = new();
             task.ContinueWith(
-                t =>
+                result =>
                 {
-                    if (t.IsFaulted)
+                    if (result.IsFaulted)
                     {
-                        taskCompletionSource.TrySetException(t.Exception.InnerExceptions);
+                        taskCompletionSource.TrySetException(result.Exception!.InnerExceptions);
                         return;
                     }
 
-                    if (t.IsCanceled)
+                    if (result.IsCanceled)
                     {
                         taskCompletionSource.TrySetCanceled();
                         return;
