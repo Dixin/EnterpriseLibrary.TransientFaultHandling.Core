@@ -1,9 +1,9 @@
-﻿#pragma warning disable
+﻿// https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/NullableAttributes.cs
 #define INTERNAL_NULLABLE_ATTRIBUTES
 
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4|| NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD2_0 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47 || NET471 || NET472 || NET48
 namespace System.Diagnostics.CodeAnalysis
 {
-#if NETSTANDARD1_0 || NETSTANDARD2_0 ||  NETCOREAPP2_0 ||  NETCOREAPP2_1 ||  NETCOREAPP2_2 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47 || NET471 || NET472 || NET48
     /// <summary>Specifies that null is allowed as an input even if the corresponding type disallows it.</summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property)]
 #if SYSTEM_PRIVATE_CORELIB
@@ -130,9 +130,7 @@ namespace System.Diagnostics.CodeAnalysis
         /// <summary>Gets the condition parameter value.</summary>
         public bool ParameterValue { get; }
     }
-#endif
 
-#if NETSTANDARD2_0 ||  NETCOREAPP2_0 ||  NETCOREAPP2_1 ||  NETCOREAPP2_2 || NETCOREAPP3_0 || NETCOREAPP3_1 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47 || NET471 || NET472 || NET48
     /// <summary>Specifies that the method or property will ensure that the listed field and property members have not-null values.</summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
 #if SYSTEM_PRIVATE_CORELIB
@@ -146,13 +144,13 @@ namespace System.Diagnostics.CodeAnalysis
         /// <param name="member">
         /// The field or property member that is promised to be not-null.
         /// </param>
-        public MemberNotNullAttribute(string member) => Members = new[] { member };
+        public MemberNotNullAttribute(string member) => this.Members = new[] { member };
 
         /// <summary>Initializes the attribute with the list of field and property members.</summary>
         /// <param name="members">
         /// The list of field and property members that are promised to be not-null.
         /// </param>
-        public MemberNotNullAttribute(params string[] members) => Members = members;
+        public MemberNotNullAttribute(params string[] members) => this.Members = members;
 
         /// <summary>Gets field or property member names.</summary>
         public string[] Members { get; }
@@ -176,8 +174,8 @@ namespace System.Diagnostics.CodeAnalysis
         /// </param>
         public MemberNotNullWhenAttribute(bool returnValue, string member)
         {
-            ReturnValue = returnValue;
-            Members = new[] { member };
+            this.ReturnValue = returnValue;
+            this.Members = new[] { member };
         }
 
         /// <summary>Initializes the attribute with the specified return value condition and list of field and property members.</summary>
@@ -189,8 +187,8 @@ namespace System.Diagnostics.CodeAnalysis
         /// </param>
         public MemberNotNullWhenAttribute(bool returnValue, params string[] members)
         {
-            ReturnValue = returnValue;
-            Members = members;
+            this.ReturnValue = returnValue;
+            this.Members = members;
         }
 
         /// <summary>Gets the return value condition.</summary>
@@ -199,5 +197,5 @@ namespace System.Diagnostics.CodeAnalysis
         /// <summary>Gets field or property member names.</summary>
         public string[] Members { get; }
     }
-#endif
 }
+#endif
