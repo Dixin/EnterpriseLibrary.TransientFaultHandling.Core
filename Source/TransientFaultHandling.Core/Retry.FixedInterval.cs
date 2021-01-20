@@ -17,7 +17,7 @@
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
         /// <returns>The result from the action.</returns>
         /// <exception cref="ArgumentNullException">func</exception>
-        public static TResult? FixedInterval<TResult>(
+        public static TResult FixedInterval<TResult>(
             Func<TResult> func,
             int? retryCount = null,
             Func<Exception, bool>? isTransient = null,

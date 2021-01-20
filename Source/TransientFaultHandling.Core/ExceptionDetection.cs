@@ -5,6 +5,7 @@
     /// <summary>
     /// Detects specific transient conditions.
     /// </summary>
+    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ErrorDetectionStrategy.")]
     public class ExceptionDetection : ITransientErrorDetectionStrategy
     {
         private readonly Func<Exception, bool> isTransient;
@@ -15,7 +16,7 @@
         /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
         public ExceptionDetection(Func<Exception, bool>? isTransient = null) =>
             this.isTransient = isTransient ?? (_ => true);
-
+        
         /// <summary>
         /// Determines whether the specified exception is transient.
         /// </summary>
@@ -28,6 +29,7 @@
     /// Detects specific transient exception.
     /// </summary>
     /// <typeparam name="TException">The type of the transient exception.</typeparam>
+    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ErrorDetectionStrategy<TException>.")]
     public class TransientDetection<TException> : ExceptionDetection
         where TException : Exception
     {

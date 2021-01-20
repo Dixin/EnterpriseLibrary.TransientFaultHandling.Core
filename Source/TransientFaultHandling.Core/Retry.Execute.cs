@@ -18,7 +18,7 @@
         /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
         /// <returns>The result from the action.</returns>
         /// <exception cref="ArgumentNullException">func</exception>
-        public static TResult? Execute<TResult>(
+        public static TResult Execute<TResult>(
             Func<TResult> func,
             RetryStrategy? retryStrategy = null,
             Func<Exception, bool>? isTransient = null,
