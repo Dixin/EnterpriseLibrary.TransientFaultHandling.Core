@@ -5,74 +5,44 @@
     /// <summary>
     /// Represents the options for <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryStrategy" />.
     /// </summary>
-    public class RetryStrategyOptions
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether the first retry attempt will be made immediately, whereas subsequent retries will remain subject to the retry interval.
-        /// </summary>
-        public bool FastFirstRetry { get; private set; }
-    }
+    public abstract record RetryStrategyOptions(bool FastFirstRetry);
 
     /// <summary>
     /// Represents the options for <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval" /> retry strategy.
     /// </summary>
-    public class FixedIntervalOptions : RetryStrategyOptions
+    public record FixedIntervalOptions(bool FastFirstRetry, int RetryCount, TimeSpan RetryInterval) : RetryStrategyOptions(FastFirstRetry)
     {
         /// <summary>
-        /// Gets the maximum number of retry attempts.
+        /// Initializes a new instance of the <see cref="FixedIntervalOptions" /> record. 
         /// </summary>
-        public int RetryCount { get; private set; }
-
-        /// <summary>
-        /// Gets the time interval between retries.
-        /// </summary>
-        public TimeSpan RetryInterval { get; private set; }
+        public FixedIntervalOptions() : this(true, default, default)
+        {
+        }
     }
 
     /// <summary>
     /// Represents the options for <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental" /> retry strategy.
     /// </summary>
-    public class IncrementalOptions : RetryStrategyOptions
+    public record IncrementalOptions(bool FastFirstRetry, int RetryCount, TimeSpan InitialInterval, TimeSpan Increment) : RetryStrategyOptions(FastFirstRetry)
     {
         /// <summary>
-        /// Gets the maximum number of retry attempts.
+        /// Initializes a new instance of the <see cref="IncrementalOptions" /> record. 
         /// </summary>
-        public int RetryCount { get; private set; }
-
-        /// <summary>
-        /// Gets the initial interval that will apply for the first retry.
-        /// </summary>
-        public TimeSpan InitialInterval { get; private set; }
-
-        /// <summary>
-        /// Gets the incremental time value that will be used to calculate the progressive delay between retries..
-        /// </summary>
-        public TimeSpan Increment { get; private set; }
+        public IncrementalOptions() : this(true, default, default, default)
+        {
+        }
     }
 
     /// <summary>
     /// Represents the options for <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff" /> retry strategy.
     /// </summary>
-    public class ExponentialBackoffOptions : RetryStrategyOptions
+    public record ExponentialBackoffOptions(bool FastFirstRetry, int RetryCount, TimeSpan MinBackOff, TimeSpan MaxBackOff, TimeSpan DeltaBackOff) : RetryStrategyOptions(FastFirstRetry)
     {
         /// <summary>
-        /// Gets the maximum number of retry attempts.
+        /// Initializes a new instance of the <see cref="ExponentialBackoffOptions" /> record. 
         /// </summary>
-        public int RetryCount { get; private set; }
-
-        /// <summary>
-        /// Gets the minimum backoff time.
-        /// </summary>
-        public TimeSpan MinBackOff { get; private set; }
-
-        /// <summary>
-        /// Gets the maximum backoff time.
-        /// </summary>
-        public TimeSpan MaxBackOff { get; private set; }
-
-        /// <summary>
-        /// Gets the value that will be used to calculate a random delta in the exponential delay between retries.
-        /// </summary>
-        public TimeSpan DeltaBackOff { get; private set; }
+        public ExponentialBackoffOptions() : this(true, default, default, default, default)
+        {
+        }
     }
 }
