@@ -31,9 +31,8 @@
         {
             Guard.ArgumentNotNull(retryStrategies, nameof(retryStrategies));
 
-            this.retryStrategies = retryStrategies.ToDictionary(retryStrategy => 
-                retryStrategy.Name 
-                ?? throw new ArgumentException(Resources.RetryStrategyNameCannotBeEmpty, nameof(retryStrategies)));
+            this.retryStrategies = retryStrategies.ToDictionary(retryStrategy =>
+                retryStrategy.Name ?? throw new ArgumentException(Resources.RetryStrategyNameCannotBeEmpty, nameof(retryStrategies)));
             this.DefaultRetryStrategyName = defaultRetryStrategyName;
             this.defaultRetryStrategiesMap = new Dictionary<string, RetryStrategy>();
             if (defaultRetryStrategyNamesMap is not null)
@@ -58,8 +57,7 @@
         /// Gets the default <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryManager" /> for the application.
         /// </summary>
         /// <remarks>You can update the default retry manager by calling the <see cref="M:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryManager.SetDefault(Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryManager,System.Boolean)" /> method.</remarks>
-        public static RetryManager Instance => 
-            defaultRetryManager ?? throw new InvalidOperationException(Resources.ExceptionRetryManagerNotSet);
+        public static RetryManager Instance => defaultRetryManager ?? throw new InvalidOperationException(Resources.ExceptionRetryManagerNotSet);
 
         /// <summary>
         /// Gets or sets the default retry strategy name.
@@ -96,7 +94,7 @@
         /// <param name="retryManager">The retry manager.</param>
         /// <param name="throwIfSet">true to throw an exception if the manager is already set; otherwise, false. Defaults to <see langword="true" />.</param>
         /// <exception cref="T:System.InvalidOperationException">The singleton is already set and <paramref name="throwIfSet" /> is true.</exception>
-        public static void SetDefault(RetryManager retryManager, bool throwIfSet = true)
+        public static void SetDefault(RetryManager? retryManager, bool throwIfSet = true)
         {
             if (defaultRetryManager is not null && throwIfSet && retryManager != defaultRetryManager)
             {
@@ -122,8 +120,39 @@
         /// <typeparam name="T">The type that implements the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> interface that is responsible for detecting transient conditions.</typeparam>
         /// <param name="retryStrategyName">The retry strategy name, as defined in the configuration.</param>
         /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
-        public virtual RetryPolicy<T> GetRetryPolicy<T>(string retryStrategyName) where T : ITransientErrorDetectionStrategy, new() =>
-            new(this.GetRetryStrategy(retryStrategyName));
+        public virtual RetryPolicy<T> GetRetryPolicy<T>(string retryStrategyName) where T : ITransientErrorDetectionStrategy, new()
+        {
+            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
+
+            return new RetryPolicy<T>(this.GetRetryStrategy(retryStrategyName));
+        }
+
+        /// <summary>
+        /// Returns a retry policy with the specified error detection strategy and the default retry strategy defined in the configuration. 
+        /// </summary>
+        /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
+        public virtual RetryPolicy GetRetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy)
+        {
+            Guard.ArgumentNotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
+
+            return new RetryPolicy(
+                errorDetectionStrategy,
+                this.GetRetryStrategy() ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.DefaultRetryStrategyNotFound, string.Empty)));
+        }
+
+        /// <summary>
+        /// Returns a retry policy with the specified error detection strategy and retry strategy.
+        /// </summary>
+        /// <param name="retryStrategyName">The retry strategy name, as defined in the configuration.</param>
+        /// <param name="errorDetectionStrategy">The <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> that is responsible for detecting transient conditions.</param>
+        /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
+        public virtual RetryPolicy GetRetryPolicy(string retryStrategyName, ITransientErrorDetectionStrategy errorDetectionStrategy)
+        {
+            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
+            Guard.ArgumentNotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
+
+            return new RetryPolicy(errorDetectionStrategy, this.GetRetryStrategy(retryStrategyName));
+        }
 
         /// <summary>
         /// Returns the default retry strategy defined in the configuration.
