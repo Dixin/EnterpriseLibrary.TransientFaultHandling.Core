@@ -1,13 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests</RootNamespace>
-
     <LangVersion>latest</LangVersion>
+    <nullable>enable</nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Source\TransientFaultHandling.Configuration.Core\TransientFaultHandling.Configuration.Core.csproj" />
+    <ProjectReference Include="..\..\Tools\TransientFaultHandling.TestSupport\TransientFaultHandling.TestSupport.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +37,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="app.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -8,13 +8,13 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class XmlConfigurationTests
+    public class RetryStrategyIniTests
     {
         [TestMethod]
-        public void XmlRetryStrategyTest()
+        public void RetryStrategyIniTest()
         {
             IConfiguration configuration = new ConfigurationBuilder()
-                .AddXmlFile("app.xml")
+                .AddIniFile("app.ini")
                 .Build();
 
             IDictionary<string, RetryStrategy> retryStrategies = configuration.GetRetryStrategies();

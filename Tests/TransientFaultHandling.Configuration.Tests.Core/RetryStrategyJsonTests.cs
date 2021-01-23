@@ -9,10 +9,10 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class JsonConfigurationTests
+    public class RetryStrategyJsonTests
     {
         [TestMethod]
-        public void JsonRetryStrategyTest()
+        public void RetryStrategyJsonTest()
         {
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile("app.json") // or AddXml("app.xml") or AddIni("app.ini")
