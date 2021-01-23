@@ -81,6 +81,15 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Propertie
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified argument {0} cannot be less than min value {1} or greater than max value {2}..
+        /// </summary>
+        internal static string ArgumentCannotBeOutOutRange {
+            get {
+                return ResourceManager.GetString("ArgumentCannotBeOutOutRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default retry strategy for technology {0}, named &apos;{1}&apos;, is not defined..
         /// </summary>
         internal static string DefaultRetryStrategyMappingNotFound {

@@ -24,7 +24,7 @@
             Func<Exception, bool>? isTransient = null,
             EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
-            Guard.ArgumentNotNull(func, nameof(func));
+            Argument.NotNull(func, nameof(func));
 
             return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAction(func);
         }
@@ -43,7 +43,7 @@
             Func<Exception, bool>? isTransient = null,
             EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
-            Guard.ArgumentNotNull(action, nameof(action));
+            Argument.NotNull(action, nameof(action));
 
             CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAction(action);
         }
@@ -64,7 +64,7 @@
             Func<Exception, bool>? isTransient = null,
             EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
-            Guard.ArgumentNotNull(func, nameof(func));
+            Argument.NotNull(func, nameof(func));
 
             return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func);
         }
@@ -84,7 +84,7 @@
             Func<Exception, bool>? isTransient = null,
             EventHandler<RetryingEventArgs>? retryingHandler = null)
         {
-            Guard.ArgumentNotNull(func, nameof(func));
+            Argument.NotNull(func, nameof(func));
 
             return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func);
         }

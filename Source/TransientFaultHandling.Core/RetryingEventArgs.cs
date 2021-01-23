@@ -30,11 +30,9 @@
         /// <param name="lastException">The exception that caused the retry conditions to occur.</param>
         public RetryingEventArgs(int currentRetryCount, TimeSpan delay, Exception lastException)
         {
-            Guard.ArgumentNotNull(lastException, nameof(lastException));
-
             this.CurrentRetryCount = currentRetryCount;
             this.Delay = delay;
-            this.LastException = lastException;
+            this.LastException = Argument.NotNull(lastException, nameof(lastException));
         }
     }
 }

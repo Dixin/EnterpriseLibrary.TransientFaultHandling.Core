@@ -6,9 +6,9 @@
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
 
     /// <summary>
-    /// Implements the common guard methods.
+    /// Provides the argument validation methods.
     /// </summary>
-    internal static class Guard
+    internal static class Argument
     {
         /// <summary>
         /// Checks a string argument to ensure that it isn't null or empty.
@@ -16,15 +16,14 @@
         /// <param name="argumentValue">The argument value to check.</param>
         /// <param name="argumentName">The name of the argument.</param>
         /// <returns>The return value should be ignored. It is intended to be used only when validating arguments during instance creation (for example, when calling the base constructor).</returns>
-        public static bool ArgumentNotNullOrEmptyString([NotNull] string? argumentValue, string argumentName)
+        public static string NotNullOrEmpty([NotNull] string? argumentValue, string argumentName)
         {
-            ArgumentNotNull(argumentValue, argumentName);
-            if (argumentValue.Length == 0)
+            if (string.IsNullOrEmpty(argumentValue))
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.StringCannotBeEmpty, argumentName));
             }
 
-            return true;
+            return argumentValue;
         }
 
         /// <summary>
@@ -33,14 +32,14 @@
         /// <param name="argumentValue">The argument value to check.</param>
         /// <param name="argumentName">The name of the argument.</param>
         /// <returns>The return value should be ignored. It is intended to be used only when validating arguments during instance creation (for example, when calling the base constructor).</returns>
-        public static bool ArgumentNotNull<T>([NotNull] T? argumentValue, string argumentName) where T : class
+        public static T NotNull<T>([NotNull] T? argumentValue, string argumentName) where T : class
         {
             if (argumentValue is null)
             {
                 throw new ArgumentNullException(argumentName);
             }
 
-            return true;
+            return argumentValue;
         }
 
         /// <summary>
@@ -48,7 +47,7 @@
         /// </summary>
         /// <param name="argumentValue">The <see cref="T:System.Int32" /> value of the argument.</param>
         /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-        public static void ArgumentNotNegativeValue(int argumentValue, string argumentName)
+        public static int NotNegative(int argumentValue, string argumentName)
         {
             if (argumentValue < 0)
             {
@@ -57,6 +56,8 @@
                     argumentValue,
                     string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeNegative, argumentName));
             }
+
+            return argumentValue;
         }
 
         /// <summary>
@@ -64,7 +65,7 @@
         /// </summary>
         /// <param name="argumentValue">The <see cref="T:System.Int64" /> value of the argument.</param>
         /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-        public static void ArgumentNotNegativeValue(long argumentValue, string argumentName)
+        public static long NotNegative(long argumentValue, string argumentName)
         {
             if (argumentValue < 0L)
             {
@@ -73,6 +74,8 @@
                     argumentValue,
                     string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeNegative, argumentName));
             }
+
+            return argumentValue;
         }
 
         /// <summary>
@@ -81,7 +84,7 @@
         /// <param name="argumentValue">The <see cref="T:System.Double" /> value of the argument.</param>
         /// <param name="ceilingValue">The <see cref="T:System.Double" /> ceiling value of the argument.</param>
         /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-        public static void ArgumentNotGreaterThan(double argumentValue, double ceilingValue, string argumentName)
+        public static double NotGreaterThan(double argumentValue, double ceilingValue, string argumentName)
         {
             if (argumentValue > ceilingValue)
             {
@@ -90,6 +93,46 @@
                     argumentValue,
                     string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeGreaterThanBaseline, argumentName, ceilingValue));
             }
+
+            return argumentValue;
+        }
+
+        /// <summary>
+        /// Checks an argument to ensure that its 64-bit signed value isn't negative.
+        /// </summary>
+        /// <param name="argumentValue">The <see cref="T:System.TimeSpan" /> value of the argument.</param>
+        /// <param name="minValue">The min value.</param>
+        /// <param name="maxValue">The max value.</param>
+        /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
+        public static TimeSpan InRange(TimeSpan argumentValue, TimeSpan minValue, TimeSpan maxValue, string argumentName)
+        {
+            if (argumentValue < minValue || argumentValue > maxValue)
+            {
+                throw new ArgumentOutOfRangeException(
+                    argumentName,
+                    argumentValue,
+                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeOutOutRange, argumentName, minValue, maxValue));
+            }
+
+            return argumentValue;
+        }
+
+        /// <summary>
+        /// Checks an argument to ensure that its 64-bit signed value isn't negative.
+        /// </summary>
+        /// <param name="argumentValue">The <see cref="T:System.TimeSpan" /> value of the argument.</param>
+        /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
+        public static TimeSpan NotNegative(TimeSpan argumentValue, string argumentName)
+        {
+            if (argumentValue < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(
+                    argumentName,
+                    argumentValue,
+                    string.Format(CultureInfo.CurrentCulture, Resources.ArgumentCannotBeNegative, argumentName));
+            }
+
+            return argumentValue;
         }
     }
 }

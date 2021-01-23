@@ -26,8 +26,8 @@
         public static RetryManager CreateDefault(
             string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
         {
-            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
-            Guard.ArgumentNotNullOrEmptyString(configurationKey, nameof(configurationKey));
+            Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile));
+            Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey));
 
             RetryManager manager = RetryConfiguration.GetRetryManager(configurationFile, configurationKey, getCustomRetryStrategy);
             RetryManager.SetDefault(manager);
@@ -40,13 +40,9 @@
         /// <returns>The retry policy for SQL connections with the corresponding default strategy (or the default strategy if no retry strategy definition for SQL connections was found).</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "As designed")]
         public static RetryPolicy GetDefaultSqlConnectionRetryPolicy(
-            string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
-        {
-            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
-            Guard.ArgumentNotNullOrEmptyString(configurationKey, nameof(configurationKey));
-
-            return GetOrCreateRetryManager(configurationFile, configurationKey, getCustomRetryStrategy).GetDefaultSqlConnectionRetryPolicy();
-        }
+            string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
+            GetOrCreateRetryManager(Argument.NotNullOrEmpty(Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey)), nameof(configurationFile)), configurationKey, getCustomRetryStrategy)
+                .GetDefaultSqlConnectionRetryPolicy();
 
         /// <summary>
         /// Returns the default retry policy dedicated to handling transient conditions with SQL commands.
@@ -54,13 +50,9 @@
         /// <returns>The retry policy for SQL commands with the corresponding default strategy (or the default strategy if no retry strategy definition for SQL commands was found).</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "As designed")]
         public static RetryPolicy GetDefaultSqlCommandRetryPolicy(
-            string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
-        {
-            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
-            Guard.ArgumentNotNullOrEmptyString(configurationKey, nameof(configurationKey));
-
-            return GetOrCreateRetryManager(configurationFile, configurationKey, getCustomRetryStrategy).GetDefaultSqlCommandRetryPolicy();
-        }
+            string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
+            GetOrCreateRetryManager(Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile)), Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey)), getCustomRetryStrategy)
+                .GetDefaultSqlCommandRetryPolicy();
 
         ///// <summary>
         ///// Returns the default retry policy dedicated to handling transient conditions with Windows Azure Service Bus.
@@ -100,13 +92,9 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public static RetryPolicy GetRetryPolicy<T>(
             string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) 
-            where T : ITransientErrorDetectionStrategy, new()
-        {
-            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
-            Guard.ArgumentNotNullOrEmptyString(configurationKey, nameof(configurationKey));
-
-            return GetOrCreateRetryManager(configurationFile, configurationKey, getCustomRetryStrategy).GetRetryPolicy<T>();
-        }
+            where T : ITransientErrorDetectionStrategy, new() =>
+            GetOrCreateRetryManager(Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile)), Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey)), getCustomRetryStrategy)
+                .GetRetryPolicy<T>();
 
         /// <summary>
         /// Returns a retry policy with the specified error detection strategy and the default retry strategy defined in the configuration. 
@@ -122,9 +110,9 @@
             string configurationKey = nameof(RetryManager), 
             Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
         {
-            Guard.ArgumentNotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
-            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
-            Guard.ArgumentNotNullOrEmptyString(configurationKey, nameof(configurationKey));
+            Argument.NotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
+            Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile));
+            Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey));
 
             return GetOrCreateRetryManager(configurationFile, configurationKey, getCustomRetryStrategy).GetRetryPolicy(errorDetectionStrategy);
         }
@@ -145,9 +133,9 @@
             string configurationKey = nameof(RetryManager), 
             Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) where T : ITransientErrorDetectionStrategy, new()
         {
-            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
-            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
-            Guard.ArgumentNotNullOrEmptyString(configurationKey, nameof(configurationKey));
+            Argument.NotNullOrEmpty(retryStrategyName, nameof(retryStrategyName));
+            Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile));
+            Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey));
 
             return GetOrCreateRetryManager(configurationFile, configurationKey, getCustomRetryStrategy).GetRetryPolicy<T>(retryStrategyName);
         }
@@ -169,10 +157,10 @@
             string configurationKey = nameof(RetryManager), 
             Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
         {
-            Guard.ArgumentNotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
-            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
-            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
-            Guard.ArgumentNotNullOrEmptyString(configurationKey, nameof(configurationKey));
+            Argument.NotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
+            Argument.NotNullOrEmpty(retryStrategyName, nameof(retryStrategyName));
+            Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile));
+            Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey));
 
             return GetOrCreateRetryManager(configurationFile, configurationKey, getCustomRetryStrategy).GetRetryPolicy(retryStrategyName, errorDetectionStrategy);
         }

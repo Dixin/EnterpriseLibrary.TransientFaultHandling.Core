@@ -126,4 +126,7 @@
   <data name="ConfigurationSectionNotExist" xml:space="preserve">
     <value>The specified configuration section {0} does not exist.</value>
   </data>
+  <data name="RetryStrategySectionNotFoundInRetryManager" xml:space="preserve">
+    <value>The section for retry strategies cannot be found in the retry manager options</value>
+  </data>
 </root>

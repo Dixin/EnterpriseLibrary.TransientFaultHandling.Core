@@ -3,15 +3,25 @@
     using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
 
+    /// <summary>
+    /// Provides the extension methods for <see cref="RetryManagerOptions"/> class.
+    /// </summary>
     public static class RetryManagerOptionsExtensions
     {
+        /// <summary>
+        /// Converts options to retry manager.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="getCustomRetryStrategy">The function to get custom retry strategy from options.</param>
+        /// <returns></returns>
         public static RetryManager ToRetryManager(this RetryManagerOptions options, Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
         {
-            Guard.ArgumentNotNull(options, nameof(options));
+            Argument.NotNull(options, nameof(options));
             if (options.RetryStrategy is null || !options.RetryStrategy.Exists())
             {
-                throw new ArgumentException("The retry manager options does not have the section for retry strategies", nameof(options));
+                throw new ArgumentException(Resources.RetryStrategySectionNotFoundInRetryManager, nameof(options));
             }
 
             Dictionary<string, string>? defaultStrategies = new();

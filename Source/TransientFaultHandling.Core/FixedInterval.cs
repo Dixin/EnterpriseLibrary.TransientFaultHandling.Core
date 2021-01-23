@@ -57,11 +57,8 @@
         public FixedInterval(string? name, int retryCount, TimeSpan retryInterval, bool firstFastRetry) :
             base(name, firstFastRetry)
         {
-            Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
-            Guard.ArgumentNotNegativeValue(retryInterval.Ticks, nameof(retryInterval));
-
-            this.retryCount = retryCount;
-            this.retryInterval = retryInterval;
+            this.retryCount = Argument.NotNegative(retryCount, nameof(retryCount));
+            this.retryInterval = Argument.NotNegative(retryInterval, nameof(retryInterval)); ;
         }
 
         /// <summary>

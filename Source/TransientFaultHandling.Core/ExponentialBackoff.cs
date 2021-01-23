@@ -60,16 +60,10 @@
         public ExponentialBackoff(string? name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, bool firstFastRetry) : 
             base(name, firstFastRetry)
         {
-            Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
-            Guard.ArgumentNotNegativeValue(minBackoff.Ticks, nameof(minBackoff));
-            Guard.ArgumentNotNegativeValue(maxBackoff.Ticks, nameof(maxBackoff));
-            Guard.ArgumentNotNegativeValue(deltaBackoff.Ticks, nameof(deltaBackoff));
-            Guard.ArgumentNotGreaterThan(minBackoff.TotalMilliseconds, maxBackoff.TotalMilliseconds, nameof(minBackoff));
-
-            this.retryCount = retryCount;
-            this.minBackoff = minBackoff;
-            this.maxBackoff = maxBackoff;
-            this.deltaBackoff = deltaBackoff;
+            this.retryCount = Argument.NotNegative(retryCount, nameof(retryCount));
+            this.minBackoff = Argument.InRange(minBackoff, TimeSpan.Zero, maxBackoff, nameof(minBackoff));
+            this.maxBackoff = Argument.NotNegative(maxBackoff, nameof(maxBackoff));
+            this.deltaBackoff = Argument.NotNegative(deltaBackoff, nameof(deltaBackoff));
         }
 
         /// <summary>

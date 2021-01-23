@@ -25,16 +25,12 @@
             EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
-            bool? firstFastRetry = null)
-        {
-            Guard.ArgumentNotNull(func, nameof(func));
-
-            return Execute(
-                func,
+            bool? firstFastRetry = null) =>
+            Execute(
+                Argument.NotNull(func, nameof(func)),
                 WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
                 isTransient,
                 retryingHandler);
-        }
 
         /// <summary>
         /// Repetitively executes the specified action while it satisfies the specified retry strategy.
@@ -54,16 +50,12 @@
             EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
-            bool? firstFastRetry = null)
-        {
-            Guard.ArgumentNotNull(action, nameof(action));
-
+            bool? firstFastRetry = null) =>
             Execute(
-                action,
+                Argument.NotNull(action, nameof(action)),
                 WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
                 isTransient,
                 retryingHandler);
-        }
 
         /// <summary>
         /// Repeatedly executes the specified asynchronous function while it satisfies the current retry policy.
@@ -85,16 +77,12 @@
             EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
-            bool? firstFastRetry = null)
-        {
-            Guard.ArgumentNotNull(func, nameof(func));
-
-            return ExecuteAsync(
-                func,
+            bool? firstFastRetry = null) =>
+            ExecuteAsync(
+                Argument.NotNull(func, nameof(func)),
                 WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
                 isTransient,
                 retryingHandler);
-        }
 
         /// <summary>
         /// Repeatedly executes the specified asynchronous function while it satisfies the current retry policy.
@@ -115,16 +103,12 @@
             EventHandler<RetryingEventArgs>? retryingHandler = null,
             TimeSpan? initialInterval = null,
             TimeSpan? increment = null,
-            bool? firstFastRetry = null)
-        {
-            Guard.ArgumentNotNull(func, nameof(func));
-
-            return ExecuteAsync(
-                func,
+            bool? firstFastRetry = null) =>
+            ExecuteAsync(
+                Argument.NotNull(func, nameof(func)),
                 WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
                 isTransient,
                 retryingHandler);
-        }
 
         /// <summary>
         /// Create a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental" /> class. 

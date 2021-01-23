@@ -28,8 +28,8 @@
             string key = RetryConfiguration.DefaultConfigurationKeyRetryStrategy,
             Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
         {
-            Guard.ArgumentNotNull(configuration, nameof(configuration));
-            Guard.ArgumentNotNullOrEmptyString(key, nameof(key));
+            Argument.NotNull(configuration, nameof(configuration));
+            Argument.NotNullOrEmpty(key, nameof(key));
 
             IConfigurationSection section = configuration.GetSection(key);
             return section.Exists()
@@ -47,7 +47,7 @@
             this IConfigurationSection configurationSection,
             Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
         {
-            Guard.ArgumentNotNull(configurationSection, nameof(configurationSection));
+            Argument.NotNull(configurationSection, nameof(configurationSection));
             if (!configurationSection.Exists())
             {
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
@@ -65,21 +65,21 @@
                         && !incrementalProperties.All(options.HasKey)
                         && !exponentialBackoffProperties.All(options.HasKey))
                     {
-                        return options.Get<FixedIntervalOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).Strategy(options.Key);
+                        return options.Get<FixedIntervalOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToFixedInterval(options.Key);
                     }
 
                     if (incrementalProperties.All(options.HasKey)
                         && !fixedIntervalProperties.All(options.HasKey)
                         && !exponentialBackoffProperties.All(options.HasKey))
                     {
-                        return options.Get<IncrementalOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).Strategy(options.Key);
+                        return options.Get<IncrementalOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToIncremental(options.Key);
                     }
 
                     if (exponentialBackoffProperties.All(options.HasKey)
                         && !incrementalProperties.All(options.HasKey)
                         && !fixedIntervalProperties.All(options.HasKey))
                     {
-                        return options.Get<ExponentialBackoffOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).Strategy(options.Key);
+                        return options.Get<ExponentialBackoffOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToExponentialBackoff(options.Key);
                     }
 
                     if (getCustomRetryStrategy is not null)
@@ -105,8 +105,8 @@
             Func<IConfigurationSection, TRetryStrategy>? getCustomRetryStrategy = null)
             where TRetryStrategy : RetryStrategy
         {
-            Guard.ArgumentNotNull(configuration, nameof(configuration));
-            Guard.ArgumentNotNullOrEmptyString(key, nameof(key));
+            Argument.NotNull(configuration, nameof(configuration));
+            Argument.NotNullOrEmpty(key, nameof(key));
 
             Func<IConfigurationSection, RetryStrategy>? covariant = getCustomRetryStrategy;
             return GetRetryStrategies(configuration, key, covariant)
@@ -125,8 +125,8 @@
             string key = RetryConfiguration.DefaultConfigurationKeyRetryManager,
             Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
         {
-            Guard.ArgumentNotNull(configuration, nameof(configuration));
-            Guard.ArgumentNotNullOrEmptyString(key, nameof(key));
+            Argument.NotNull(configuration, nameof(configuration));
+            Argument.NotNullOrEmpty(key, nameof(key));
 
             IConfigurationSection section = configuration.GetSection(key);
             return section.Exists()
@@ -142,13 +142,9 @@
         /// <returns>An instance of <see cref="RetryManager"/> type.</returns>
         public static RetryManager GetRetryManager(
             this IConfigurationSection configurationSection,
-            Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
-        {
-            Guard.ArgumentNotNull(configurationSection, nameof(configurationSection));
-
-            return configurationSection.Exists()
+            Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
+            Argument.NotNull(configurationSection, nameof(configurationSection)).Exists()
                 ? configurationSection.Get<RetryManagerOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToRetryManager(getCustomRetryStrategy)
                 : throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
-        }
     }
 }

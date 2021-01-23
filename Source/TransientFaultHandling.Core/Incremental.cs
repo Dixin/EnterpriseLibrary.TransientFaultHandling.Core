@@ -51,13 +51,9 @@
         /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
         public Incremental(string? name, int retryCount, TimeSpan initialInterval, TimeSpan increment, bool firstFastRetry) : base(name, firstFastRetry)
         {
-            Guard.ArgumentNotNegativeValue(retryCount, nameof(retryCount));
-            Guard.ArgumentNotNegativeValue(initialInterval.Ticks, nameof(initialInterval));
-            Guard.ArgumentNotNegativeValue(increment.Ticks, nameof(increment));
-
-            this.retryCount = retryCount;
-            this.initialInterval = initialInterval;
-            this.increment = increment;
+            this.retryCount = Argument.NotNegative(retryCount, nameof(retryCount)); ;
+            this.initialInterval = Argument.NotNegative(initialInterval, nameof(initialInterval)); ;
+            this.increment = Argument.NotNegative(increment, nameof(increment)); ;
         }
 
         /// <summary>

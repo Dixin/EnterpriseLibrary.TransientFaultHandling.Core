@@ -29,9 +29,7 @@
         /// <param name="defaultRetryStrategyNamesMap">The names of the default strategies for different technologies.</param>
         public RetryManager(IEnumerable<RetryStrategy> retryStrategies, string? defaultRetryStrategyName = null, IDictionary<string, string>? defaultRetryStrategyNamesMap = null)
         {
-            Guard.ArgumentNotNull(retryStrategies, nameof(retryStrategies));
-
-            this.retryStrategies = retryStrategies.ToDictionary(retryStrategy =>
+            this.retryStrategies = Argument.NotNull(retryStrategies, nameof(retryStrategies)).ToDictionary(retryStrategy =>
                 retryStrategy.Name ?? throw new ArgumentException(Resources.RetryStrategyNameCannotBeEmpty, nameof(retryStrategies)));
             this.DefaultRetryStrategyName = defaultRetryStrategyName;
             this.defaultRetryStrategiesMap = new Dictionary<string, RetryStrategy>();
@@ -120,25 +118,17 @@
         /// <typeparam name="T">The type that implements the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> interface that is responsible for detecting transient conditions.</typeparam>
         /// <param name="retryStrategyName">The retry strategy name, as defined in the configuration.</param>
         /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
-        public virtual RetryPolicy<T> GetRetryPolicy<T>(string retryStrategyName) where T : ITransientErrorDetectionStrategy, new()
-        {
-            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
-
-            return new RetryPolicy<T>(this.GetRetryStrategy(retryStrategyName));
-        }
+        public virtual RetryPolicy<T> GetRetryPolicy<T>(string retryStrategyName) where T : ITransientErrorDetectionStrategy, new() => 
+            new (this.GetRetryStrategy(Argument.NotNullOrEmpty(retryStrategyName, nameof(retryStrategyName))));
 
         /// <summary>
         /// Returns a retry policy with the specified error detection strategy and the default retry strategy defined in the configuration. 
         /// </summary>
         /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
-        public virtual RetryPolicy GetRetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy)
-        {
-            Guard.ArgumentNotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
-
-            return new RetryPolicy(
-                errorDetectionStrategy,
+        public virtual RetryPolicy GetRetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy) =>
+            new RetryPolicy(
+                Argument.NotNull(errorDetectionStrategy, nameof(errorDetectionStrategy)),
                 this.GetRetryStrategy() ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.DefaultRetryStrategyNotFound, string.Empty)));
-        }
 
         /// <summary>
         /// Returns a retry policy with the specified error detection strategy and retry strategy.
@@ -148,8 +138,8 @@
         /// <returns>A new retry policy with the specified error detection strategy and the default retry strategy defined in the configuration.</returns>
         public virtual RetryPolicy GetRetryPolicy(string retryStrategyName, ITransientErrorDetectionStrategy errorDetectionStrategy)
         {
-            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
-            Guard.ArgumentNotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
+            Argument.NotNullOrEmpty(retryStrategyName, nameof(retryStrategyName));
+            Argument.NotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
 
             return new RetryPolicy(errorDetectionStrategy, this.GetRetryStrategy(retryStrategyName));
         }
@@ -167,9 +157,7 @@
         /// <returns>The retry strategy that matches the specified name.</returns>
         public virtual RetryStrategy GetRetryStrategy(string retryStrategyName)
         {
-            Guard.ArgumentNotNullOrEmptyString(retryStrategyName, nameof(retryStrategyName));
-
-            if (!this.retryStrategies.TryGetValue(retryStrategyName, out RetryStrategy? result))
+            if (!this.retryStrategies.TryGetValue(Argument.NotNullOrEmpty(retryStrategyName, nameof(retryStrategyName)), out RetryStrategy? result))
             {
                 throw new ArgumentOutOfRangeException(
                     string.Format(CultureInfo.CurrentCulture, Resources.RetryStrategyNotFound, retryStrategyName));
@@ -183,14 +171,10 @@
         /// </summary>
         /// <param name="technology">The technology to get the default retry strategy for.</param>
         /// <returns>The retry strategy for the specified technology.</returns>
-        public virtual RetryStrategy GetDefaultRetryStrategy(string technology)
-        {
-            Guard.ArgumentNotNullOrEmptyString(technology, nameof(technology));
-
-            return this.defaultRetryStrategiesMap.TryGetValue(technology, out RetryStrategy? retryStrategy)
+        public virtual RetryStrategy GetDefaultRetryStrategy(string technology) =>
+            this.defaultRetryStrategiesMap.TryGetValue(Argument.NotNullOrEmpty(technology, nameof(technology)), out RetryStrategy? retryStrategy)
                 ? retryStrategy
                 : this.defaultStrategy ?? throw new ArgumentOutOfRangeException(
                     string.Format(CultureInfo.CurrentCulture, Resources.DefaultRetryStrategyNotFound, technology));
-        }
     }
 }

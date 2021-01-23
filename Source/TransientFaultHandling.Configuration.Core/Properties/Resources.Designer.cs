@@ -87,5 +87,14 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Propertie
                 return ResourceManager.GetString("ConfigurationSectionNotExist", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The section for retry strategies cannot be found in the retry manager options.
+        /// </summary>
+        internal static string RetryStrategySectionNotFoundInRetryManager {
+            get {
+                return ResourceManager.GetString("RetryStrategySectionNotFoundInRetryManager", resourceCulture);
+            }
+        }
     }
 }
