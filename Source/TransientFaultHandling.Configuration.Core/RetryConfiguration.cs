@@ -63,8 +63,13 @@
             return GetConfiguration(configurationFile).GetRetryManager(configurationKey, getCustomRetryStrategy);
         }
 
-        private static IConfiguration GetConfiguration(string configurationFile = DefaultConfigurationFile)
+        /// <summary>Gets the configuration from the specified file.</summary>
+        /// <param name="configurationFile">The specified configuration file.</param>
+        /// <returns>The configuration.</returns>
+        public static IConfiguration GetConfiguration(string configurationFile = DefaultConfigurationFile)
         {
+            Guard.ArgumentNotNullOrEmptyString(configurationFile, nameof(configurationFile));
+
             IConfigurationBuilder builder = new ConfigurationBuilder();
             builder = Path.GetExtension(configurationFile).ToUpperInvariant() switch
             {
