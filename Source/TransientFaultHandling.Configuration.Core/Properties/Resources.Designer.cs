@@ -80,6 +80,15 @@ namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Propertie
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configuration section {0} has invalid retry strategy properties..
+        /// </summary>
+        internal static string ConfigurationSectionHasInvalidRetryStrategy {
+            get {
+                return ResourceManager.GetString("ConfigurationSectionHasInvalidRetryStrategy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified configuration section {0} does not exist..
         /// </summary>
         internal static string ConfigurationSectionNotExist {

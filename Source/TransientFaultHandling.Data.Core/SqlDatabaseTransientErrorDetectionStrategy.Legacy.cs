@@ -1,7 +1,9 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
     using System;
-    using System.Data;
+#if NETSTANDARD2_1 || NET5_0
+    using System.Data.Entity.Core;
+#endif
     using System.Data.SqlClient;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
@@ -76,11 +78,13 @@
         /// </summary>
         /// <param name="ex">The exception object to be verified.</param>
         /// <returns>true if the specified exception is considered as transient; otherwise, false.</returns>
-        public bool IsTransient(Exception ex)
+        public bool IsTransient(Exception? ex)
         {
-            if (ex is not null)
+            switch (ex)
             {
-                if (ex is SqlException sqlException)
+                case null:
+                    return false;
+                case SqlException sqlException:
                 {
                     // Enumerate through all errors found in the exception.
                     foreach (SqlError err in sqlException.Errors)
@@ -139,6 +143,24 @@
                             // SQL Error Code: 40540
                             // The service has encountered an error processing your request. Please try again.
                             case 40540:
+                            // SQL Error Code: 40544
+                            // The database has reached its size quota. Partition or delete data, drop indexes, or consult the documentation for possible resolutions.
+                            case 40544:
+                            // SQL Error Code: 40549
+                            // Session is terminated because you have a long-running transaction. Try shortening your transaction.
+                            case 40549:
+                            // SQL Error Code: 40550
+                            // The session has been terminated because it has acquired too many locks. Try reading or modifying fewer rows in a single transaction.
+                            case 40550:
+                            // SQL Error Code: 40551
+                            // The session has been terminated because of excessive TEMPDB usage. Try modifying your query to reduce the temporary table space usage.
+                            case 40551:
+                            // SQL Error Code: 40552
+                            // The session has been terminated because of excessive transaction log space usage. Try modifying fewer rows in a single transaction.
+                            case 40552:
+                            // SQL Error Code: 40553
+                            // The session has been terminated because of excessive memory usage. Try modifying your query to process fewer rows.
+                            case 40553:
                             // SQL Error Code: 40613
                             // Database XXXX on server YYYY is not currently available. Please retry the connection later. If the problem persists, contact customer 
                             // support, and provide them the session tracing ID of ZZZZZ.
@@ -162,18 +184,15 @@
                                 return true;
                         }
                     }
+
+                    break;
                 }
-                else if (ex is TimeoutException)
-                {
+                case TimeoutException:
                     return true;
-                }
-                else
-                {
-                    if (ex is EntityException entityException)
-                    {
-                        return this.IsTransient(entityException.InnerException);
-                    }
-                }
+#if NETSTANDARD2_1 || NET5_0
+                case EntityException entityException:
+                    return this.IsTransient(entityException.InnerException);
+#endif
             }
 
             return false;

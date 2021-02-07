@@ -1,7 +1,9 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
     using System;
-    using System.Data;
+#if NETSTANDARD2_1 || NET5_0
+    using System.Data.Entity.Core;
+#endif
     using Microsoft.Data.SqlClient;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
@@ -75,11 +77,13 @@
         /// </summary>
         /// <param name="ex">The exception object to be verified.</param>
         /// <returns>true if the specified exception is considered as transient; otherwise, false.</returns>
-        public bool IsTransient(Exception ex)
+        public bool IsTransient(Exception? ex)
         {
-            if (ex is not null)
+            switch (ex)
             {
-                if (ex is SqlException sqlException)
+                case null:
+                    return false;
+                case SqlException sqlException:
                 {
                     // Enumerate through all errors found in the exception.
                     foreach (SqlError err in sqlException.Errors)
@@ -179,18 +183,15 @@
                                 return true;
                         }
                     }
+
+                    break;
                 }
-                else if (ex is TimeoutException)
-                {
+                case TimeoutException:
                     return true;
-                }
-                else
-                {
-                    if (ex is EntityException entityException)
-                    {
-                        return this.IsTransient(entityException.InnerException);
-                    }
-                }
+#if NETSTANDARD2_1 || NET5_0
+                case EntityException entityException:
+                    return this.IsTransient(entityException.InnerException);
+#endif
             }
 
             return false;
@@ -220,45 +221,5 @@ namespace Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandl
         /// <param name="ex">The exception object to be verified.</param>
         /// <returns>true if the specified exception is considered transient; otherwise, false.</returns>
         public bool IsTransient(Exception ex) => this.inner.IsTransient(ex);
-    }
-}
-
-namespace System.Data
-{
-    using System.Runtime.Serialization;
-    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;
-
-    /// <summary>Represents Entity Framework-related errors that occur in the <see langword="EntityClient" /> namespace. The <see langword="EntityException" /> is the base class for all Entity Framework exceptions thrown by the <see langword="EntityClient" />.</summary>
-    [Serializable]
-    public class EntityException : DataException
-    {
-        /// <summary>Initializes a new instance of the <see cref="T:System.Data.EntityException" /> class.</summary>
-        public EntityException()
-          : base(Resources.EntityClient_ProviderGeneralError)
-        {
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="T:System.Data.EntityException" /> class.</summary>
-        /// <param name="message">The message that describes the error.</param>
-        public EntityException(string message)
-          : base(message)
-        {
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="T:System.Data.EntityException" /> class.</summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that caused the current exception, or a <see langword="null" /> reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
-        public EntityException(string message, Exception innerException)
-          : base(message, innerException)
-        {
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="T:System.Data.EntityException" /> class.</summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected EntityException(SerializationInfo info, StreamingContext context)
-          : base(info, context)
-        {
-        }
     }
 }

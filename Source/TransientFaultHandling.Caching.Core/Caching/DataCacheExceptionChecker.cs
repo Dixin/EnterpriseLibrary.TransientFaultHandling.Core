@@ -18,8 +18,8 @@
         // PublicKeyToken = 31bf3856ad364e35
         private static readonly byte[] CachePublicKeyToken = { 0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35 };
 
-        private static Type dataCacheExceptionType;
-        private static Func<Exception, int> getErrorCode;
+        private static Type? dataCacheExceptionType;
+        private static Func<Exception, int>? getErrorCode;
 
         private static readonly int[] ErrorCodes =
         {
@@ -38,7 +38,7 @@
         /// <see langword="false"/> if the exception is of type DataCacheException and is not transient;
         /// <see langword="null"/> if the exception is not of type DataCacheException.
         /// </returns>
-        public static bool? IsTransientDataCacheException(Exception ex)
+        public static bool? IsTransientDataCacheException(Exception? ex)
         {
             if (ex is null)
             {
@@ -56,7 +56,7 @@
 
             if (dataCacheExceptionType is not null && dataCacheExceptionType.GetTypeInfo().IsInstanceOfType(ex))
             {
-                return ErrorCodes.Contains(getErrorCode(ex));
+                return ErrorCodes.Contains(getErrorCode!(ex));
             }
 
             return null;
@@ -71,7 +71,7 @@
             {
                 CheckIsCacheAssembly(type.GetTypeInfo().Assembly);
 
-                PropertyInfo errorCodeProperty = type.GetTypeInfo().GetProperty("ErrorCode");
+                PropertyInfo? errorCodeProperty = type.GetTypeInfo().GetProperty("ErrorCode");
                 if (errorCodeProperty is null || errorCodeProperty.PropertyType != typeof(int))
                 {
                     throw new InvalidOperationException(Resources.TypeMismatchException);
@@ -99,7 +99,7 @@
             AssemblyName assemblyName = assembly.GetName();
             if (assemblyName?.Name == "Microsoft.ApplicationServer.Caching.Core")
             {
-                byte[] token = assemblyName.GetPublicKeyToken();
+                byte[]? token = assemblyName.GetPublicKeyToken();
                 if (token is not null && CachePublicKeyToken.SequenceEqual(token))
                 {
                     return;

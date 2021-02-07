@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests</RootNamespace>
+    <nullable>enable</nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\TransientFaultHandling.Configuration.Core\TransientFaultHandling.Configuration.Core.csproj" />
+    <ProjectReference Include="..\..\Source\TransientFaultHandling.Core\TransientFaultHandling.Core.csproj" />
+    <ProjectReference Include="..\..\Source\TransientFaultHandling.Data.Core\TransientFaultHandling.Data.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

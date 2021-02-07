@@ -135,7 +135,7 @@
         /// <summary>
         /// Maintains a collection of key/value pairs where a key is the resource type and a value is the type of throttling applied to the given resource type.
         /// </summary>
-        private readonly IList<Tuple<ThrottledResourceType, ThrottlingType>> throttledResources = new List<Tuple<ThrottledResourceType, ThrottlingType>>(9);
+        private readonly IList<(ThrottledResourceType ThrottledResource, ThrottlingType Throttling)> throttledResources = new List<(ThrottledResourceType, ThrottlingType)>(9);
 
         /// <summary>
         /// Provides a compiled regular expression used to extract the reason code from the error message.
@@ -150,7 +150,7 @@
             get
             {
                 ThrottlingCondition unknownCondition = new() { ThrottlingMode = ThrottlingMode.Unknown };
-                unknownCondition.throttledResources.Add(Tuple.Create(ThrottledResourceType.Unknown, ThrottlingType.Unknown));
+                unknownCondition.throttledResources.Add((ThrottledResourceType.Unknown, ThrottlingType.Unknown));
 
                 return unknownCondition;
             }
@@ -165,7 +165,7 @@
         /// Gets a list of the resources in the SQL Database that were subject to throttling conditions.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "As designed")]
-        public IEnumerable<Tuple<ThrottledResourceType, ThrottlingType>> ThrottledResources => this.throttledResources;
+        public IEnumerable<(ThrottledResourceType, ThrottlingType)> ThrottledResources => this.throttledResources;
 
         /// <summary>
         /// Gets a value that indicates whether physical data file space throttling was reported by SQL Database.
@@ -213,38 +213,29 @@
         /// </summary>
         /// <param name="ex">The <see cref="SqlException"/> object that contains information relevant to an error returned by SQL Server when throttling conditions were encountered.</param>
         /// <returns>An instance of the object that holds the decoded reason codes returned from SQL Database when throttling conditions were encountered.</returns>
-        public static ThrottlingCondition FromException(SqlException ex)
-        {
-            if (ex is not null)
-            {
-                foreach (SqlError error in ex.Errors
+        public static ThrottlingCondition FromException(SqlException? ex) =>
+            ex is null
+                ? Unknown
+                : ex.Errors
                     .Cast<SqlError>()
-                    .Where(error => error.Number == ThrottlingErrorNumber))
-                {
-                    return FromError(error);
-                }
-            }
-
-            return Unknown;
-        }
+                    .Where(error => error.Number == ThrottlingErrorNumber)
+                    .Select(FromError)
+                    .FirstOrDefault() ?? Unknown;
 
         /// <summary>
         /// Determines the throttling conditions from the specified SQL error.
         /// </summary>
         /// <param name="error">The <see cref="SqlError"/> object that contains information relevant to a warning or error returned by SQL Server.</param>
         /// <returns>An instance of the object that holds the decoded reason codes returned from SQL Database when throttling conditions were encountered.</returns>
-        public static ThrottlingCondition FromError(SqlError error)
+        public static ThrottlingCondition FromError(SqlError? error)
         {
-            if (error is not null)
+            if (error is null)
             {
-                Match match = SqlErrorCodeRegEx.Match(error.Message);
-                if (match.Success && int.TryParse(match.Groups[1].Value, out int reasonCode))
-                {
-                    return FromReasonCode(reasonCode);
-                }
+                return Unknown;
             }
 
-            return Unknown;
+            Match match = SqlErrorCodeRegEx.Match(error.Message);
+            return match.Success && int.TryParse(match.Groups[1].Value, out int reasonCode) ? FromReasonCode(reasonCode) : Unknown;
         }
 
         /// <summary>
@@ -254,51 +245,45 @@
         /// <returns>An instance of the object holding the decoded reason codes returned from SQL Database when encountering throttling conditions.</returns>
         public static ThrottlingCondition FromReasonCode(int reasonCode)
         {
-            if (reasonCode > 0)
+            if (reasonCode <= 0)
             {
-                // Decode throttling mode from the last 2 bits.
-                ThrottlingMode throttlingMode = (ThrottlingMode)(reasonCode & 3);
-
-                ThrottlingCondition condition = new() { ThrottlingMode = throttlingMode };
-
-                // Shift 8 bits to truncate throttling mode.
-                int groupCode = reasonCode >> 8;
-
-                // Determine throttling type for all well-known resources that may be subject to throttling conditions.
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.PhysicalDatabaseSpace, (ThrottlingType)(groupCode & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.PhysicalLogSpace, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.LogWriteIoDelay, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.DataReadIoDelay, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.Cpu, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.DatabaseSize, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.Internal, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.WorkerThreads, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
-                condition.throttledResources.Add(Tuple.Create(ThrottledResourceType.Internal, (ThrottlingType)((groupCode >> 2) & 3)));
-
-                return condition;
+                return Unknown;
             }
 
-            return Unknown;
+            // Decode throttling mode from the last 2 bits.
+            ThrottlingMode throttlingMode = (ThrottlingMode)(reasonCode & 3);
+
+            ThrottlingCondition condition = new() { ThrottlingMode = throttlingMode };
+
+            // Shift 8 bits to truncate throttling mode.
+            int groupCode = reasonCode >> 8;
+
+            // Determine throttling type for all well-known resources that may be subject to throttling conditions.
+            condition.throttledResources.Add((ThrottledResourceType.PhysicalDatabaseSpace, (ThrottlingType)(groupCode & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.PhysicalLogSpace, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.LogWriteIoDelay, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.DataReadIoDelay, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.Cpu, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.DatabaseSize, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.Internal, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.WorkerThreads, (ThrottlingType)((groupCode = groupCode >> 2) & 3)));
+            condition.throttledResources.Add((ThrottledResourceType.Internal, (ThrottlingType)((groupCode >> 2) & 3)));
+
+            return condition;
         }
 
         /// <summary>
         ///  Returns a textual representation of the current ThrottlingCondition object, including the information held with respect to throttled resources.
         /// </summary>
         /// <returns>A string that represents the current ThrottlingCondition object.</returns>
-        public override string ToString()
-        {
-            StringBuilder result = new();
+        public override string ToString() =>
+            new StringBuilder()
+                .AppendFormat(CultureInfo.CurrentCulture, "Mode: {0} | ", this.ThrottlingMode)
+                .Append(string.Join(", ", this.throttledResources
+                    .Where(tuple => tuple.ThrottledResource != ThrottledResourceType.Internal)
+                    .Select(tuple => string.Format(CultureInfo.CurrentCulture, "{0}: {1}", tuple.ThrottledResource, tuple.Throttling))
+                    .OrderBy(throttleResource => throttleResource)))
 
-            result.AppendFormat(CultureInfo.CurrentCulture, "Mode: {0} | ", this.ThrottlingMode);
-
-            string[] resources = this.throttledResources
-                .Where(x => x.Item1 != ThrottledResourceType.Internal)
-                .Select(x => string.Format(CultureInfo.CurrentCulture, "{0}: {1}", x.Item1, x.Item2))
-                .OrderBy(x => x).ToArray();
-
-            result.Append(string.Join(", ", resources));
-
-            return result.ToString();
-        }
+                .ToString();
     }
 }

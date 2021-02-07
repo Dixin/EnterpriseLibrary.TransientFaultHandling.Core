@@ -66,12 +66,9 @@
         /// <param name="unitOfWork">A delegate that represents the executable unit of work that will be retried upon failure.</param>
         public TransactionRetryScope(TransactionScopeOption scopeOption, TimeSpan scopeTimeout, RetryPolicy retryPolicy, Action unitOfWork)
         {
-            this.transactionScopeInit = () =>
-            {
-                TransactionOptions txOptions = new() { IsolationLevel = IsolationLevel.ReadCommitted, Timeout = scopeTimeout };
-
-                return new TransactionScope(scopeOption, txOptions);
-            };
+            this.transactionScopeInit = () => new TransactionScope(
+                scopeOption, 
+                new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted, Timeout = scopeTimeout });
 
             this.transactionScope = this.transactionScopeInit();
             this.RetryPolicy = retryPolicy;
@@ -222,8 +219,7 @@
         /// <summary>
         /// Configures the specified retry policy to work with a transactional scope.
         /// </summary>
-        private void InitializeRetryPolicy()
-        {
+        private void InitializeRetryPolicy() =>
             this.RetryPolicy.Retrying += (sender, args) =>
             {
                 try
@@ -242,7 +238,7 @@
                 // Get a new instance of a transactional scope.
                 this.transactionScope = this.transactionScopeInit();
             };
-        }
+
         #endregion
     }
 }

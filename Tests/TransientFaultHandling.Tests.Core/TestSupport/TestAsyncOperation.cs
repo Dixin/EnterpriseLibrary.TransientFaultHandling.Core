@@ -5,10 +5,7 @@
 
     public class TestAsyncOperation
     {
-        public TestAsyncOperation(Exception exceptionToThrow)
-        {
-            this.ExceptionToThrow = exceptionToThrow;
-        }
+        public TestAsyncOperation(Exception exceptionToThrow) => this.ExceptionToThrow = exceptionToThrow;
 
         public int BeginMethodCount { get; private set; }
         public int EndMethodCount { get; private set; }
@@ -39,7 +36,7 @@
     {
         public bool IsCompleted { get; set; }
 
-        public WaitHandle AsyncWaitHandle { get; set; }
+        public WaitHandle? AsyncWaitHandle { get; set; }
 
         public object AsyncState { get; set; }
 

@@ -12,6 +12,12 @@
     /// </summary>
     public static class ConfigurationExtensions
     {
+        private static readonly string[] FixedIntervalProperties = typeof(FixedIntervalOptions).GetProperties().Select(property => property.Name).ToArray();
+
+        private static readonly string[] IncrementalProperties = typeof(IncrementalOptions).GetProperties().Select(property => property.Name).ToArray();
+
+        private static readonly string[] ExponentialBackoffProperties = typeof(ExponentialBackoffOptions).GetProperties().Select(property => property.Name).ToArray();
+
         private static bool HasKey(this IConfigurationSection section, string key) =>
             section.GetSection(key).Exists();
 
@@ -53,42 +59,88 @@
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
             }
 
-            string[] fixedIntervalProperties = typeof(FixedIntervalOptions).GetProperties().Select(property => property.Name).ToArray();
-            string[] incrementalProperties = typeof(IncrementalOptions).GetProperties().Select(property => property.Name).ToArray();
-            string[] exponentialBackoffProperties = typeof(ExponentialBackoffOptions).GetProperties().Select(property => property.Name).ToArray();
-
             return configurationSection.GetChildren().ToDictionary(
-                options => options.Key,
-                options =>
-                {
-                    if (fixedIntervalProperties.All(options.HasKey)
-                        && !incrementalProperties.All(options.HasKey)
-                        && !exponentialBackoffProperties.All(options.HasKey))
-                    {
-                        return options.Get<FixedIntervalOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToFixedInterval(options.Key);
-                    }
+                childSection => childSection.Key,
+                childSection => childSection.GetRetryStrategy(getCustomRetryStrategy));
+        }
 
-                    if (incrementalProperties.All(options.HasKey)
-                        && !fixedIntervalProperties.All(options.HasKey)
-                        && !exponentialBackoffProperties.All(options.HasKey))
-                    {
-                        return options.Get<IncrementalOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToIncremental(options.Key);
-                    }
+        /// <summary>Gets the retry strategy from the specified configuration section.</summary>
+        /// <param name="configurationSection">The configuration section.</param>
+        /// <param name="getCustomRetryStrategy">The function to ger custom retry strategy from options.</param>
+        /// <returns>The retry strategy. </returns>
+        public static RetryStrategy GetRetryStrategy(this IConfigurationSection configurationSection, Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
+        {
+            Argument.NotNull(configurationSection, nameof(configurationSection));
+            if (!configurationSection.Exists())
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
+            }
 
-                    if (exponentialBackoffProperties.All(options.HasKey)
-                        && !incrementalProperties.All(options.HasKey)
-                        && !fixedIntervalProperties.All(options.HasKey))
-                    {
-                        return options.Get<ExponentialBackoffOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToExponentialBackoff(options.Key);
-                    }
+            return (FixedIntervalProperties.All(configurationSection.HasKey), IncrementalProperties.All(configurationSection.HasKey), ExponentialBackoffProperties.All(configurationSection.HasKey)) switch
+            {
+                (true, false, false) => configurationSection.Get<FixedIntervalOptions>().ToFixedInterval(configurationSection.Key),
+                (false, true, false) => configurationSection.Get<IncrementalOptions>().ToIncremental(configurationSection.Key),
+                (false, false, true) => configurationSection.Get<ExponentialBackoffOptions>().ToExponentialBackoff(configurationSection.Key),
+                _ => getCustomRetryStrategy?.Invoke(configurationSection)
+                    ?? throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.ConfigurationSectionHasInvalidRetryStrategy, configurationSection.Path), nameof(configurationSection))
+            };
+        }
 
-                    if (getCustomRetryStrategy is not null)
-                    {
-                        return getCustomRetryStrategy(options);
-                    }
+        /// <summary>Gets the retry strategy from the specified configuration section.</summary>
+        /// <param name="configurationSection">The configuration section.</param>
+        /// <returns>The retry strategy. </returns>
+        public static FixedInterval GetFixedInterval(this IConfigurationSection configurationSection)
+        {
+            Argument.NotNull(configurationSection, nameof(configurationSection));
+            if (!configurationSection.Exists())
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
+            }
 
-                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Current retry strategy options in section {0} are invalid.", options.Key));
-                });
+            if (!FixedIntervalProperties.All(configurationSection.HasKey) || IncrementalProperties.All(configurationSection.HasKey) || ExponentialBackoffProperties.All(configurationSection.HasKey))
+            {
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.ConfigurationSectionHasInvalidRetryStrategy, configurationSection.Path), nameof(configurationSection));
+            }
+
+            return configurationSection.Get<FixedIntervalOptions>().ToFixedInterval(configurationSection.Key);
+        }
+
+        /// <summary>Gets the retry strategy from the specified configuration section.</summary>
+        /// <param name="configurationSection">The configuration section.</param>
+        /// <returns>The retry strategy. </returns>
+        public static Incremental GetIncremental(this IConfigurationSection configurationSection)
+        {
+            Argument.NotNull(configurationSection, nameof(configurationSection));
+            if (!configurationSection.Exists())
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
+            }
+
+            if (FixedIntervalProperties.All(configurationSection.HasKey) || !IncrementalProperties.All(configurationSection.HasKey) || ExponentialBackoffProperties.All(configurationSection.HasKey))
+            {
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.ConfigurationSectionHasInvalidRetryStrategy, configurationSection.Path), nameof(configurationSection));
+            }
+
+            return configurationSection.Get<IncrementalOptions>().ToIncremental(configurationSection.Key);
+        }
+
+        /// <summary>Gets the retry strategy from the specified configuration section.</summary>
+        /// <param name="configurationSection">The configuration section.</param>
+        /// <returns>The retry strategy. </returns>
+        public static ExponentialBackoff GetExponentialBackoff(this IConfigurationSection configurationSection)
+        {
+            Argument.NotNull(configurationSection, nameof(configurationSection));
+            if (!configurationSection.Exists())
+            {
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
+            }
+
+            if (FixedIntervalProperties.All(configurationSection.HasKey) || IncrementalProperties.All(configurationSection.HasKey) || !ExponentialBackoffProperties.All(configurationSection.HasKey))
+            {
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.ConfigurationSectionHasInvalidRetryStrategy, configurationSection.Path), nameof(configurationSection));
+            }
+
+            return configurationSection.Get<ExponentialBackoffOptions>().ToExponentialBackoff(configurationSection.Key);
         }
 
         /// <summary>
@@ -108,9 +160,10 @@
             Argument.NotNull(configuration, nameof(configuration));
             Argument.NotNullOrEmpty(key, nameof(key));
 
-            Func<IConfigurationSection, RetryStrategy>? covariant = getCustomRetryStrategy;
-            return GetRetryStrategies(configuration, key, covariant)
-                .Where(pair => pair.Value is not null and TRetryStrategy).ToDictionary(pair => pair.Key, pair => (TRetryStrategy)pair.Value);
+            Func<IConfigurationSection, RetryStrategy>? covariance = getCustomRetryStrategy;
+            return GetRetryStrategies(configuration, key, covariance)
+                .Where(pair => pair.Value is not null and TRetryStrategy)
+                .ToDictionary(pair => pair.Key, pair => (TRetryStrategy)pair.Value);
         }
 
         /// <summary>

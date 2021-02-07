@@ -5,6 +5,7 @@
     <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests</RootNamespace>
     <AssemblyName>TransientFaultHandling.Tests.Core</AssemblyName>
     <LangVersion>latest</LangVersion>
+    <nullable>enable</nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +17,39 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Source\TransientFaultHandling.Caching.Core\TransientFaultHandling.Caching.Core.csproj" />
+    <ProjectReference Include="..\..\Source\TransientFaultHandling.Configuration.Core\TransientFaultHandling.Configuration.Core.csproj" />
     <ProjectReference Include="..\..\Source\TransientFaultHandling.Core\TransientFaultHandling.Core.csproj" />
-    <ProjectReference Include="..\..\Tools\TransientFaultHandling.TestSupport\TransientFaultHandling.TestSupport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="app.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="app.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="app.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

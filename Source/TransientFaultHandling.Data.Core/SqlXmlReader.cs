@@ -23,8 +23,8 @@
         /// <param name="innerReader">The original XML reader that is to be wrapped by this instance.</param>
         public SqlXmlReader(IDbConnection connection, XmlReader innerReader)
         {
-            Guard.ArgumentNotNull(connection, nameof(connection));
-            Guard.ArgumentNotNull(innerReader, nameof(innerReader));
+            Argument.NotNull(connection, nameof(connection));
+            Argument.NotNull(innerReader, nameof(innerReader));
 
             this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
             this.innerReader = innerReader ?? throw new ArgumentNullException(nameof(innerReader));
@@ -39,7 +39,7 @@
         /// <summary>
         /// Returns the base Uniform Resource Identifier (URI) of the current node.
         /// </summary>
-        public override string BaseURI => this.innerReader.BaseURI;
+        public override string? BaseURI => this.innerReader.BaseURI;
 
         /// <summary>
         /// Returns the depth of the current node in the XML document.
@@ -101,7 +101,7 @@
         /// </summary>
         /// <param name="name">The qualified name of the attribute.</param>
         /// <returns>The value of the specified attribute, or null if the attribute isn't found or its value is <see cref="String.Empty"/>.</returns>
-        public override string GetAttribute(string name) => this.innerReader.GetAttribute(name);
+        public override string? GetAttribute(string name) => this.innerReader.GetAttribute(name);
 
         /// <summary>
         /// Returns the value of the attribute that has the specified index.
@@ -116,16 +116,16 @@
         /// <param name="name">The local name of the attribute.</param>
         /// <param name="namespaceUri">The namespace URI of the attribute.</param>
         /// <returns>The value of the specified attribute, or null if the attribute isn't found or its value is <see cref="String.Empty"/>. This method does not move the reader.</returns>
-        public override string GetAttribute(string name, string namespaceUri) => this.innerReader.GetAttribute(name, namespaceUri);
+        public override string? GetAttribute(string name, string? namespaceUri) => this.innerReader.GetAttribute(name, namespaceUri);
 
         /// <summary>
         /// Closes both the original <see cref="System.Xml.XmlReader"/> and the associated SQL connection.
         /// </summary>
         public override void Close()
         {
-            this.innerReader?.Close();
+            this.innerReader.Close();
 
-            this.connection?.Close();
+            this.connection.Close();
         }
 
         /// <summary>
@@ -133,7 +133,7 @@
         /// </summary>
         /// <param name="prefix">The prefix whose namespace URI you want to resolve. To match the default namespace, pass an empty string.</param>
         /// <returns>The namespace URI to which the prefix maps, or null if no matching prefix is found.</returns>
-        public override string LookupNamespace(string prefix) => this.innerReader.LookupNamespace(prefix);
+        public override string? LookupNamespace(string prefix) => this.innerReader.LookupNamespace(prefix);
 
         /// <summary>
         /// Moves to the attribute that has the specified name and namespace URI.
@@ -141,7 +141,7 @@
         /// <param name="name">The local name of the attribute.</param>
         /// <param name="ns">The namespace URI of the attribute.</param>
         /// <returns>true if the attribute is found; otherwise, false. If false, the reader's position does not change.</returns>
-        public override bool MoveToAttribute(string name, string ns) => this.innerReader.MoveToAttribute(name, ns);
+        public override bool MoveToAttribute(string name, string? ns) => this.innerReader.MoveToAttribute(name, ns);
 
         /// <summary>
         /// Moves to the attribute that has the specified name.

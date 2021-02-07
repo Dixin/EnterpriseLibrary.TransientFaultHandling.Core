@@ -35,6 +35,7 @@
                 defaultStrategies.Add(RetryManagerSqlExtensions.DefaultStrategyConnectionTechnologyName, options.DefaultSqlConnectionRetryStrategy);
             }
 
+            // TODO.
             //if (!string.IsNullOrWhiteSpace(options.DefaultAzureServiceBusRetryStrategy))
             //{
             //    defaultStrategies.Add(RetryManagerServiceBusExtensions.DefaultStrategyTechnologyName, options.DefaultAzureServiceBusRetryStrategy);

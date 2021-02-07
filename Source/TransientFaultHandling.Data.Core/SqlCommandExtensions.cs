@@ -12,22 +12,14 @@
     public static partial class SqlCommandExtensions
     {
         #region ExecuteNonQueryWithRetry method implementations
+
         /// <summary>
         /// Executes a Transact-SQL statement against the connection and returns the number of rows affected. Uses the default retry policy when executing the command.
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQueryWithRetry(this SqlCommand command) => 
+        public static int ExecuteNonQueryWithRetry(this SqlCommand command) =>
             ExecuteNonQueryWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-
-        /// <summary>
-        /// Executes a Transact-SQL statement against the connection and returns the number of rows affected. Uses the specified retry policy when executing the command.
-        /// </summary>
-        /// <param name="command">The command object that is required for the extension method declaration.</param>
-        /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
-        /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
-            ExecuteNonQueryWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Executes a Transact-SQL statement against the connection and returns the number of rows affected. Uses the specified retry policies when executing the command
@@ -37,8 +29,9 @@
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
+        public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
         {
+            Argument.NotNull(command, nameof(command));
             GuardConnectionIsNotNull(command);
 
             // Check if retry policy was specified, if not, use the default retry policy.
@@ -63,24 +56,15 @@
         #endregion
 
         #region ExecuteReaderWithRetry method implementations
+
         /// <summary>
         /// Sends the specified command to the connection and builds a SqlDataReader object that contains the results.
         /// Uses the default retry policy when executing the command.
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command) => 
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command) =>
             ExecuteReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-
-        /// <summary>
-        /// Sends the specified command to the connection and builds a SqlDataReader object that contains the results.
-        /// Uses the specified retry policy when executing the command.
-        /// </summary>
-        /// <param name="command">The command object that is required for the extension method declaration.</param>
-        /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
-        /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
-            ExecuteReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Sends the specified command to the connection and builds a SqlDataReader object that contains the results.
@@ -91,29 +75,12 @@
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
         {
+            Argument.NotNull(command, nameof(command));
             GuardConnectionIsNotNull(command);
 
-            // Check if retry policy was specified, if not, use the default retry policy.
-            return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
-            {
-                bool hasOpenConnection = EnsureValidConnection(command, conRetryPolicy);
-
-                try
-                {
-                    return command.ExecuteReader();
-                }
-                catch (Exception)
-                {
-                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
-                    {
-                        command.Connection.Close();
-                    }
-
-                    throw;
-                }
-            });
+            return ExecuteReaderWithRetry(command, CommandBehavior.Default, cmdRetryPolicy, conRetryPolicy);
         }
 
         /// <summary>
@@ -123,19 +90,8 @@
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <param name="behavior">One of the enumeration values that specifies the command behavior.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior) => 
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior) =>
             ExecuteReaderWithRetry(command, behavior, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-
-        /// <summary>
-        /// Sends the specified command to the connection and builds a SqlDataReader object by using the specified
-        /// command behavior. Uses the specified retry policy when executing the command.
-        /// </summary>
-        /// <param name="command">The command object that is required for the extension method declaration.</param>
-        /// <param name="behavior">One of the enumeration values that specifies the command behavior.</param>
-        /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
-        /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy retryPolicy) => 
-            ExecuteReaderWithRetry(command, behavior, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Sends the specified command to the connection and builds a SqlDataReader object by using the specified
@@ -147,8 +103,9 @@
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
+        public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
         {
+            Argument.NotNull(command, nameof(command));
             GuardConnectionIsNotNull(command);
 
             // Check if retry policy was specified, if not, use the default retry policy.
@@ -162,7 +119,7 @@
                 }
                 catch (Exception)
                 {
-                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
+                    if (hasOpenConnection && command.Connection?.State == ConnectionState.Open)
                     {
                         command.Connection.Close();
                     }
@@ -170,28 +127,20 @@
                     throw;
                 }
             });
-        } 
+        }
+
         #endregion
 
         #region ExecuteScalarWithRetry method implementations
+
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
         /// Uses the default retry policy when executing the command.
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
-        public static object ExecuteScalarWithRetry(this SqlCommand command) => 
+        public static object ExecuteScalarWithRetry(this SqlCommand command) =>
             ExecuteScalarWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-
-        /// <summary>
-        /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
-        /// Uses the specified retry policy when executing the command.
-        /// </summary>
-        /// <param name="command">The command object that is required for the extension method declaration.</param>
-        /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
-        /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
-        public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
-            ExecuteScalarWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
@@ -201,8 +150,9 @@
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
-        public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
+        public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
         {
+            Argument.NotNull(command, nameof(command));
             GuardConnectionIsNotNull(command);
 
             // Check if retry policy was specified, if not, use the default retry policy.
@@ -223,28 +173,19 @@
                 }
             });
         }
+
         #endregion
 
         #region ExecuteXmlReaderWithRetry method implementations
+
         /// <summary>
         /// Sends the specified command to the connection and builds an XmlReader object that contains the results.
         /// Uses the default retry policy when executing the command.
         /// </summary>
         /// <param name="command">The command object that is required for the extension method declaration.</param>
         /// <returns>An System.Xml.XmlReader object.</returns>
-        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command) => 
+        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command) =>
             ExecuteXmlReaderWithRetry(command, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy());
-
-        /// <summary>
-        /// Sends the specified command to the connection and builds an XmlReader object that contains the results.
-        /// Uses the specified retry policy when executing the command.
-        /// </summary>
-        /// <param name="command">The command object that is required for the extension method declaration.</param>
-        /// <param name="retryPolicy">The retry policy that determines whether to retry a command if a connection fails while executing the command.</param>
-        /// <returns>An System.Xml.XmlReader object.</returns>
-        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy retryPolicy) => 
-            ExecuteXmlReaderWithRetry(command, retryPolicy, RetryPolicy.NoRetry);
-
         /// <summary>
         /// Sends the specified command to the connection and builds an XmlReader object that contains the results.
         /// Uses the specified retry policies when executing the command and establishing a connection.
@@ -253,8 +194,9 @@
         /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
         /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
         /// <returns>An System.Xml.XmlReader object.</returns>
-        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy conRetryPolicy)
+        public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
         {
+            Argument.NotNull(command, nameof(command));
             GuardConnectionIsNotNull(command);
 
             // Check if retry policy was specified, if not, use the default retry policy.
@@ -268,7 +210,7 @@
                 }
                 catch (Exception)
                 {
-                    if (hasOpenConnection && command.Connection is not null && command.Connection.State == ConnectionState.Open)
+                    if (hasOpenConnection && command.Connection?.State == ConnectionState.Open)
                     {
                         command.Connection.Close();
                     }
@@ -277,6 +219,7 @@
                 }
             });
         }
+
         #endregion
 
         private static void GuardConnectionIsNotNull(SqlCommand command)
@@ -287,7 +230,7 @@
             }
         }
 
-        private static bool EnsureValidConnection(SqlCommand command, RetryPolicy retryPolicy)
+        private static bool EnsureValidConnection(SqlCommand? command, RetryPolicy? retryPolicy)
         {
             if (command is not null)
             {

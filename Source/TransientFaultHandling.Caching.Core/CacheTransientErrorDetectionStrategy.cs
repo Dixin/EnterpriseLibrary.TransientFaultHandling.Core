@@ -15,31 +15,15 @@
         /// </summary>
         /// <param name="ex">The exception object to be verified.</param>
         /// <returns>true if the specified exception belongs to the category of transient errors; otherwise, false.</returns>
-        public bool IsTransient(Exception ex)
-        {
-            if (ex is null)
+        public bool IsTransient(Exception? ex) =>
+            ex switch
             {
-                return false;
-            }
-
-            if (ex is ServerTooBusyException)
-            {
-                return true;
-            }
-
-            if (ex is SocketException socketFault)
-            {
-                return socketFault.SocketErrorCode == SocketError.TimedOut;
-            }
-
-            bool? dataCacheExceptionResult = DataCacheExceptionChecker.IsTransientDataCacheException(ex);
-            if (dataCacheExceptionResult.HasValue)
-            {
-                return dataCacheExceptionResult.Value;
-            }
-
-            // Some transient exceptions may be wrapped into an outer exception, hence we should also inspect any inner exceptions.
-            return ex.InnerException is not null && this.IsTransient(ex.InnerException);
-        }
+                null => false,
+                ServerTooBusyException => true,
+                SocketException socketFault => socketFault.SocketErrorCode == SocketError.TimedOut,
+                _ => DataCacheExceptionChecker.IsTransientDataCacheException(ex)
+                    // Some transient exceptions may be wrapped into an outer exception, hence we should also inspect any inner exceptions.
+                    ?? ex.InnerException is not null && this.IsTransient(ex.InnerException)
+            };
     }
 }

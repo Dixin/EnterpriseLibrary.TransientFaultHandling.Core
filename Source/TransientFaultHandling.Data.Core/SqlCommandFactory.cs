@@ -23,7 +23,7 @@
         /// <returns>A new SQL command that is initialized with the Stored Procedure command type and initial settings.</returns>
         public static IDbCommand CreateCommand(IDbConnection connection)
         {
-            Guard.ArgumentNotNull(connection, nameof(connection));
+            Argument.NotNull(connection, nameof(connection));
 
             IDbCommand command = connection.CreateCommand();
             command.CommandType = CommandType.StoredProcedure;
@@ -40,8 +40,8 @@
         [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
         public static IDbCommand CreateCommand(IDbConnection connection, string commandText)
         {
-            Guard.ArgumentNotNull(connection, nameof(connection));
-            Guard.ArgumentNotNullOrEmptyString(commandText, nameof(commandText));
+            Argument.NotNull(connection, nameof(connection));
+            Argument.NotNullOrEmpty(commandText, nameof(commandText));
 
             IDbCommand command = CreateCommand(connection);
             try
@@ -66,7 +66,7 @@
         [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
         public static IDbCommand CreateGetContextInfoCommand(IDbConnection connection)
         {
-            Guard.ArgumentNotNull(connection, nameof(connection));
+            Argument.NotNull(connection, nameof(connection));
 
             IDbCommand command = CreateCommand(connection);
             try

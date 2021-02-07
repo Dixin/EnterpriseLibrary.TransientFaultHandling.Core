@@ -54,6 +54,7 @@
             GetOrCreateRetryManager(Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile)), Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey)), getCustomRetryStrategy)
                 .GetDefaultSqlCommandRetryPolicy();
 
+        // TODO.
         ///// <summary>
         ///// Returns the default retry policy dedicated to handling transient conditions with Windows Azure Service Bus.
         ///// </summary>

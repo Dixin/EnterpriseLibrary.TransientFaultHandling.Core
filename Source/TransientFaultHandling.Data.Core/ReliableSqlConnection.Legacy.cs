@@ -36,7 +36,7 @@
         /// <param name="connectionString">The connection string used to open the SQL Database.</param>
         /// <param name="retryPolicy">The retry policy that defines whether to retry a request if a connection or command fails.</param>
         public ReliableSqlConnectionLegacy(string connectionString, RetryPolicy retryPolicy)
-            : this(connectionString, retryPolicy, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy() ?? retryPolicy)
+            : this(connectionString, retryPolicy, RetryManager.Instance.GetDefaultSqlCommandRetryPolicy())
         {
         }
 
@@ -145,17 +145,16 @@
         /// </summary>
         /// <param name="retryPolicy">The retry policy that defines whether to retry a request if the connection fails to open.</param>
         /// <returns>An object that represents the open connection.</returns>
-        public SqlConnection Open(RetryPolicy retryPolicy)
+        public SqlConnection Open(RetryPolicy? retryPolicy)
         {
             // Check if retry policy was specified, if not, disable retries by executing the Open method using RetryPolicy.NoRetry.
-            (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
-                this.connectionStringFailoverPolicy.ExecuteAction(() =>
+            (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() => this.connectionStringFailoverPolicy.ExecuteAction(() =>
+            {
+                if (this.Current.State != ConnectionState.Open)
                 {
-                    if (this.Current.State != ConnectionState.Open)
-                    {
-                        this.Current.Open();
-                    }
-                }));
+                    this.Current.Open();
+                }
+            }));
 
             return this.Current;
         }
@@ -166,27 +165,10 @@
         /// </summary>
         /// <typeparam name="T">IDataReader, XmlReader, or any other .NET Framework type that defines the type of result to be returned.</typeparam>
         /// <param name="command">The SQL command to be executed.</param>
-        /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Framework object that contains the result.</returns>
-        public T ExecuteCommand<T>(IDbCommand command) => this.ExecuteCommand<T>(command, this.CommandRetryPolicy, CommandBehavior.Default);
-
-        /// <summary>
-        /// Executes a SQL command and returns a result that is defined by the specified type <typeparamref name="T"/>. This method uses the retry policy specified when 
-        /// instantiating the SqlAzureConnection class (or the default retry policy if no policy was set at construction time).
-        /// </summary>
-        /// <typeparam name="T">IDataReader, XmlReader, or any other .NET Framework type that defines the type of result to be returned.</typeparam>
-        /// <param name="command">The SQL command to be executed.</param>
         /// <param name="behavior">A description of the results of the query and its effect on the database.</param>
         /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Frameork object that contains the result.</returns>
-        public T ExecuteCommand<T>(IDbCommand command, CommandBehavior behavior) => this.ExecuteCommand<T>(command, this.CommandRetryPolicy, behavior);
-
-        /// <summary>
-        /// Executes a SQL command by using the specified retry policy, and returns a result that is defined by the specified type <typeparamref name="T"/>
-        /// </summary>
-        /// <typeparam name="T">IDataReader, XmlReader, or any other .NET Framework type that defines the type of result to be returned.</typeparam>
-        /// <param name="command">The SQL command to be executed.</param>
-        /// <param name="retryPolicy">The retry policy that defines whether to retry a command if a connection fails while executing the command.</param>
-        /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Frameork object that contains the result.</returns>
-        public T ExecuteCommand<T>(IDbCommand command, RetryPolicy retryPolicy) => this.ExecuteCommand<T>(command, retryPolicy, CommandBehavior.Default);
+        public T? ExecuteCommand<T>(IDbCommand command, CommandBehavior behavior = CommandBehavior.Default) =>
+            this.ExecuteCommand<T>(command, this.CommandRetryPolicy, behavior);
 
         /// <summary>
         /// Executes a SQL command by using the specified retry policy, and returns a result that is defined by the specified type <typeparamref name="T"/>
@@ -197,113 +179,100 @@
         /// <param name="behavior">A description of the results of the query and its effect on the database.</param>
         /// <returns>An instance of an IDataReader, XmlReader, or any other .NET Frameork object that contains the result.</returns>
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by client code")]
-        public T ExecuteCommand<T>(IDbCommand command, RetryPolicy retryPolicy, CommandBehavior behavior)
+        public T? ExecuteCommand<T>(IDbCommand command, RetryPolicy? retryPolicy, CommandBehavior behavior = CommandBehavior.Default)
         {
-            T actionResult = default;
-
-            Type resultType = typeof(T);
+            Argument.NotNull(command, nameof(command));
 
             bool hasOpenedConnection = false;
-
-            bool closeOpenedConnectionOnSuccess = false;
-
             try
             {
-                (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
+                Type resultType = typeof(T);
+                bool closeOpenedConnectionOnSuccess = false;
+                T? actionResult = (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() => this.connectionStringFailoverPolicy.ExecuteAction(() =>
                 {
-                    actionResult = this.connectionStringFailoverPolicy.ExecuteAction(() =>
+                    // Make sure the command has been associated with a valid connection. If not, associate it with an opened SQL connection.
+                    if (command.Connection is null)
                     {
-                        // Make sure the command has been associated with a valid connection. If not, associate it with an opened SQL connection.
-                        if (command.Connection is null)
-                        {
-                            // Open a new connection and assign it to the command object.
-                            command.Connection = this.Open();
-                            hasOpenedConnection = true;
-                        }
+                        // Open a new connection and assign it to the command object.
+                        command.Connection = this.Open();
+                        hasOpenedConnection = true;
+                    }
 
-                        // Verify whether or not the connection is valid and is open. This code may be retried therefore
-                        // it is important to ensure that a connection is re-established should it have previously failed.
-                        if (command.Connection.State != ConnectionState.Open)
-                        {
-                            command.Connection.Open();
-                            hasOpenedConnection = true;
-                        }
+                    // Verify whether or not the connection is valid and is open. This code may be retried therefore
+                    // it is important to ensure that a connection is re-established should it have previously failed.
+                    if (command.Connection.State != ConnectionState.Open)
+                    {
+                        command.Connection.Open();
+                        hasOpenedConnection = true;
+                    }
 
-                        if (typeof(IDataReader).IsAssignableFrom(resultType))
+                    if (typeof(IDataReader).IsAssignableFrom(resultType))
+                    {
+                        closeOpenedConnectionOnSuccess = false;
+
+                        return (T)command.ExecuteReader(behavior);
+                    }
+
+                    if (resultType == typeof(XmlReader))
+                    {
+                        if (command is SqlCommand sqlCommand)
                         {
+                            object result;
+                            XmlReader xmlReader = sqlCommand.ExecuteXmlReader();
+
                             closeOpenedConnectionOnSuccess = false;
 
-                            return (T)command.ExecuteReader(behavior);
+                            result = (behavior & CommandBehavior.CloseConnection) == CommandBehavior.CloseConnection
+                                // Implicit conversion from XmlReader to <T> via an intermediary object.
+                                ? new SqlXmlReader(command.Connection, xmlReader)
+                                // Implicit conversion from XmlReader to <T> via an intermediary object.
+                                : xmlReader;
+
+                            return (T)result;
                         }
 
-                        if (resultType == typeof(XmlReader))
+                        throw new NotSupportedException();
+                    }
+
+                    if (resultType == typeof(NonQueryResult))
+                    {
+                        NonQueryResult result = new() { RecordsAffected = command.ExecuteNonQuery() };
+
+                        closeOpenedConnectionOnSuccess = true;
+
+                        return (T)Convert.ChangeType(result, resultType, CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        object? result = command.ExecuteScalar();
+
+                        closeOpenedConnectionOnSuccess = true;
+
+                        if (result is not null)
                         {
-                            if (command is SqlCommand)
-                            {
-                                object result;
-                                XmlReader xmlReader = (command as SqlCommand).ExecuteXmlReader();
-
-                                closeOpenedConnectionOnSuccess = false;
-
-                                if ((behavior & CommandBehavior.CloseConnection) == CommandBehavior.CloseConnection)
-                                {
-                                    // Implicit conversion from XmlReader to <T> via an intermediary object.
-                                    result = new SqlXmlReader(command.Connection, xmlReader);
-                                }
-                                else
-                                {
-                                    // Implicit conversion from XmlReader to <T> via an intermediary object.
-                                    result = xmlReader;
-                                }
-
-                                return (T)result;
-                            }
-
-                            throw new NotSupportedException();
-                        }
-
-                        if (resultType == typeof(NonQueryResult))
-                        {
-                            NonQueryResult result = new() { RecordsAffected = command.ExecuteNonQuery() };
-
-                            closeOpenedConnectionOnSuccess = true;
-
                             return (T)Convert.ChangeType(result, resultType, CultureInfo.InvariantCulture);
                         }
-                        else
-                        {
-                            object result = command.ExecuteScalar();
 
-                            closeOpenedConnectionOnSuccess = true;
+                        return default;
+                    }
+                }));
 
-                            if (result is not null)
-                            {
-                                return (T)Convert.ChangeType(result, resultType, CultureInfo.InvariantCulture);
-                            }
-
-                            return default;
-                        }
-                    });
-                });
-
-                if (hasOpenedConnection && closeOpenedConnectionOnSuccess &&
-                   command.Connection is not null && command.Connection.State == ConnectionState.Open)
+                if (hasOpenedConnection && closeOpenedConnectionOnSuccess && command.Connection?.State == ConnectionState.Open)
                 {
                     command.Connection.Close();
                 }
+
+                return actionResult;
             }
             catch (Exception)
             {
-                if (hasOpenedConnection &&
-                   command.Connection is not null && command.Connection.State == ConnectionState.Open)
+                if (hasOpenedConnection && command.Connection?.State == ConnectionState.Open)
                 {
                     command.Connection.Close();
                 }
 
                 throw;
             }
-
-            return actionResult;
         }
 
         /// <summary>
@@ -319,9 +288,11 @@
         /// <param name="command">The SQL command to be executed.</param>
         /// <param name="retryPolicy">The retry policy that defines whether to retry a command if a connection fails while executing the command.</param>
         /// <returns>The number of rows affected.</returns>
-        public int ExecuteCommand(IDbCommand command, RetryPolicy retryPolicy)
+        public int ExecuteCommand(IDbCommand command, RetryPolicy? retryPolicy)
         {
-            NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command, retryPolicy);
+            Argument.NotNull(command, nameof(command));
+
+            NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command, retryPolicy) ?? throw new InvalidOperationException();
 
             return result.RecordsAffected;
         }
@@ -379,7 +350,7 @@
         /// string, connection retry policy, and command retry policy.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
-        object ICloneable.Clone() => 
+        object ICloneable.Clone() =>
             new ReliableSqlConnection(this.ConnectionString, this.ConnectionRetryPolicy, this.CommandRetryPolicy);
 
         #endregion
@@ -415,13 +386,15 @@
         #endregion
 
         #region Private helper classes
+
         /// <summary>
         /// This helpers class is intended to be used exclusively for fetching the number of affected records when executing a command by using ExecuteNonQuery.
         /// </summary>
         private sealed class NonQueryResult
         {
-            public int RecordsAffected { get; set; }
+            public int RecordsAffected { get; init; }
         }
+
         #endregion
 
         /// <summary>
