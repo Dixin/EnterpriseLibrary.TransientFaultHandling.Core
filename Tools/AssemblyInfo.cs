@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Security;
 
 [assembly: CLSCompliant(true)]
-[assembly: SecurityTransparent]
+#if NET
+[assembly: System.Security.SecurityTransparent]
+#endif
