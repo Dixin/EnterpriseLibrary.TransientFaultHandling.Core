@@ -13,6 +13,7 @@ public class TransactionRetryScopeFixture
     [TestInitialize]
     public void InitializeTestDatabase()
     {
+        // TODO: Delete and create database.
     }
 
     [TestMethod]

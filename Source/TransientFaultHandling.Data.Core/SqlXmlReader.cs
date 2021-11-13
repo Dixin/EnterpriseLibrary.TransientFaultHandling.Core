@@ -11,6 +11,7 @@ internal class SqlXmlReader : XmlReader
 {
     #region Private members
     private readonly IDbConnection connection;
+
     private readonly XmlReader innerReader;
     #endregion
 
@@ -20,14 +21,9 @@ internal class SqlXmlReader : XmlReader
     /// </summary>
     /// <param name="connection">The SQL connection that provides access to the XML data for this reader.</param>
     /// <param name="innerReader">The original XML reader that is to be wrapped by this instance.</param>
-    public SqlXmlReader(IDbConnection connection, XmlReader innerReader)
-    {
-        Argument.NotNull(connection, nameof(connection));
-        Argument.NotNull(innerReader, nameof(innerReader));
+    public SqlXmlReader(IDbConnection connection, XmlReader innerReader) => 
+        (this.connection, this.innerReader) = (connection.NotNull(), innerReader.NotNull());
 
-        this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
-        this.innerReader = innerReader ?? throw new ArgumentNullException(nameof(innerReader));
-    } 
     #endregion
 
     /// <summary>

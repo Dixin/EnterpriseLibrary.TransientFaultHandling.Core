@@ -197,7 +197,7 @@ public class ConfigurationTests
         }
         catch (TargetInvocationException exception)
         {
-            Assert.IsTrue(exception.InnerException is ArgumentOutOfRangeException innerException && innerException.Message.Contains(nameof(ExponentialBackoffOptions.MinBackOff), StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsTrue(exception.InnerException is ArgumentOutOfRangeException { ParamName: "value" });
         }
     }
 

@@ -52,7 +52,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains(nameof(FixedIntervalOptions.RetryCount)), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
 
         try
@@ -63,7 +63,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains(nameof(IncrementalOptions.RetryCount)), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
 
         try
@@ -74,7 +74,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains(nameof(ExponentialBackoffOptions.RetryCount)), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
     }
 
@@ -111,7 +111,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains(nameof(FixedIntervalOptions.RetryInterval), StringComparison.InvariantCultureIgnoreCase), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
     }
 
@@ -155,7 +155,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains(nameof(IncrementalOptions.Increment), StringComparison.InvariantCultureIgnoreCase), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
     }
 
@@ -192,7 +192,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains("minBackoff", StringComparison.InvariantCultureIgnoreCase), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
     }
 
@@ -229,7 +229,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains("maxBackoff", StringComparison.InvariantCultureIgnoreCase), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
     }
 
@@ -244,7 +244,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.AreEqual("deltaBackoff", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("deltaBackoff", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
 
         try
@@ -255,7 +255,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.IsTrue(ex.Message.Contains("deltaBackoff", StringComparison.InvariantCultureIgnoreCase), $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("value", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
     }
 
@@ -270,7 +270,7 @@ public class GeneralRetryPolicyTests
         }
         catch (ArgumentOutOfRangeException ex)
         {
-            Assert.AreEqual("minBackoff", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception");
+            Assert.AreEqual("minBackoff", ex.ParamName, $"A wrong argument has caused the {ex.GetType().Name} exception.");
         }
 
         ////try

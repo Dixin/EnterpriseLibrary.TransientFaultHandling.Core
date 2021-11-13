@@ -30,8 +30,7 @@ public static partial class SqlCommandExtensions
     /// <returns>The number of rows affected.</returns>
     public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -74,13 +73,8 @@ public static partial class SqlCommandExtensions
     /// <param name="cmdRetryPolicy">The command retry policy that determines whether to retry a command if it fails while executing.</param>
     /// <param name="conRetryPolicy">The connection retry policy that determines whether to re-establish a connection if it drops while executing the command.</param>
     /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
-    public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
-    {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
-
-        return ExecuteReaderWithRetry(command, CommandBehavior.Default, cmdRetryPolicy, conRetryPolicy);
-    }
+    public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy? conRetryPolicy = null) => 
+        ExecuteReaderWithRetry(command.NotNull().ConnectionNotNull(), CommandBehavior.Default, cmdRetryPolicy, conRetryPolicy);
 
     /// <summary>
     /// Sends the specified command to the connection and builds a SqlDataReader object by using the specified 
@@ -104,8 +98,7 @@ public static partial class SqlCommandExtensions
     /// <returns>A System.Data.SqlClient.SqlDataReader object.</returns>
     public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -151,8 +144,7 @@ public static partial class SqlCommandExtensions
     /// <returns> The first column of the first row in the result set, or a null reference if the result set is empty. Returns a maximum of 2033 characters.</returns>
     public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -195,8 +187,7 @@ public static partial class SqlCommandExtensions
     /// <returns>An System.Xml.XmlReader object.</returns>
     public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -221,23 +212,23 @@ public static partial class SqlCommandExtensions
 
     #endregion
 
-    private static void GuardConnectionIsNotNull(SqlCommand command)
+    private static SqlCommand ConnectionNotNull(this SqlCommand command)
     {
         if (command.Connection is null)
         {
             throw new InvalidOperationException(Resources.ConnectionHasNotBeenInitialized);
         }
+
+        return command;
     }
 
     private static bool EnsureValidConnection(SqlCommand? command, RetryPolicy? retryPolicy)
     {
         if (command is not null)
         {
-            GuardConnectionIsNotNull(command);
-
             // Verify whether or not the connection is valid and is open. This code may be retried therefore
             // it is important to ensure that a connection is re-established should it have previously failed.
-            if (command.Connection.State != ConnectionState.Open)
+            if (command.ConnectionNotNull().Connection.State != ConnectionState.Open)
             {
                 // Attempt to open the connection using the retry policy that matches the policy for SQL commands.
                 command.Connection.OpenWithRetry(retryPolicy);

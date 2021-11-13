@@ -1,5 +1,7 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
+using System.Runtime.CompilerServices;
+
 /// <summary>
 /// Provides the argument validation methods.
 /// </summary>
@@ -11,7 +13,7 @@ internal static class Argument
     /// <param name="argumentValue">The argument value to check.</param>
     /// <param name="argumentName">The name of the argument.</param>
     /// <returns>The return value should be ignored. It is intended to be used only when validating arguments during instance creation (for example, when calling the base constructor).</returns>
-    public static string NotNullOrEmpty([NotNull] string? argumentValue, string argumentName)
+    public static string NotNullOrEmpty([NotNull] this string? argumentValue, [CallerArgumentExpression("argumentValue")] string argumentName = "")
     {
         if (string.IsNullOrEmpty(argumentValue))
         {
@@ -27,7 +29,7 @@ internal static class Argument
     /// <param name="argumentValue">The argument value to check.</param>
     /// <param name="argumentName">The name of the argument.</param>
     /// <returns>The return value should be ignored. It is intended to be used only when validating arguments during instance creation (for example, when calling the base constructor).</returns>
-    public static T NotNull<T>([NotNull] T? argumentValue, string argumentName) where T : class
+    public static T NotNull<T>([NotNull] this T? argumentValue, [CallerArgumentExpression("argumentValue")] string argumentName = "") where T : class
     {
         if (argumentValue is null)
         {
@@ -42,7 +44,7 @@ internal static class Argument
     /// </summary>
     /// <param name="argumentValue">The <see cref="T:System.Int32" /> value of the argument.</param>
     /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-    public static int NotNegative(int argumentValue, string argumentName)
+    public static int NotNegative(this int argumentValue, [CallerArgumentExpression("argumentValue")] string argumentName = "")
     {
         if (argumentValue < 0)
         {
@@ -60,7 +62,7 @@ internal static class Argument
     /// </summary>
     /// <param name="argumentValue">The <see cref="T:System.Int64" /> value of the argument.</param>
     /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-    public static long NotNegative(long argumentValue, string argumentName)
+    public static long NotNegative(this long argumentValue, [CallerArgumentExpression("argumentValue")] string argumentName = "")
     {
         if (argumentValue < 0L)
         {
@@ -79,7 +81,7 @@ internal static class Argument
     /// <param name="argumentValue">The <see cref="T:System.Double" /> value of the argument.</param>
     /// <param name="ceilingValue">The <see cref="T:System.Double" /> ceiling value of the argument.</param>
     /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-    public static double NotGreaterThan(double argumentValue, double ceilingValue, string argumentName)
+    public static double NotGreaterThan(this double argumentValue, double ceilingValue, [CallerArgumentExpression("argumentValue")] string argumentName = "")
     {
         if (argumentValue > ceilingValue)
         {
@@ -99,7 +101,7 @@ internal static class Argument
     /// <param name="minValue">The min value.</param>
     /// <param name="maxValue">The max value.</param>
     /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-    public static TimeSpan InRange(TimeSpan argumentValue, TimeSpan minValue, TimeSpan maxValue, string argumentName)
+    public static TimeSpan InRange(this TimeSpan argumentValue, TimeSpan minValue, TimeSpan maxValue, [CallerArgumentExpression("argumentValue")] string argumentName = "")
     {
         if (argumentValue < minValue || argumentValue > maxValue)
         {
@@ -117,7 +119,7 @@ internal static class Argument
     /// </summary>
     /// <param name="argumentValue">The <see cref="T:System.TimeSpan" /> value of the argument.</param>
     /// <param name="argumentName">The name of the argument for diagnostic purposes.</param>
-    public static TimeSpan NotNegative(TimeSpan argumentValue, string argumentName)
+    public static TimeSpan NotNegative(this TimeSpan argumentValue, [CallerArgumentExpression("argumentValue")] string argumentName = "")
     {
         if (argumentValue < TimeSpan.Zero)
         {

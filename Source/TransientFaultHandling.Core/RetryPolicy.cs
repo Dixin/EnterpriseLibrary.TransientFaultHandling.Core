@@ -14,8 +14,8 @@ public class RetryPolicy
     /// <param name="retryStrategy">The strategy to use for this retry policy.</param>
     public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, RetryStrategy retryStrategy)
     {
-        this.ErrorDetectionStrategy = Argument.NotNull(errorDetectionStrategy, nameof(errorDetectionStrategy));
-        this.RetryStrategy = Argument.NotNull(retryStrategy, nameof(retryStrategy));
+        this.ErrorDetectionStrategy= errorDetectionStrategy.NotNull();
+        this.RetryStrategy = retryStrategy.NotNull();
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public class RetryPolicy
     /// <param name="action">A delegate that represents the executable action that doesn't return any results.</param>
     public virtual void ExecuteAction(Action action)
     {
-        Argument.NotNull(action, nameof(action));
+        action.NotNull();
 
         this.ExecuteAction<object?>(() =>
         {
@@ -125,7 +125,7 @@ public class RetryPolicy
     /// <returns>The result from the action.</returns>
     public virtual TResult ExecuteAction<TResult>(Func<TResult> func)
     {
-        Argument.NotNull(func, nameof(func));
+        func.NotNull();
 
         int retryCount = 0;
         ShouldRetry shouldRetry = this.RetryStrategy.GetShouldRetry();
@@ -190,7 +190,7 @@ public class RetryPolicy
     /// the retry limit is reached, the returned task will transition to a faulted state and the exception must be observed.
     /// </returns>
     public Task ExecuteAsync(Func<Task> taskAction, CancellationToken cancellationToken = default) => 
-        new AsyncExecution(Argument.NotNull(taskAction, nameof(taskAction)), this.RetryStrategy.GetShouldRetry(), this.ErrorDetectionStrategy.IsTransient, this.OnRetrying, this.RetryStrategy.FastFirstRetry, cancellationToken).ExecuteAsync();
+        new AsyncExecution(taskAction.NotNull(), this.RetryStrategy.GetShouldRetry(), this.ErrorDetectionStrategy.IsTransient, this.OnRetrying, this.RetryStrategy.FastFirstRetry, cancellationToken).ExecuteAsync();
 
     /// <summary>
     /// Repeatedly executes the specified asynchronous task while it satisfies the current retry policy.
@@ -203,7 +203,7 @@ public class RetryPolicy
     /// the retry limit is reached, the returned task will transition to a faulted state and the exception must be observed.
     /// </returns>
     public Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> taskFunc, CancellationToken cancellationToken = default) => 
-        new AsyncExecution<TResult>(Argument.NotNull(taskFunc, nameof(taskFunc)), this.RetryStrategy.GetShouldRetry(), this.ErrorDetectionStrategy.IsTransient, this.OnRetrying, this.RetryStrategy.FastFirstRetry, cancellationToken).ExecuteAsync();
+        new AsyncExecution<TResult>(taskFunc.NotNull(), this.RetryStrategy.GetShouldRetry(), this.ErrorDetectionStrategy.IsTransient, this.OnRetrying, this.RetryStrategy.FastFirstRetry, cancellationToken).ExecuteAsync();
 
     /// <summary>
     /// Notifies the subscribers whenever a retry condition is encountered.

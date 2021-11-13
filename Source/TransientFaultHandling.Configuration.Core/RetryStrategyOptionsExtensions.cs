@@ -11,12 +11,8 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="options">The <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedIntervalOptions"/> instance to convert.</param>
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval"/> retry strategy.</returns>
-    public static FixedInterval ToFixedInterval(this FixedIntervalOptions options, string name)
-    {
-        Argument.NotNull(options, nameof(options));
-
-        return new FixedInterval(name, options.RetryCount, options.RetryInterval, options.FastFirstRetry);
-    }
+    public static FixedInterval ToFixedInterval(this FixedIntervalOptions options, string name) => 
+        new (name, options.NotNull().RetryCount, options.RetryInterval, options.FastFirstRetry);
 
     /// <summary>
     /// Converts <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.IncrementalOptions"/> instance to <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental"/> retry strategy.
@@ -24,12 +20,8 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="options">The <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.IncrementalOptions"/> instance to convert.</param>
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental"/> retry strategy.</returns>
-    public static Incremental ToIncremental(this IncrementalOptions options, string name)
-    {
-        Argument.NotNull(options, nameof(options));
-
-        return new Incremental(name, options.RetryCount, options.InitialInterval, options.Increment, options.FastFirstRetry);
-    }
+    public static Incremental ToIncremental(this IncrementalOptions options, string name) => 
+        new (name, options.NotNull().RetryCount, options.InitialInterval, options.Increment, options.FastFirstRetry);
 
     /// <summary>
     /// Converts <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoffOptions"/> instance to <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff"/> retry strategy.
@@ -37,12 +29,8 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="options">The <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoffOptions"/> instance to convert.</param>
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff"/> retry strategy.</returns>
-    public static ExponentialBackoff ToExponentialBackoff(this ExponentialBackoffOptions options, string name)
-    {
-        Argument.NotNull(options, nameof(options));
-
-        return new ExponentialBackoff(name, options.RetryCount, options.MinBackOff, options.MaxBackOff, options.DeltaBackOff, options.FastFirstRetry);
-    }
+    public static ExponentialBackoff ToExponentialBackoff(this ExponentialBackoffOptions options, string name) => 
+        new (name, options.NotNull().RetryCount, options.MinBackOff, options.MaxBackOff, options.DeltaBackOff, options.FastFirstRetry);
 
     /// <summary>
     /// Converts <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedIntervalOptions"/> instance to <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval"/> retry strategy.
@@ -50,7 +38,7 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="options">The <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedIntervalOptions"/> instance to convert.</param>
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval"/> retry strategy.</returns>
-    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ToRetryStrategy.ToFixedInterval")]
+    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryStrategyOptionsExtensions.ToFixedInterval")]
     public static FixedInterval Strategy(this FixedIntervalOptions options, string name) => 
         ToFixedInterval(options, name);
 
@@ -60,7 +48,7 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="options">The <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.IncrementalOptions"/> instance to convert.</param>
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental"/> retry strategy.</returns>
-    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ToRetryStrategy.ToIncremental")]
+    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryStrategyOptionsExtensions.ToIncremental")]
     public static Incremental Strategy(this IncrementalOptions options, string name) => 
         ToIncremental(options, name);
 
@@ -70,7 +58,7 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="options">The <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoffOptions"/> instance to convert.</param>
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff"/> retry strategy.</returns>
-    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ToRetryStrategy.ToExponentialBackoff")]
+    [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryStrategyOptionsExtensions.ToExponentialBackoff")]
     public static ExponentialBackoff Strategy(this ExponentialBackoffOptions options, string name) => 
         ToExponentialBackoff(options, name);
 }

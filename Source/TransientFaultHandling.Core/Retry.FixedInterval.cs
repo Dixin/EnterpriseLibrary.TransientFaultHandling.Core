@@ -22,7 +22,7 @@ public static partial class Retry
         TimeSpan? retryInterval = null,
         bool? firstFastRetry = null) =>
         Execute(
-            Argument.NotNull(func, nameof(func)),
+            func.NotNull(),
             WithFixedInterval(retryCount, retryInterval, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -45,7 +45,7 @@ public static partial class Retry
         TimeSpan? retryInterval = null,
         bool? firstFastRetry = null) =>
         Execute(
-            Argument.NotNull(action, nameof(action)),
+            action.NotNull(),
             WithFixedInterval(retryCount, retryInterval, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -70,7 +70,7 @@ public static partial class Retry
         TimeSpan? retryInterval = null,
         bool? firstFastRetry = null) =>
         ExecuteAsync(
-            Argument.NotNull(func, nameof(func)),
+            func.NotNull(),
             WithFixedInterval(retryCount, retryInterval, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -94,7 +94,7 @@ public static partial class Retry
         TimeSpan? retryInterval = null,
         bool? firstFastRetry = null) =>
         ExecuteAsync(
-            Argument.NotNull(func, nameof(func)),
+            func.NotNull(),
             WithFixedInterval(retryCount, retryInterval, firstFastRetry),
             isTransient,
             retryingHandler);

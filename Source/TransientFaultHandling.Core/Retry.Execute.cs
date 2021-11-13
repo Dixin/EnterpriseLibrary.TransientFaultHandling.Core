@@ -21,7 +21,7 @@ public static partial class Retry
         Func<Exception, bool>? isTransient = null,
         EventHandler<RetryingEventArgs>? retryingHandler = null)
     {
-        Argument.NotNull(func, nameof(func));
+        func.NotNull();
 
         return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAction(func);
     }
@@ -40,7 +40,7 @@ public static partial class Retry
         Func<Exception, bool>? isTransient = null,
         EventHandler<RetryingEventArgs>? retryingHandler = null)
     {
-        Argument.NotNull(action, nameof(action));
+        action.NotNull();
 
         CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAction(action);
     }
@@ -61,7 +61,7 @@ public static partial class Retry
         Func<Exception, bool>? isTransient = null,
         EventHandler<RetryingEventArgs>? retryingHandler = null)
     {
-        Argument.NotNull(func, nameof(func));
+        func.NotNull();
 
         return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func);
     }
@@ -81,7 +81,7 @@ public static partial class Retry
         Func<Exception, bool>? isTransient = null,
         EventHandler<RetryingEventArgs>? retryingHandler = null)
     {
-        Argument.NotNull(func, nameof(func));
+        func.NotNull();
 
         return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func);
     }

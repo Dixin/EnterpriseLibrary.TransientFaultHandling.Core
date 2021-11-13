@@ -30,13 +30,8 @@ public static class RetryConfiguration
     public static IDictionary<string, RetryStrategy> GetRetryStrategies(
         string configurationFile = DefaultConfigurationFile, 
         string configurationKey = DefaultConfigurationKeyRetryStrategy, 
-        Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
-    {
-        Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile));
-        Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey));
-
-        return GetConfiguration(configurationFile).GetRetryStrategies(configurationKey, getCustomRetryStrategy);
-    }
+        Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
+        GetConfiguration(configurationFile.NotNullOrEmpty()).GetRetryStrategies(configurationKey.NotNullOrEmpty(), getCustomRetryStrategy);
 
     /// <summary>
     /// ets the retry manager from the specified configuration file and key.
@@ -48,20 +43,15 @@ public static class RetryConfiguration
     public static RetryManager GetRetryManager(
         string configurationFile = DefaultConfigurationFile, 
         string configurationKey = DefaultConfigurationKeyRetryManager, 
-        Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
-    {
-        Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile));
-        Argument.NotNullOrEmpty(configurationKey, nameof(configurationKey));
-
-        return GetConfiguration(configurationFile).GetRetryManager(configurationKey, getCustomRetryStrategy);
-    }
+        Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
+        GetConfiguration(configurationFile.NotNullOrEmpty()).GetRetryManager(configurationKey.NotNullOrEmpty(), getCustomRetryStrategy);
 
     /// <summary>Gets the configuration from the specified file.</summary>
     /// <param name="configurationFile">The specified configuration file.</param>
     /// <returns>The configuration.</returns>
     public static IConfiguration GetConfiguration(string configurationFile = DefaultConfigurationFile)
     {
-        Argument.NotNullOrEmpty(configurationFile, nameof(configurationFile));
+        configurationFile.NotNullOrEmpty();
 
         IConfigurationBuilder builder = new ConfigurationBuilder();
         builder = Path.GetExtension(configurationFile).ToUpperInvariant() switch

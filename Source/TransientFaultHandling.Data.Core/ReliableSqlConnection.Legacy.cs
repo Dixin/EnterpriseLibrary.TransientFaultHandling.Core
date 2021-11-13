@@ -178,7 +178,7 @@ public sealed class ReliableSqlConnectionLegacy : IDbConnection, ICloneable
     [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by client code")]
     public T? ExecuteCommand<T>(IDbCommand command, RetryPolicy? retryPolicy, CommandBehavior behavior = CommandBehavior.Default)
     {
-        Argument.NotNull(command, nameof(command));
+        command.NotNull();
 
         bool hasOpenedConnection = false;
         try
@@ -287,10 +287,7 @@ public sealed class ReliableSqlConnectionLegacy : IDbConnection, ICloneable
     /// <returns>The number of rows affected.</returns>
     public int ExecuteCommand(IDbCommand command, RetryPolicy? retryPolicy)
     {
-        Argument.NotNull(command, nameof(command));
-
-        NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command, retryPolicy) ?? throw new InvalidOperationException();
-
+        NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command.NotNull(), retryPolicy) ?? throw new InvalidOperationException();
         return result.RecordsAffected;
     }
     #endregion
@@ -299,9 +296,9 @@ public sealed class ReliableSqlConnectionLegacy : IDbConnection, ICloneable
     /// <summary>
     /// Begins a database transaction with the specified System.Data.IsolationLevel value.
     /// </summary>
-    /// <param name="il">One of the enumeration values that specifies the isolation level for the transaction.</param>
+    /// <param name="isolationLevel">One of the enumeration values that specifies the isolation level for the transaction.</param>
     /// <returns>An object that represents the new transaction.</returns>
-    public IDbTransaction BeginTransaction(IsolationLevel il) => this.Current.BeginTransaction(il);
+    public IDbTransaction BeginTransaction(IsolationLevel isolationLevel) => this.Current.BeginTransaction(isolationLevel);
 
     /// <summary>
     /// Begins a database transaction.

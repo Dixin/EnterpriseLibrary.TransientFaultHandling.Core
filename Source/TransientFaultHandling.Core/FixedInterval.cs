@@ -55,8 +55,8 @@ public class FixedInterval : RetryStrategy
     public FixedInterval(string? name, int retryCount, TimeSpan retryInterval, bool firstFastRetry) :
         base(name, firstFastRetry)
     {
-        this.retryCount = Argument.NotNegative(retryCount, nameof(retryCount));
-        this.retryInterval = Argument.NotNegative(retryInterval, nameof(retryInterval));
+        this.retryCount = retryCount.NotNegative();
+        this.retryInterval = retryInterval.NotNegative();
     }
 
     /// <summary>

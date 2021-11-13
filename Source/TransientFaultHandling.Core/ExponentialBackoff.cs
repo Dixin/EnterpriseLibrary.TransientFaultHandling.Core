@@ -58,10 +58,10 @@ public class ExponentialBackoff : RetryStrategy
     public ExponentialBackoff(string? name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, bool firstFastRetry) : 
         base(name, firstFastRetry)
     {
-        this.retryCount = Argument.NotNegative(retryCount, nameof(retryCount));
-        this.minBackoff = Argument.InRange(minBackoff, TimeSpan.Zero, maxBackoff, nameof(minBackoff));
-        this.maxBackoff = Argument.NotNegative(maxBackoff, nameof(maxBackoff));
-        this.deltaBackoff = Argument.NotNegative(deltaBackoff, nameof(deltaBackoff));
+        this.retryCount = retryCount.NotNegative();
+        this.minBackoff = minBackoff.InRange(TimeSpan.Zero, maxBackoff);
+        this.maxBackoff = maxBackoff.NotNegative();
+        this.deltaBackoff = deltaBackoff.NotNegative();
     }
 
     /// <summary>

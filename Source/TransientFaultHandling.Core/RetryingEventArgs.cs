@@ -30,6 +30,6 @@ public class RetryingEventArgs : EventArgs
     {
         this.CurrentRetryCount = currentRetryCount;
         this.Delay = delay;
-        this.LastException = Argument.NotNull(lastException, nameof(lastException));
+        this.LastException = lastException.NotNull();
     }
 }

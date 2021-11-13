@@ -14,7 +14,7 @@ public static partial class SqlConnectionExtensions
     /// <param name="connection">The connection object that is required for the extension method declaration.</param>
     [Obsolete("Use OpenWithRetry for Microsoft.Data.SqlClient.SqlConnection in Microsoft.Data.SqlClient.")]
     public static void OpenWithRetry(this SqlConnection connection) =>
-        OpenWithRetry(connection, RetryManager.Instance.GetDefaultSqlConnectionRetryPolicy());
+        OpenWithRetry(connection.NotNull(), RetryManager.Instance.GetDefaultSqlConnectionRetryPolicy());
 
     /// <summary>
     /// Opens a database connection with the connection settings specified in the ConnectionString property of the connection object.
@@ -23,10 +23,6 @@ public static partial class SqlConnectionExtensions
     /// <param name="connection">The connection object that is required for the extension method declaration.</param>
     /// <param name="retryPolicy">The retry policy that defines whether to retry a request if the connection fails.</param>
     [Obsolete("Use OpenWithRetry for Microsoft.Data.SqlClient.SqlConnection in Microsoft.Data.SqlClient.")]
-    public static void OpenWithRetry(this SqlConnection connection, RetryPolicy? retryPolicy)
-    {
-        Argument.NotNull(connection, nameof(connection));
-
-        (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(connection.Open);
-    }
+    public static void OpenWithRetry(this SqlConnection connection, RetryPolicy? retryPolicy) => 
+        (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(connection.NotNull().Open);
 }

@@ -13,8 +13,7 @@ public static class RetryManagerOptionsExtensions
     /// <returns></returns>
     public static RetryManager ToRetryManager(this RetryManagerOptions options, Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
     {
-        Argument.NotNull(options, nameof(options));
-        if (options.RetryStrategy is null || !options.RetryStrategy.Exists())
+        if (options.NotNull().RetryStrategy is null || !options.RetryStrategy.Exists())
         {
             throw new ArgumentException(Resources.RetryStrategySectionNotFoundInRetryManager, nameof(options));
         }

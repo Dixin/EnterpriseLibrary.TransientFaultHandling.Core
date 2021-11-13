@@ -32,8 +32,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteNonQueryWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -80,10 +79,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
-
-        return ExecuteReaderWithRetry(command, CommandBehavior.Default, cmdRetryPolicy, conRetryPolicy);
+        return ExecuteReaderWithRetry(command.NotNull().ConnectionNotNull(), CommandBehavior.Default, cmdRetryPolicy, conRetryPolicy);
     }
 
     /// <summary>
@@ -110,8 +106,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -159,8 +154,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteScalarWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -205,8 +199,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteXmlReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        Argument.NotNull(command, nameof(command));
-        GuardConnectionIsNotNull(command);
+        command.NotNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -231,23 +224,23 @@ public static partial class SqlCommandExtensions
 
     #endregion
 
-    private static void GuardConnectionIsNotNull(SqlCommand command)
+    private static SqlCommand ConnectionNotNull(this SqlCommand command)
     {
         if (command.Connection is null)
         {
             throw new InvalidOperationException(Resources.ConnectionHasNotBeenInitialized);
         }
+
+        return command;
     }
 
     private static bool EnsureValidConnection(SqlCommand? command, RetryPolicy? retryPolicy)
     {
         if (command is not null)
         {
-            GuardConnectionIsNotNull(command);
-
             // Verify whether or not the connection is valid and is open. This code may be retried therefore
             // it is important to ensure that a connection is re-established should it have previously failed.
-            if (command.Connection.State != ConnectionState.Open)
+            if (command.ConnectionNotNull().Connection.State != ConnectionState.Open)
             {
                 // Attempt to open the connection using the retry policy that matches the policy for SQL commands.
 #pragma warning disable CS0618 // Type or member is obsolete

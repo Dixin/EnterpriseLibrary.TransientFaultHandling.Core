@@ -26,7 +26,7 @@ public static partial class Retry
         TimeSpan? deltaBackoff = null,
         bool? firstFastRetry = null) =>
         Execute(
-            Argument.NotNull(func, nameof(func)),
+            func.NotNull(),
             WithExponentialBackoff(retryCount, minBackoff, maxBackoff, deltaBackoff, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -53,7 +53,7 @@ public static partial class Retry
         TimeSpan? deltaBackoff = null,
         bool? firstFastRetry = null) =>
         Execute(
-            Argument.NotNull(action, nameof(action)),
+            action.NotNull(),
             WithExponentialBackoff(retryCount, minBackoff, maxBackoff, deltaBackoff, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -82,7 +82,7 @@ public static partial class Retry
         TimeSpan? deltaBackoff = null,
         bool? firstFastRetry = null) =>
         ExecuteAsync(
-            Argument.NotNull(func, nameof(func)),
+            func.NotNull(),
             WithExponentialBackoff(retryCount, minBackoff, maxBackoff, deltaBackoff, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -110,7 +110,7 @@ public static partial class Retry
         TimeSpan? deltaBackoff = null,
         bool? firstFastRetry = null) =>
         ExecuteAsync(
-            Argument.NotNull(func, nameof(func)),
+            func.NotNull(),
             WithExponentialBackoff(retryCount, minBackoff, maxBackoff, deltaBackoff, firstFastRetry),
             isTransient,
             retryingHandler);

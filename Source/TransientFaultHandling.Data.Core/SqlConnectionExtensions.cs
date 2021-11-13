@@ -21,10 +21,6 @@ public static partial class SqlConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection object that is required for the extension method declaration.</param>
     /// <param name="retryPolicy">The retry policy that defines whether to retry a request if the connection fails.</param>
-    public static void OpenWithRetry(this SqlConnection connection, RetryPolicy? retryPolicy)
-    {
-        Argument.NotNull(connection, nameof(connection));
-
-        (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(connection.Open);
-    }
+    public static void OpenWithRetry(this SqlConnection connection, RetryPolicy? retryPolicy) => 
+        (retryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(connection.NotNull().Open);
 }

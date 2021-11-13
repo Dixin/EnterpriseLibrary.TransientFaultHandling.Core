@@ -27,10 +27,7 @@ public static class ConfigurationExtensions
         string key = RetryConfiguration.DefaultConfigurationKeyRetryStrategy,
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
     {
-        Argument.NotNull(configuration, nameof(configuration));
-        Argument.NotNullOrEmpty(key, nameof(key));
-
-        IConfigurationSection section = configuration.GetSection(key);
+        IConfigurationSection section = configuration.NotNull().GetSection(key.NotNullOrEmpty());
         return section.Exists()
             ? section.GetRetryStrategies(getCustomRetryStrategy)
             : throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationKeyNotFOund, key), nameof(key));
@@ -44,18 +41,12 @@ public static class ConfigurationExtensions
     /// <returns>A dictionary where keys are the names of retry strategies and values are retry strategies.</returns>
     public static IDictionary<string, RetryStrategy> GetRetryStrategies(
         this IConfigurationSection configurationSection,
-        Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
-    {
-        Argument.NotNull(configurationSection, nameof(configurationSection));
-        if (!configurationSection.Exists())
-        {
-            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
-        }
-
-        return configurationSection.GetChildren().ToDictionary(
-            childSection => childSection.Key,
-            childSection => childSection.GetRetryStrategy(getCustomRetryStrategy));
-    }
+        Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
+        configurationSection.NotNull().Exists()
+            ? configurationSection.GetChildren().ToDictionary(
+                childSection => childSection.Key,
+                childSection => childSection.GetRetryStrategy(getCustomRetryStrategy))
+            : throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
 
     /// <summary>Gets the retry strategy from the specified configuration section.</summary>
     /// <param name="configurationSection">The configuration section.</param>
@@ -63,8 +54,7 @@ public static class ConfigurationExtensions
     /// <returns>The retry strategy. </returns>
     public static RetryStrategy GetRetryStrategy(this IConfigurationSection configurationSection, Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
     {
-        Argument.NotNull(configurationSection, nameof(configurationSection));
-        if (!configurationSection.Exists())
+        if (!configurationSection.NotNull().Exists())
         {
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
         }
@@ -84,8 +74,7 @@ public static class ConfigurationExtensions
     /// <returns>The retry strategy. </returns>
     public static FixedInterval GetFixedInterval(this IConfigurationSection configurationSection)
     {
-        Argument.NotNull(configurationSection, nameof(configurationSection));
-        if (!configurationSection.Exists())
+        if (!configurationSection.NotNull().Exists())
         {
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
         }
@@ -103,8 +92,7 @@ public static class ConfigurationExtensions
     /// <returns>The retry strategy. </returns>
     public static Incremental GetIncremental(this IConfigurationSection configurationSection)
     {
-        Argument.NotNull(configurationSection, nameof(configurationSection));
-        if (!configurationSection.Exists())
+        if (!configurationSection.NotNull().Exists())
         {
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
         }
@@ -122,8 +110,7 @@ public static class ConfigurationExtensions
     /// <returns>The retry strategy. </returns>
     public static ExponentialBackoff GetExponentialBackoff(this IConfigurationSection configurationSection)
     {
-        Argument.NotNull(configurationSection, nameof(configurationSection));
-        if (!configurationSection.Exists())
+        if (!configurationSection.NotNull().Exists())
         {
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
         }
@@ -150,11 +137,8 @@ public static class ConfigurationExtensions
         Func<IConfigurationSection, TRetryStrategy>? getCustomRetryStrategy = null)
         where TRetryStrategy : RetryStrategy
     {
-        Argument.NotNull(configuration, nameof(configuration));
-        Argument.NotNullOrEmpty(key, nameof(key));
-
         Func<IConfigurationSection, RetryStrategy>? covariance = getCustomRetryStrategy;
-        return GetRetryStrategies(configuration, key, covariance)
+        return GetRetryStrategies(configuration.NotNull(), key.NotNullOrEmpty(), covariance)
             .Where(pair => pair.Value is not null and TRetryStrategy)
             .ToDictionary(pair => pair.Key, pair => (TRetryStrategy)pair.Value);
     }
@@ -171,10 +155,7 @@ public static class ConfigurationExtensions
         string key = RetryConfiguration.DefaultConfigurationKeyRetryManager,
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
     {
-        Argument.NotNull(configuration, nameof(configuration));
-        Argument.NotNullOrEmpty(key, nameof(key));
-
-        IConfigurationSection section = configuration.GetSection(key);
+        IConfigurationSection section = configuration.NotNull().GetSection(key.NotNullOrEmpty());
         return section.Exists()
             ? section.GetRetryManager(getCustomRetryStrategy)
             : throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationKeyNotFOund, key), nameof(key));
@@ -189,7 +170,7 @@ public static class ConfigurationExtensions
     public static RetryManager GetRetryManager(
         this IConfigurationSection configurationSection,
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
-        Argument.NotNull(configurationSection, nameof(configurationSection)).Exists()
+        configurationSection.NotNull().Exists()
             ? configurationSection.Get<RetryManagerOptions>(buildOptions => buildOptions.BindNonPublicProperties = true).ToRetryManager(getCustomRetryStrategy)
             : throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ConfigurationSectionNotExist, configurationSection.Path), nameof(configurationSection));
 }
