@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.0;net5.0;net6.0</TargetFrameworks>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Authors>Dixin Yan</Authors>
     <Company>https://DixinYan.com</Company>
     <Copyright>Initially ported from https://www.nuget.org/packages/EnterpriseLibrary.TransientFaultHandling</Copyright>
@@ -17,8 +17,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Tools/Key.snk</AssemblyOriginatorKeyFile>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>EnterpriseLibrary.TransientFaultHandling.Core</PackageId>
     <AssemblyName>TransientFaultHandling.Core</AssemblyName>

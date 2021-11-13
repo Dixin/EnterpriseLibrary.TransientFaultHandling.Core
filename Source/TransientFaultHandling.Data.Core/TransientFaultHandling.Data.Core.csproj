@@ -5,7 +5,7 @@
     <AssemblyName>TransientFaultHandling.Data.Core</AssemblyName>
     <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <PackageId>TransientFaultHandling.Data</PackageId>
     <Authors>Dixin Yan</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -19,8 +19,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Tools/Key.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <FileVersion>2.2.0.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <nullable>enable</nullable>
     <NoWarn>CS0436</NoWarn>
