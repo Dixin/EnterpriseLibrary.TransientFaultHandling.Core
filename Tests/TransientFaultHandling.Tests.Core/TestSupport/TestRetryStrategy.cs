@@ -1,33 +1,29 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport;
+
+public class TestRetryStrategy : RetryStrategy
 {
-    using System;
-    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
+    public TestRetryStrategy()
+        : base(nameof(TestRetryStrategy), true) =>
+        this.CustomProperty = 1;
 
-    public class TestRetryStrategy : RetryStrategy
+    public int CustomProperty { get; }
+
+    public int ShouldRetryCount { get; private set; }
+
+    public override ShouldRetry GetShouldRetry()
     {
-        public TestRetryStrategy()
-            : base(nameof(TestRetryStrategy), true) =>
-            this.CustomProperty = 1;
-
-        public int CustomProperty { get; }
-
-        public int ShouldRetryCount { get; private set; }
-
-        public override ShouldRetry GetShouldRetry()
+        return delegate(int currentRetryCount, Exception lastException, out TimeSpan interval)
         {
-            return delegate(int currentRetryCount, Exception lastException, out TimeSpan interval)
+            if (this.CustomProperty == currentRetryCount)
             {
-                if (this.CustomProperty == currentRetryCount)
-                {
-                    interval = TimeSpan.Zero;
-                    return false;
-                }
+                interval = TimeSpan.Zero;
+                return false;
+            }
 
-                this.ShouldRetryCount++;
+            this.ShouldRetryCount++;
 
-                interval = TimeSpan.FromMilliseconds(1);
-                return true;
-            };
-        }
+            interval = TimeSpan.FromMilliseconds(1);
+            return true;
+        };
     }
 }

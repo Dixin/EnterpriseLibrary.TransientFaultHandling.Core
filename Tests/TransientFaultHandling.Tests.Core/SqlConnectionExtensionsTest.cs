@@ -1,41 +1,34 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests;
+
+[TestClass]
+public class SqlConnectionExtensionsTest
 {
-    using System.Data;
-    using System.Diagnostics;
-    using Microsoft.Data.SqlClient;
-    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    
-    [TestClass]
-    public class SqlConnectionExtensionsTest
+    [TestInitialize]
+    public void Setup() => RetryPolicyFactory.CreateDefault();
+
+    [TestCleanup]
+    public void Cleanup() => RetryPolicyFactory.SetRetryManager(null, false);
+
+    [Description("F5.1.1")]
+    [Priority(1)]
+    [TestMethod]
+    public void TestSqlConnectionExtensions()
     {
-        [TestInitialize]
-        public void Setup() => RetryPolicyFactory.CreateDefault();
+        using SqlConnection connection = new(TestSqlSupport.SqlDatabaseConnectionString);
+        using SqlCommand command = new("SELECT [ProductCategoryID], [Name] FROM [SalesLT].[ProductCategory]", connection);
+        connection.OpenWithRetry();
 
-        [TestCleanup]
-        public void Cleanup() => RetryPolicyFactory.SetRetryManager(null, false);
-
-        [Description("F5.1.1")]
-        [Priority(1)]
-        [TestMethod]
-        public void TestSqlConnectionExtensions()
+        using IDataReader reader = command.ExecuteReader();
+        while (reader.Read())
         {
-            using SqlConnection connection = new(TestSqlSupport.SqlDatabaseConnectionString);
-            using SqlCommand command = new("SELECT [ProductCategoryID], [Name] FROM [SalesLT].[ProductCategory]", connection);
-            connection.OpenWithRetry();
+            int id = reader.GetInt32(0);
+            string name = reader.GetString(1);
 
-            using IDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                int id = reader.GetInt32(0);
-                string name = reader.GetString(1);
-
-                Trace.WriteLine($"{id}: {name}");
-            }
-
-            reader.Close();
-
-            connection.Close();
+            Trace.WriteLine($"{id}: {name}");
         }
+
+        reader.Close();
+
+        connection.Close();
     }
 }

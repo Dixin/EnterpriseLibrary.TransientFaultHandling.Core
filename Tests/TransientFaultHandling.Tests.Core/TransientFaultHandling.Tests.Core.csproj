@@ -1,18 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests</RootNamespace>
     <AssemblyName>TransientFaultHandling.Tests.Core</AssemblyName>
     <LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>
     <nullable>enable</nullable>
+    <NoWarn>CS0436</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.1' And '$(TargetFramework)' != 'net5.0' And '$(TargetFramework)' != 'net6.0'">
+    <NoWarn>CS0436;CS8603;CS8604;CS8777</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Include="Moq" Version="4.16.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+    <Compile Include="..\..\Tools\GlobalUsings.cs" Link="Properties\GlobalUsings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
     <PackageReference Include="System.Interactive" Version="5.0.0" />
   </ItemGroup>
 

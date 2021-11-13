@@ -1,13 +1,10 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport
-{
-    using Microsoft.Extensions.Configuration;
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport;
 
-    public class ConfigurationHelper
+public class ConfigurationHelper
+{
+    public static string GetSetting(string settingName, string fileName = RetryConfiguration.DefaultConfigurationFile)
     {
-        public static string GetSetting(string settingName, string fileName = RetryConfiguration.DefaultConfigurationFile)
-        {
-            IConfiguration configuration = RetryConfiguration.GetConfiguration(fileName);
-            return configuration[settingName];
-        }
+        IConfiguration configuration = RetryConfiguration.GetConfiguration(fileName);
+        return configuration[settingName];
     }
 }

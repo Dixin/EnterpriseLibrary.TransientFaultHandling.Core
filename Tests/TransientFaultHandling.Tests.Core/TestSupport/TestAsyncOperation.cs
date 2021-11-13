@@ -1,45 +1,41 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport;
+
+public class TestAsyncOperation
 {
-    using System;
-    using System.Threading;
+    public TestAsyncOperation(Exception exceptionToThrow) => this.ExceptionToThrow = exceptionToThrow;
 
-    public class TestAsyncOperation
+    public int BeginMethodCount { get; private set; }
+    public int EndMethodCount { get; private set; }
+    public Exception ExceptionToThrow { get; set; }
+
+    public IAsyncResult BeginMethod(AsyncCallback callback, object state)
     {
-        public TestAsyncOperation(Exception exceptionToThrow) => this.ExceptionToThrow = exceptionToThrow;
-
-        public int BeginMethodCount { get; private set; }
-        public int EndMethodCount { get; private set; }
-        public Exception ExceptionToThrow { get; set; }
-
-        public IAsyncResult BeginMethod(AsyncCallback callback, object state)
-        {
-            this.BeginMethodCount++;
-            TestAsyncResult asyncResult = new();
-            ThreadPool.QueueUserWorkItem(_ => callback(asyncResult), null);
-            return asyncResult;
-        }
-
-        public bool EndMethod(IAsyncResult asyncResult)
-        {
-            this.EndMethodCount++;
-
-            if (this.ExceptionToThrow != null)
-            {
-                throw this.ExceptionToThrow;
-            }
-
-            return true;
-        }
+        this.BeginMethodCount++;
+        TestAsyncResult asyncResult = new();
+        ThreadPool.QueueUserWorkItem(_ => callback(asyncResult), null);
+        return asyncResult;
     }
 
-    public class TestAsyncResult : IAsyncResult
+    public bool EndMethod(IAsyncResult asyncResult)
     {
-        public bool IsCompleted { get; set; }
+        this.EndMethodCount++;
 
-        public WaitHandle? AsyncWaitHandle { get; set; }
+        if (this.ExceptionToThrow != null)
+        {
+            throw this.ExceptionToThrow;
+        }
 
-        public object AsyncState { get; set; }
-
-        public bool CompletedSynchronously { get; set; }
+        return true;
     }
+}
+
+public class TestAsyncResult : IAsyncResult
+{
+    public bool IsCompleted { get; set; }
+
+    public WaitHandle? AsyncWaitHandle { get; set; }
+
+    public object AsyncState { get; set; }
+
+    public bool CompletedSynchronously { get; set; }
 }

@@ -1,30 +1,24 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests.Extensibility
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests.Extensibility;
+
+[TestClass]
+public class ExtensibilityFixture
 {
-    using global::TransientFaultHandling.Tests.TestObjects;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests.TestObjects;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    private RetryManager retryManager;
 
-    [TestClass]
-    public class ExtensibilityFixture
+    [TestInitialize]
+    public void Initialize() =>
+        this.retryManager = RetryConfiguration.GetRetryManager(getCustomRetryStrategy: section => 
+            section.Get<TestRetryStrategyOptions>().ToTestRetryStrategy(section.Key));
+
+    [TestCleanup]
+    public void Cleanup()
     {
-        private RetryManager retryManager;
+    }
 
-        [TestInitialize]
-        public void Initialize() =>
-            this.retryManager = RetryConfiguration.GetRetryManager(getCustomRetryStrategy: section => 
-                section.Get<TestRetryStrategyOptions>().ToTestRetryStrategy(section.Key));
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-        }
-
-        [TestMethod]
-        public void CreatesCustomRetryStrategyFromConfiguration()
-        {
-            RetryPolicy<MockErrorDetectionStrategy> mockCustomStrategy = this.retryManager.GetRetryPolicy<MockErrorDetectionStrategy>("Test Retry Strategy");
-            Assert.IsInstanceOfType(mockCustomStrategy.RetryStrategy, typeof(TestRetryStrategy));
-        }
+    [TestMethod]
+    public void CreatesCustomRetryStrategyFromConfiguration()
+    {
+        RetryPolicy<MockErrorDetectionStrategy> mockCustomStrategy = this.retryManager.GetRetryPolicy<MockErrorDetectionStrategy>("Test Retry Strategy");
+        Assert.IsInstanceOfType(mockCustomStrategy.RetryStrategy, typeof(TestRetryStrategy));
     }
 }

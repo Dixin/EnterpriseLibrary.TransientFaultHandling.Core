@@ -1,0 +1,1 @@
+﻿global using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Properties;

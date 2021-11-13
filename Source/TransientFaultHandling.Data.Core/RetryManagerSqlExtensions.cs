@@ -1,71 +1,68 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
+
+/// <summary>
+/// Extends the <see cref="RetryManager"/> class to use it with the SQL Database retry strategy.
+/// </summary>
+public static class RetryManagerSqlExtensions
 {
-    using System;
+    /// <summary>
+    /// The technology name that can be used to get the default SQL command retry strategy.
+    /// </summary>
+    public const string DefaultStrategyCommandTechnologyName = "SQL";
 
     /// <summary>
-    /// Extends the <see cref="RetryManager"/> class to use it with the SQL Database retry strategy.
+    /// The technology name that can be used to get the default SQL connection retry strategy.
     /// </summary>
-    public static class RetryManagerSqlExtensions
+    public const string DefaultStrategyConnectionTechnologyName = "SQLConnection";
+
+    /// <summary>
+    /// Returns the default retry strategy for SQL commands.
+    /// </summary>
+    /// <returns>The default retry strategy for SQL commands (or the default strategy, if no default could be found).</returns>
+    public static RetryStrategy GetDefaultSqlCommandRetryStrategy(this RetryManager retryManager)
     {
-        /// <summary>
-        /// The technology name that can be used to get the default SQL command retry strategy.
-        /// </summary>
-        public const string DefaultStrategyCommandTechnologyName = "SQL";
+        Argument.NotNull(retryManager, nameof(retryManager));
 
-        /// <summary>
-        /// The technology name that can be used to get the default SQL connection retry strategy.
-        /// </summary>
-        public const string DefaultStrategyConnectionTechnologyName = "SQLConnection";
+        return retryManager.GetDefaultRetryStrategy(DefaultStrategyCommandTechnologyName);
+    }
 
-        /// <summary>
-        /// Returns the default retry strategy for SQL commands.
-        /// </summary>
-        /// <returns>The default retry strategy for SQL commands (or the default strategy, if no default could be found).</returns>
-        public static RetryStrategy GetDefaultSqlCommandRetryStrategy(this RetryManager retryManager)
+    /// <summary>
+    /// Returns the default retry policy dedicated to handling transient conditions with SQL commands.
+    /// </summary>
+    /// <returns>The retry policy for SQL commands with the corresponding default strategy (or the default strategy, if no retry strategy assigned to SQL commands was found).</returns>
+    public static RetryPolicy GetDefaultSqlCommandRetryPolicy(this RetryManager retryManager)
+    {
+        Argument.NotNull(retryManager, nameof(retryManager));
+
+        return new RetryPolicy(new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.GetDefaultSqlCommandRetryStrategy());
+    }
+
+    /// <summary>
+    /// Returns the default retry strategy for SQL connections.
+    /// </summary>
+    /// <returns>The default retry strategy for SQL connections (or the default strategy, if no default could be found).</returns>
+    public static RetryStrategy GetDefaultSqlConnectionRetryStrategy(this RetryManager retryManager)
+    {
+        Argument.NotNull(retryManager, nameof(retryManager));
+
+        try
         {
-            Argument.NotNull(retryManager, nameof(retryManager));
-
+            return retryManager.GetDefaultRetryStrategy(DefaultStrategyConnectionTechnologyName);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
             return retryManager.GetDefaultRetryStrategy(DefaultStrategyCommandTechnologyName);
         }
+    }
 
-        /// <summary>
-        /// Returns the default retry policy dedicated to handling transient conditions with SQL commands.
-        /// </summary>
-        /// <returns>The retry policy for SQL commands with the corresponding default strategy (or the default strategy, if no retry strategy assigned to SQL commands was found).</returns>
-        public static RetryPolicy GetDefaultSqlCommandRetryPolicy(this RetryManager retryManager)
-        {
-            Argument.NotNull(retryManager, nameof(retryManager));
+    /// <summary>
+    /// Returns the default retry policy dedicated to handling transient conditions with SQL connections.
+    /// </summary>
+    /// <returns>The retry policy for SQL connections with the corresponding default strategy (or the default strategy, if no retry strategy for SQL connections was found).</returns>
+    public static RetryPolicy GetDefaultSqlConnectionRetryPolicy(this RetryManager retryManager)
+    {
+        Argument.NotNull(retryManager, nameof(retryManager));
 
-            return new RetryPolicy(new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.GetDefaultSqlCommandRetryStrategy());
-        }
-
-        /// <summary>
-        /// Returns the default retry strategy for SQL connections.
-        /// </summary>
-        /// <returns>The default retry strategy for SQL connections (or the default strategy, if no default could be found).</returns>
-        public static RetryStrategy GetDefaultSqlConnectionRetryStrategy(this RetryManager retryManager)
-        {
-            Argument.NotNull(retryManager, nameof(retryManager));
-
-            try
-            {
-                return retryManager.GetDefaultRetryStrategy(DefaultStrategyConnectionTechnologyName);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return retryManager.GetDefaultRetryStrategy(DefaultStrategyCommandTechnologyName);
-            }
-        }
-
-        /// <summary>
-        /// Returns the default retry policy dedicated to handling transient conditions with SQL connections.
-        /// </summary>
-        /// <returns>The retry policy for SQL connections with the corresponding default strategy (or the default strategy, if no retry strategy for SQL connections was found).</returns>
-        public static RetryPolicy GetDefaultSqlConnectionRetryPolicy(this RetryManager retryManager)
-        {
-            Argument.NotNull(retryManager, nameof(retryManager));
-
-            return new RetryPolicy(new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.GetDefaultSqlConnectionRetryStrategy());
-        }
+        return new RetryPolicy(new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.GetDefaultSqlConnectionRetryStrategy());
     }
 }

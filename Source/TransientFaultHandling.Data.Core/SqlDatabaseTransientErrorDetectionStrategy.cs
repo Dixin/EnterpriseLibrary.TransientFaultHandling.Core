@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling
 {
-    using System;
-#if NETSTANDARD2_1 || NET5_0
+#if NETSTANDARD2_1 || NET5_0 || NET6_0
     using System.Data.Entity.Core;
 #endif
     using Microsoft.Data.SqlClient;
@@ -188,7 +187,7 @@
                 }
                 case TimeoutException:
                     return true;
-#if NETSTANDARD2_1 || NET5_0
+#if NETSTANDARD2_1 || NET5_0 || NET6_0
                 case EntityException entityException:
                     return this.IsTransient(entityException.InnerException);
 #endif
@@ -203,7 +202,6 @@
 
 namespace Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandling.SqlAzure
 {
-    using System;
     using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
     /// <summary>

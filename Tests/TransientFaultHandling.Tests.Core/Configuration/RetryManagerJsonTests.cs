@@ -1,15 +1,12 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests
-{
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.Configuration;
 
-    [TestClass]
-    public class RetryManagerJsonTests
+[TestClass]
+public class RetryManagerJsonTests
+{
+    [TestMethod]
+    public void RetryManagerJsonTest()
     {
-        [TestMethod]
-        public void RetryManagerJsonTest()
-        {
-            RetryManager retryManager = RetryConfiguration.GetRetryManager();
-            Assert.IsNotNull(retryManager);
-        }
+        RetryManager retryManager = RetryConfiguration.GetRetryManager();
+        Assert.IsNotNull(retryManager);
     }
 }

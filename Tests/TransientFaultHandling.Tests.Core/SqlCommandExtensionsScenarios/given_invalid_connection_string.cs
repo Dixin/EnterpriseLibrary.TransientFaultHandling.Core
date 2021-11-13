@@ -1,279 +1,267 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.SqlCommandExtensionsScenarios.given_invalid_connection_string
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.SqlCommandExtensionsScenarios.given_invalid_connection_string;
+
+public abstract class Context : ArrangeActAssert
 {
-    using System;
-    using System.Data;
-    using Microsoft.Data.SqlClient;
+    protected TestRetryStrategy connectionStrategy;
+    protected TestRetryStrategy commandStrategy;
+    protected SqlCommand command;
+    protected RetryPolicy connectionPolicy;
+    protected RetryPolicy commandPolicy;
 
-    using Microsoft.Practices.EnterpriseLibrary.Common.TestSupport.ContextBase;
-
-    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport;
-    using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
-
-    using VisualStudio.TestTools.UnitTesting;
-
-    public abstract class Context : ArrangeActAssert
+    protected override void Arrange()
     {
-        protected TestRetryStrategy connectionStrategy;
-        protected TestRetryStrategy commandStrategy;
-        protected SqlCommand command;
-        protected RetryPolicy connectionPolicy;
-        protected RetryPolicy commandPolicy;
+        this.command = new SqlCommand(TestSqlSupport.ValidSqlText);
 
-        protected override void Arrange()
+        this.connectionStrategy = new TestRetryStrategy();
+
+        this.commandStrategy = new TestRetryStrategy();
+
+        this.connectionPolicy = new RetryPolicy(ErrorDetectionStrategy.AlwaysTransient, this.connectionStrategy);
+
+        this.commandPolicy = new RetryPolicy(ErrorDetectionStrategy.AlwaysTransient, this.commandStrategy);
+    }
+}
+
+[TestClass]
+public class when_executing_non_query_command_with_closed_connection : Context
+{
+    protected override void Act()
+    {
+        try
         {
-            this.command = new SqlCommand(TestSqlSupport.ValidSqlText);
-
-            this.connectionStrategy = new TestRetryStrategy();
-
-            this.commandStrategy = new TestRetryStrategy();
-
-            this.connectionPolicy = new RetryPolicy(ErrorDetectionStrategy.AlwaysTransient, this.connectionStrategy);
-
-            this.commandPolicy = new RetryPolicy(ErrorDetectionStrategy.AlwaysTransient, this.commandStrategy);
+            this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
+            this.command.ExecuteNonQueryWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
+        }
+        catch (SqlException)
+        {
         }
     }
 
-    [TestClass]
-    public class when_executing_non_query_command_with_closed_connection : Context
+    [TestMethod]
+    public void then_connection_is_closed()
     {
-        protected override void Act()
-        {
-            try
-            {
-                this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
-                this.command.ExecuteNonQueryWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (SqlException)
-            {
-            }
-        }
+        Assert.IsNotNull(this.command.Connection);
+        Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
+    }
 
-        [TestMethod]
-        public void then_connection_is_closed()
-        {
-            Assert.IsNotNull(this.command.Connection);
-            Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
-        }
+    [TestMethod]
+    public void then_retried()
+    {
+        Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
+    }
+}
 
-        [TestMethod]
-        public void then_retried()
+[TestClass]
+public class when_executing_non_query_command_with_no_connection : Context
+{
+    protected override void Act()
+    {
+        try
         {
-            Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
+            this.command.ExecuteNonQueryWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
         }
     }
 
-    [TestClass]
-    public class when_executing_non_query_command_with_no_connection : Context
+    [TestMethod]
+    public void then_did_not_retried()
     {
-        protected override void Act()
-        {
-            try
-            {
-                this.command.ExecuteNonQueryWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
+        Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
+    }
+}
 
-        [TestMethod]
-        public void then_did_not_retried()
+[TestClass]
+public class when_executing_scalar_command_with_closed_connection : Context
+{
+    protected override void Act()
+    {
+        try
         {
-            Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
+            this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
+            this.command.ExecuteScalarWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
+        }
+        catch (SqlException)
+        {
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
         }
     }
 
-    [TestClass]
-    public class when_executing_scalar_command_with_closed_connection : Context
+    [TestMethod]
+    public void then_connection_is_closed()
     {
-        protected override void Act()
-        {
-            try
-            {
-                this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
-                this.command.ExecuteScalarWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (SqlException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
+        Assert.IsNotNull(this.command.Connection);
+        Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
+    }
 
-        [TestMethod]
-        public void then_connection_is_closed()
-        {
-            Assert.IsNotNull(this.command.Connection);
-            Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
-        }
+    [TestMethod]
+    public void then_retried()
+    {
+        Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
+    }
+}
 
-        [TestMethod]
-        public void then_retried()
+[TestClass]
+public class when_executing_scalar_command_with_no_connection : Context
+{
+    protected override void Act()
+    {
+        try
         {
-            Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
+            this.command.ExecuteScalarWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
         }
     }
 
-    [TestClass]
-    public class when_executing_scalar_command_with_no_connection : Context
+    [TestMethod]
+    public void then_did_not_retried()
     {
-        protected override void Act()
-        {
-            try
-            {
-                this.command.ExecuteScalarWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
+        Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
+    }
+}
 
-        [TestMethod]
-        public void then_did_not_retried()
+[TestClass]
+public class when_executing_reader_command_with_closed_connection : Context
+{
+    protected override void Act()
+    {
+        try
         {
-            Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
+            this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
+            this.command.ExecuteReaderWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
+        }
+        catch (SqlException)
+        {
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
         }
     }
 
-    [TestClass]
-    public class when_executing_reader_command_with_closed_connection : Context
+    [TestMethod]
+    public void then_connection_is_closed()
     {
-        protected override void Act()
-        {
-            try
-            {
-                this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
-                this.command.ExecuteReaderWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (SqlException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
-
-        [TestMethod]
-        public void then_connection_is_closed()
-        {
-            Assert.IsNotNull(this.command.Connection);
-            Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
-        }
-
-        [TestMethod]
-        public void then_retried()
-        {
-            Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
-        }
+        Assert.IsNotNull(this.command.Connection);
+        Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
     }
+
+    [TestMethod]
+    public void then_retried()
+    {
+        Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
+    }
+}
     
-    [TestClass]
-    public class when_executing_reader_command_with_no_connection : Context
+[TestClass]
+public class when_executing_reader_command_with_no_connection : Context
+{
+    protected override void Act()
     {
-        protected override void Act()
+        try
         {
-            try
-            {
-                this.command.ExecuteReaderWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            this.command.ExecuteReaderWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
         }
-
-        [TestMethod]
-        public void then_did_not_retried()
+        catch (InvalidOperationException)
         {
-            Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
         }
     }
 
-    [TestClass]
-    public class when_executing_xml_reader_command_with_closed_connection : Context
+    [TestMethod]
+    public void then_did_not_retried()
     {
-        protected override void Act()
-        {
-            try
-            {
-                this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
-                this.command.ExecuteXmlReaderWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (SqlException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
+        Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
+    }
+}
 
-        [TestMethod]
-        public void then_connection_is_closed()
+[TestClass]
+public class when_executing_xml_reader_command_with_closed_connection : Context
+{
+    protected override void Act()
+    {
+        try
         {
-            Assert.IsNotNull(this.command.Connection);
-            Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
+            this.command.Connection = new SqlConnection(TestSqlSupport.InvalidConnectionString);
+            this.command.ExecuteXmlReaderWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
         }
-
-        [TestMethod]
-        public void then_retried()
+        catch (SqlException)
         {
-            Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
         }
     }
 
-    [TestClass]
-    public class when_executing_xml_reader_command_with_no_connection : Context
+    [TestMethod]
+    public void then_connection_is_closed()
     {
-        protected override void Act()
-        {
-            try
-            {
-                this.command.ExecuteXmlReaderWithRetry(this.commandPolicy, this.connectionPolicy);
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
+        Assert.IsNotNull(this.command.Connection);
+        Assert.IsTrue(this.command.Connection.State == ConnectionState.Closed);
+    }
 
-        [TestMethod]
-        public void then_did_not_retried()
+    [TestMethod]
+    public void then_retried()
+    {
+        Assert.AreEqual(2, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(1, this.commandStrategy.ShouldRetryCount);
+    }
+}
+
+[TestClass]
+public class when_executing_xml_reader_command_with_no_connection : Context
+{
+    protected override void Act()
+    {
+        try
         {
-            Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
-            Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
+            this.command.ExecuteXmlReaderWithRetry(this.commandPolicy, this.connectionPolicy);
+            Assert.Fail();
         }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
+        }
+    }
+
+    [TestMethod]
+    public void then_did_not_retried()
+    {
+        Assert.AreEqual(0, this.connectionStrategy.ShouldRetryCount);
+        Assert.AreEqual(0, this.commandStrategy.ShouldRetryCount);
     }
 }

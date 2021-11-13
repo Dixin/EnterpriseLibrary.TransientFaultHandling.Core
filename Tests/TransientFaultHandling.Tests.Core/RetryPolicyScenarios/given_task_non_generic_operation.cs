@@ -1,456 +1,311 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.RetryPolicyScenarios.given_task_non_generic_operation
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.RetryPolicyScenarios.given_task_non_generic_operation;
+
+public class Context : ArrangeActAssert
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Practices.EnterpriseLibrary.Common.TestSupport.ContextBase;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
+    protected Mock<ITransientErrorDetectionStrategy> detectionStrategyMock;
+    protected RetryPolicy retryPolicy;
 
-    public class Context : ArrangeActAssert
+    protected override void Arrange()
     {
-        protected Mock<ITransientErrorDetectionStrategy> detectionStrategyMock;
-        protected RetryPolicy retryPolicy;
+        base.Arrange();
 
-        protected override void Arrange()
-        {
-            base.Arrange();
+        this.detectionStrategyMock = new Mock<ITransientErrorDetectionStrategy>();
+        this.detectionStrategyMock.Setup(ds => ds.IsTransient(It.Is<Exception>(e => e is InvalidOperationException))).Returns(true);
 
-            this.detectionStrategyMock = new Mock<ITransientErrorDetectionStrategy>();
-            this.detectionStrategyMock.Setup(ds => ds.IsTransient(It.Is<Exception>(e => e is InvalidOperationException))).Returns(true);
-
-            this.retryPolicy = new RetryPolicy(this.detectionStrategyMock.Object, 2);
-        }
+        this.retryPolicy = new RetryPolicy(this.detectionStrategyMock.Object, 2);
     }
+}
 
-    [TestClass]
-    public class when_invoking_successful_operation : Context
+[TestClass]
+public class when_invoking_successful_operation : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                    {
-                        int result = ++this.timesStarted;
-                        return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
-                    });
-
-            Assert.IsTrue(this.task.Wait(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
-        }
-    }
-
-    [TestClass]
-    public class when_invoking_successful_operation_that_executes_fast : Context
-    {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    int result = ++this.timesStarted;
-                    Task t = Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
-                    t.Wait();
-                    return t;
-                });
-
-            Assert.IsTrue(this.task.Wait(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
-        }
-    }
-
-    [TestClass]
-    public class when_task_invocation_throws_synchronously_non_transient_exception : Context
-    {
-        private Exception exception;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            try
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
             {
-                this.retryPolicy
-                    .ExecuteAsync(() =>
-                    {
-                        ++this.timesStarted;
-                        throw new Exception("non transient");
-                    });
-            }
-            catch (Exception ex)
+                int result = ++this.timesStarted;
+                return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
+            });
+
+        Assert.IsTrue(this.task.Wait(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_ran_to_completion()
+    {
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
+    }
+
+    [TestMethod]
+    public void then_starts_task_once()
+    {
+        Assert.AreEqual(1, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
+    }
+}
+
+[TestClass]
+public class when_invoking_successful_operation_that_executes_fast : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
             {
-                this.exception = ex;
-            }
-        }
+                int result = ++this.timesStarted;
+                Task t = Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
+                t.Wait();
+                return t;
+            });
 
-        [TestMethod]
-        public void then_gets_synchronous_exception()
-        {
-            Assert.AreEqual("non transient", this.exception.Message);
-        }
-
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
+        Assert.IsTrue(this.task.Wait(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_task_fails_with_non_transient_exception : Context
+    [TestMethod]
+    public void then_ran_to_completion()
     {
-        private Task task;
-        private int timesStarted;
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
+    }
 
-        protected override void Act()
+    [TestMethod]
+    public void then_starts_task_once()
+    {
+        Assert.AreEqual(1, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
+    }
+}
+
+[TestClass]
+public class when_task_invocation_throws_synchronously_non_transient_exception : Context
+{
+    private Exception exception;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        try
         {
-            this.task = this.retryPolicy
+            this.retryPolicy
                 .ExecuteAsync(() =>
                 {
-                    int result = ++this.timesStarted;
-                    return Task.Factory.StartNew(() => throw new Exception("non transient"), TaskCreationOptions.LongRunning);
+                    ++this.timesStarted;
+                    throw new Exception("non transient");
                 });
-
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
         }
-
-        [TestMethod]
-        public void then_gets_exception()
+        catch (Exception ex)
         {
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("non transient", this.task.Exception.InnerException.Message);
-        }
-
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_one_exception_is_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
+            this.exception = ex;
         }
     }
 
-    [TestClass]
-    public class when_task_invocation_throws_synchronously_with_transient_exception_in_first_attempt : Context
+    [TestMethod]
+    public void then_gets_synchronous_exception()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    int result = ++this.timesStarted;
-                    if (result == 1)
-                    {
-                        throw new InvalidOperationException("transient");
-                    }
-
-                    return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
-                });
-
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_twice()
-        {
-            Assert.AreEqual(2, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_one_exception_is_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(1));
-        }
+        Assert.AreEqual("non transient", this.exception.Message);
     }
 
-    [TestClass]
-    public class when_task_invocation_throws_synchronously_with_transient_exception_in_first_and_second_attempts : Context
+    [TestMethod]
+    public void then_starts_task_once()
     {
-        private Task task;
-        private int timesStarted;
+        Assert.AreEqual(1, this.timesStarted);
+    }
+}
 
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    int result = ++this.timesStarted;
-                    if (result <= 2)
-                    {
-                        throw new InvalidOperationException("transient");
-                    }
+[TestClass]
+public class when_task_fails_with_non_transient_exception : Context
+{
+    private Task task;
+    private int timesStarted;
 
-                    return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
-                });
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                return Task.Factory.StartNew(() => throw new Exception("non transient"), TaskCreationOptions.LongRunning);
+            });
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_three_times()
-        {
-            Assert.AreEqual(3, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_two_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(2));
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_task_invocation_throws_synchronously_with_transient_exception_in_all_attempts : Context
+    [TestMethod]
+    public void then_gets_exception()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    int result = ++this.timesStarted;
-                    if (result <= 3)
-                    {
-                        throw new InvalidOperationException("transient");
-                    }
-
-                    return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
-                });
-
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_gets_exception()
-        {
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
-        }
-
-        [TestMethod]
-        public void then_starts_task_three_times()
-        {
-            Assert.AreEqual(3, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_three_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(3));
-        }
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("non transient", this.task.Exception.InnerException.Message);
     }
 
-    [TestClass]
-    public class when_operation_fails_with_transient_exception_in_first_attempt : Context
+    [TestMethod]
+    public void then_starts_task_once()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    int result = ++this.timesStarted;
-                    return Task.Factory.StartNew(() =>
-                        {
-                            if (result == 1)
-                            {
-                                throw new InvalidOperationException("transient");
-                            }
-                        },
-                        TaskCreationOptions.LongRunning);
-                });
-
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_twice()
-        {
-            Assert.AreEqual(2, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_one_exception_is_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
-        }
+        Assert.AreEqual(1, this.timesStarted);
     }
 
-    [TestClass]
-    public class when_operation_fails_with_transient_exception_in_first_and_second_attempts : Context
+    [TestMethod]
+    public void then_one_exception_is_tested_for_transient()
     {
-        private Task task;
-        private int timesStarted;
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
+    }
+}
 
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+[TestClass]
+public class when_task_invocation_throws_synchronously_with_transient_exception_in_first_attempt : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                if (result == 1)
                 {
-                    int result = ++this.timesStarted;
-                    return Task.Factory.StartNew(() =>
-                    {
-                        if (result <= 2)
-                        {
-                            throw new InvalidOperationException("transient");
-                        }
-                    },
-                    TaskCreationOptions.LongRunning);
-                });
+                    throw new InvalidOperationException("transient");
+                }
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
+                return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
+            });
 
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_three_times()
-        {
-            Assert.AreEqual(3, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_two_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(2));
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_operation_fails_with_transient_exception_in_all_attempts : Context
+    [TestMethod]
+    public void then_ran_to_completion()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    int result = ++this.timesStarted;
-                    return Task.Factory.StartNew(() =>
-                    {
-                        if (result <= 3)
-                        {
-                            throw new InvalidOperationException("transient");
-                        }
-                    },
-                    TaskCreationOptions.LongRunning);
-                });
-
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_gets_exception()
-        {
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
-        }
-
-        [TestMethod]
-        public void then_starts_task_three_times()
-        {
-            Assert.AreEqual(3, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_three_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(3));
-        }
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
     }
 
-    [TestClass]
-    public class when_task_invocation_throws_synchronously_on_second_attempt_with_non_transient_exception : Context
+    [TestMethod]
+    public void then_starts_task_twice()
     {
-        private Task task;
-        private int timesStarted;
+        Assert.AreEqual(2, this.timesStarted);
+    }
 
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+    [TestMethod]
+    public void then_one_exception_is_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(1));
+    }
+}
+
+[TestClass]
+public class when_task_invocation_throws_synchronously_with_transient_exception_in_first_and_second_attempts : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                if (result <= 2)
                 {
-                    int result = ++this.timesStarted;
-                    if (result == 2)
-                    {
-                        throw new Exception("non transient");
-                    }
+                    throw new InvalidOperationException("transient");
+                }
 
-                    return Task.Factory.StartNew(() =>
+                return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
+            });
+
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_ran_to_completion()
+    {
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
+    }
+
+    [TestMethod]
+    public void then_starts_task_three_times()
+    {
+        Assert.AreEqual(3, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_two_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(2));
+    }
+}
+
+[TestClass]
+public class when_task_invocation_throws_synchronously_with_transient_exception_in_all_attempts : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                if (result <= 3)
+                {
+                    throw new InvalidOperationException("transient");
+                }
+
+                return Task.Factory.StartNew(() => { }, TaskCreationOptions.LongRunning);
+            });
+
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_gets_exception()
+    {
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
+    }
+
+    [TestMethod]
+    public void then_starts_task_three_times()
+    {
+        Assert.AreEqual(3, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_three_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(3));
+    }
+}
+
+[TestClass]
+public class when_operation_fails_with_transient_exception_in_first_attempt : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                return Task.Factory.StartNew(() =>
                     {
                         if (result == 1)
                         {
@@ -458,44 +313,182 @@
                         }
                     },
                     TaskCreationOptions.LongRunning);
-                });
+            });
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_gets_exception()
-        {
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("non transient", this.task.Exception?.InnerException?.Message);
-        }
-
-        [TestMethod]
-        public void then_starts_task_twice()
-        {
-            Assert.AreEqual(2, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_two_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(2));
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_operation_fails_on_second_attempt_with_non_transient_exception : Context
+    [TestMethod]
+    public void then_ran_to_completion()
     {
-        private Task task;
-        private int timesStarted;
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
+    }
 
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+    [TestMethod]
+    public void then_starts_task_twice()
+    {
+        Assert.AreEqual(2, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_one_exception_is_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
+    }
+}
+
+[TestClass]
+public class when_operation_fails_with_transient_exception_in_first_and_second_attempts : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                return Task.Factory.StartNew(() =>
+                    {
+                        if (result <= 2)
+                        {
+                            throw new InvalidOperationException("transient");
+                        }
+                    },
+                    TaskCreationOptions.LongRunning);
+            });
+
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_ran_to_completion()
+    {
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
+    }
+
+    [TestMethod]
+    public void then_starts_task_three_times()
+    {
+        Assert.AreEqual(3, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_two_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(2));
+    }
+}
+
+[TestClass]
+public class when_operation_fails_with_transient_exception_in_all_attempts : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                return Task.Factory.StartNew(() =>
+                    {
+                        if (result <= 3)
+                        {
+                            throw new InvalidOperationException("transient");
+                        }
+                    },
+                    TaskCreationOptions.LongRunning);
+            });
+
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_gets_exception()
+    {
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
+    }
+
+    [TestMethod]
+    public void then_starts_task_three_times()
+    {
+        Assert.AreEqual(3, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_three_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(3));
+    }
+}
+
+[TestClass]
+public class when_task_invocation_throws_synchronously_on_second_attempt_with_non_transient_exception : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                if (result == 2)
                 {
-                    int result = ++this.timesStarted;
-                    return Task.Factory.StartNew(() =>
+                    throw new Exception("non transient");
+                }
+
+                return Task.Factory.StartNew(() =>
+                    {
+                        if (result == 1)
+                        {
+                            throw new InvalidOperationException("transient");
+                        }
+                    },
+                    TaskCreationOptions.LongRunning);
+            });
+
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_gets_exception()
+    {
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("non transient", this.task.Exception?.InnerException?.Message);
+    }
+
+    [TestMethod]
+    public void then_starts_task_twice()
+    {
+        Assert.AreEqual(2, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_two_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(2));
+    }
+}
+
+[TestClass]
+public class when_operation_fails_on_second_attempt_with_non_transient_exception : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                return Task.Factory.StartNew(() =>
                     {
                         if (result == 1)
                         {
@@ -508,209 +501,209 @@
                         }
                     },
                     TaskCreationOptions.LongRunning);
-                });
+            });
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
 
-        [TestMethod]
-        public void then_gets_exception()
+    [TestMethod]
+    public void then_gets_exception()
+    {
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("non transient", this.task.Exception?.InnerException?.Message);
+    }
+
+    [TestMethod]
+    public void then_starts_task_twice()
+    {
+        Assert.AreEqual(2, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_two_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(2));
+    }
+}
+
+[TestClass]
+public class when_invoking_operation_without_task : Context
+{
+    private ArgumentNullException exception;
+
+    protected override void Act()
+    {
+        this.exception = null;
+
+        try
         {
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("non transient", this.task.Exception?.InnerException?.Message);
-        }
+            this.retryPolicy.ExecuteAsync(null);
 
-        [TestMethod]
-        public void then_starts_task_twice()
-        {
-            Assert.AreEqual(2, this.timesStarted);
+            Assert.Fail("Should have thrown");
         }
-
-        [TestMethod]
-        public void then_two_exceptions_are_tested_for_transient()
+        catch (ArgumentNullException e)
         {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(2));
+            this.exception = e;
         }
     }
 
-    [TestClass]
-    public class when_invoking_operation_without_task : Context
+    [TestMethod]
+    public void then_throws_exception()
     {
-        private ArgumentNullException exception;
+        Assert.IsNotNull(this.exception);
+        Assert.AreEqual("taskAction", this.exception.ParamName);
+    }
+}
 
-        protected override void Act()
+[TestClass]
+public class when_invoking_operation_with_function_that_returns_null : Context
+{
+    private ArgumentException exception;
+
+    protected override void Act()
+    {
+        this.exception = null;
+
+        try
         {
-            this.exception = null;
+            this.retryPolicy.ExecuteAsync(() => (Task)null);
 
-            try
-            {
-                this.retryPolicy.ExecuteAsync(null);
-
-                Assert.Fail("Should have thrown");
-            }
-            catch (ArgumentNullException e)
-            {
-                this.exception = e;
-            }
+            Assert.Fail("Should have thrown");
         }
-
-        [TestMethod]
-        public void then_throws_exception()
+        catch (ArgumentException e)
         {
-            Assert.IsNotNull(this.exception);
-            Assert.AreEqual("taskAction", this.exception.ParamName);
+            this.exception = e;
         }
     }
 
-    [TestClass]
-    public class when_invoking_operation_with_function_that_returns_null : Context
+    [TestMethod]
+    public void then_throws_exception()
     {
-        private ArgumentException exception;
+        Assert.IsNotNull(this.exception);
+        Assert.AreEqual("taskAction", this.exception.ParamName);
+    }
+}
 
-        protected override void Act()
+[TestClass]
+public class when_invoking_operation_with_function_that_returns_a_cold_task : Context
+{
+    private ArgumentException exception;
+
+    protected override void Act()
+    {
+        try
         {
-            this.exception = null;
-
-            try
-            {
-                this.retryPolicy.ExecuteAsync(() => (Task)null);
-
-                Assert.Fail("Should have thrown");
-            }
-            catch (ArgumentException e)
-            {
-                this.exception = e;
-            }
+            this.retryPolicy.ExecuteAsync(() => new Task(() => { }));
         }
-
-        [TestMethod]
-        public void then_throws_exception()
+        catch (ArgumentException ex)
         {
-            Assert.IsNotNull(this.exception);
-            Assert.AreEqual("taskAction", this.exception.ParamName);
+            this.exception = ex;
         }
     }
 
-    [TestClass]
-    public class when_invoking_operation_with_function_that_returns_a_cold_task : Context
+    [TestMethod]
+    public void then_gets_synchronous_exception()
     {
-        private ArgumentException exception;
-
-        protected override void Act()
-        {
-            try
-            {
-                this.retryPolicy.ExecuteAsync(() => new Task(() => { }));
-            }
-            catch (ArgumentException ex)
-            {
-                this.exception = ex;
-            }
-        }
-
-        [TestMethod]
-        public void then_gets_synchronous_exception()
-        {
-            Assert.IsNotNull(this.exception);
-            Assert.AreEqual("taskAction", this.exception.ParamName);
-        }
+        Assert.IsNotNull(this.exception);
+        Assert.AreEqual("taskAction", this.exception.ParamName);
     }
+}
 
-    [TestClass]
-    public class when_task_fails_synchronously_on_second_attempt_then_asynchronous_task_fails : Context
+[TestClass]
+public class when_task_fails_synchronously_on_second_attempt_then_asynchronous_task_fails : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                if (result == 2)
                 {
-                    int result = ++this.timesStarted;
-                    if (result == 2)
-                    {
-                        throw new Exception("not checked");
-                    }
+                    throw new Exception("not checked");
+                }
 
-                    return Task.Factory.StartNew(
-                        () => throw new InvalidOperationException("transient"),
-                        TaskCreationOptions.LongRunning);
-                });
+                return Task.Factory.StartNew(
+                    () => throw new InvalidOperationException("transient"),
+                    TaskCreationOptions.LongRunning);
+            });
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_gets_exception()
-        {
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("not checked", this.task.Exception?.InnerException?.Message);
-        }
-
-        [TestMethod]
-        public void then_starts_task_twice()
-        {
-            Assert.AreEqual(2, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_one_exception_is_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(1));
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_task_is_canceled : Context
+    [TestMethod]
+    public void then_gets_exception()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            CancellationTokenSource cts = new();
-            cts.Cancel();
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    int result = ++this.timesStarted;
-                    return Task.Factory.StartNew(() => throw new OperationCanceledException(cts.Token), cts.Token);
-                });
-
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_task_is_canceled()
-        {
-            Assert.AreEqual(TaskStatus.Canceled, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
-        }
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("not checked", this.task.Exception?.InnerException?.Message);
     }
 
-    [TestClass]
-    public class when_using_cancellation_token_and_task_is_canceled_in_flight_and_succeeds : Context
+    [TestMethod]
+    public void then_starts_task_twice()
     {
-        private Task task;
-        private int timesStarted;
+        Assert.AreEqual(2, this.timesStarted);
+    }
 
-        protected override void Act()
-        {
-            CancellationTokenSource cts = new();
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+    [TestMethod]
+    public void then_one_exception_is_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.AtLeast(1));
+    }
+}
+
+[TestClass]
+public class when_task_is_canceled : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        CancellationTokenSource cts = new();
+        cts.Cancel();
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                int result = ++this.timesStarted;
+                return Task.Factory.StartNew(() => throw new OperationCanceledException(cts.Token), cts.Token);
+            });
+
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_task_is_canceled()
+    {
+        Assert.AreEqual(TaskStatus.Canceled, this.task.Status);
+    }
+
+    [TestMethod]
+    public void then_starts_task_once()
+    {
+        Assert.AreEqual(1, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
+    }
+}
+
+[TestClass]
+public class when_using_cancellation_token_and_task_is_canceled_in_flight_and_succeeds : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        CancellationTokenSource cts = new();
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
                 {
                     int result = ++this.timesStarted;
                     return Task.Factory.StartNew(() =>
@@ -723,78 +716,78 @@
                 },
                 cts.Token);
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_using_cancellation_token_and_is_canceled_even_before_starting : Context
+    [TestMethod]
+    public void then_ran_to_completion()
     {
-        private Task task;
-        private int timesStarted;
-
-        protected override void Act()
-        {
-            CancellationTokenSource cts = new();
-            cts.Cancel();
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
-                {
-                    ++this.timesStarted;
-                    return Task.Factory.StartNew(() => { });
-                }, cts.Token);
-
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_task_is_canceled()
-        {
-            Assert.AreEqual(TaskStatus.Canceled, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_does_not_start_task()
-        {
-            Assert.AreEqual(0, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
-        }
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
     }
 
-    [TestClass]
-    public class when_using_cancellation_token_and_task_is_canceled_in_flight_and_fails_with_transient : Context
+    [TestMethod]
+    public void then_starts_task_once()
     {
-        private Task task;
-        private int timesStarted;
+        Assert.AreEqual(1, this.timesStarted);
+    }
 
-        protected override void Act()
-        {
-            CancellationTokenSource cts = new();
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
+    }
+}
+
+[TestClass]
+public class when_using_cancellation_token_and_is_canceled_even_before_starting : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        CancellationTokenSource cts = new();
+        cts.Cancel();
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
+            {
+                ++this.timesStarted;
+                return Task.Factory.StartNew(() => { });
+            }, cts.Token);
+
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
+
+    [TestMethod]
+    public void then_task_is_canceled()
+    {
+        Assert.AreEqual(TaskStatus.Canceled, this.task.Status);
+    }
+
+    [TestMethod]
+    public void then_does_not_start_task()
+    {
+        Assert.AreEqual(0, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
+    }
+}
+
+[TestClass]
+public class when_using_cancellation_token_and_task_is_canceled_in_flight_and_fails_with_transient : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        CancellationTokenSource cts = new();
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
                 {
                     int result = ++this.timesStarted;
                     return Task.Factory.StartNew(() =>
@@ -812,41 +805,41 @@
                 },
                 cts.Token);
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_gets_exception()
-        {
-            // TODO: should this be Canceled or Faulted?
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
-        }
-
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_using_cancellation_token_and_task_is_canceled_in_flight_after_one_attempt_and_succeeds : Context
+    [TestMethod]
+    public void then_gets_exception()
     {
-        private Task task;
-        private int timesStarted;
+        // TODO: should this be Canceled or Faulted?
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
+    }
 
-        protected override void Act()
-        {
-            CancellationTokenSource cts = new();
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+    [TestMethod]
+    public void then_starts_task_once()
+    {
+        Assert.AreEqual(1, this.timesStarted);
+    }
+
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Never());
+    }
+}
+
+[TestClass]
+public class when_using_cancellation_token_and_task_is_canceled_in_flight_after_one_attempt_and_succeeds : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Act()
+    {
+        CancellationTokenSource cts = new();
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
                 {
                     int result = ++this.timesStarted;
                     return Task.Factory.StartNew(() =>
@@ -864,45 +857,45 @@
                 },
                 cts.Token);
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
-
-        [TestMethod]
-        public void then_ran_to_completion()
-        {
-            Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
-        }
-
-        [TestMethod]
-        public void then_starts_task_twice()
-        {
-            Assert.AreEqual(2, this.timesStarted);
-        }
-
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
     }
 
-    [TestClass]
-    public class when_using_cancellation_token_and_task_is_canceled_while_waiting_to_retry : Context
+    [TestMethod]
+    public void then_ran_to_completion()
     {
-        private Task task;
-        private int timesStarted;
+        Assert.AreEqual(TaskStatus.RanToCompletion, this.task.Status);
+    }
 
-        protected override void Arrange()
-        {
-            base.Arrange();
-            this.retryPolicy.RetryStrategy.FastFirstRetry = false;
-        }
+    [TestMethod]
+    public void then_starts_task_twice()
+    {
+        Assert.AreEqual(2, this.timesStarted);
+    }
 
-        protected override void Act()
-        {
-            CancellationTokenSource cts = new();
-            this.task = this.retryPolicy
-                .ExecuteAsync(() =>
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
+    }
+}
+
+[TestClass]
+public class when_using_cancellation_token_and_task_is_canceled_while_waiting_to_retry : Context
+{
+    private Task task;
+    private int timesStarted;
+
+    protected override void Arrange()
+    {
+        base.Arrange();
+        this.retryPolicy.RetryStrategy.FastFirstRetry = false;
+    }
+
+    protected override void Act()
+    {
+        CancellationTokenSource cts = new();
+        this.task = this.retryPolicy
+            .ExecuteAsync(() =>
                 {
                     int result = ++this.timesStarted;
                     return Task.Factory.StartNew(() =>
@@ -919,27 +912,26 @@
                 },
                 cts.Token);
 
-            Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
-        }
+        Assert.IsTrue(((IAsyncResult)this.task).AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(20)));
+    }
 
-        [TestMethod]
-        public void then_gets_past_exception()
-        {
-            // TODO: should this be Canceled or Faulted?
-            Assert.IsTrue(this.task.IsFaulted);
-            Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
-        }
+    [TestMethod]
+    public void then_gets_past_exception()
+    {
+        // TODO: should this be Canceled or Faulted?
+        Assert.IsTrue(this.task.IsFaulted);
+        Assert.AreEqual("transient", this.task.Exception?.InnerException?.Message);
+    }
 
-        [TestMethod]
-        public void then_starts_task_once()
-        {
-            Assert.AreEqual(1, this.timesStarted);
-        }
+    [TestMethod]
+    public void then_starts_task_once()
+    {
+        Assert.AreEqual(1, this.timesStarted);
+    }
 
-        [TestMethod]
-        public void then_no_exceptions_are_tested_for_transient()
-        {
-            this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
-        }
+    [TestMethod]
+    public void then_no_exceptions_are_tested_for_transient()
+    {
+        this.detectionStrategyMock.Verify(ds => ds.IsTransient(It.IsAny<Exception>()), Times.Exactly(1));
     }
 }

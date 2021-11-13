@@ -1,27 +1,22 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using TransientFaultHandling.Tests.TestObjects;
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests;
 
-namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests
+[TestClass]
+public class RetryPolicyProgrammaticallyFixture
 {
-    [TestClass]
-    public class RetryPolicyProgrammaticallyFixture
+    [TestMethod]
+    public void CreateFixedIntervalRetryStrategyWithCountAndInterval()
     {
-        [TestMethod]
-        public void CreateFixedIntervalRetryStrategyWithCountAndInterval()
+        try
         {
-            try
-            {
-                RetryPolicy<MockErrorDetectionStrategy> retryPolicy = new(new FixedInterval(3, TimeSpan.FromSeconds(1)));
-                retryPolicy.ExecuteAction(() => throw new InvalidCastException());
-            }
-            catch (InvalidCastException)
-            {
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+            RetryPolicy<MockErrorDetectionStrategy> retryPolicy = new(new FixedInterval(3, TimeSpan.FromSeconds(1)));
+            retryPolicy.ExecuteAction(() => throw new InvalidCastException());
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (Exception)
+        {
+            Assert.Fail();
         }
     }
 }

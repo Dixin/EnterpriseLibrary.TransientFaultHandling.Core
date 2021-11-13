@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29905.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06C0CE15-BE6D-4031-9E5D-ED3162EF9EBA}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
+		Tools\GlobalUsings.cs = Tools\GlobalUsings.cs
 		LICENSE = LICENSE
 		README.md = README.md
 		TransientFaultHandling.Core.sln.DotSettings = TransientFaultHandling.Core.sln.DotSettings
@@ -26,8 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{36EF0A81-D4C3-40CE-A2AA-42F8A14BC43B}"
 	ProjectSection(SolutionItems) = preProject
+		Tools\AssemblyInfo.cs = Tools\AssemblyInfo.cs
 		Tools\CreateTransientFaultHandlingTestDatabase.sql = Tools\CreateTransientFaultHandlingTestDatabase.sql
 		Tools\CreateTransientFaultHandlingTestDatabaseObjects.sql = Tools\CreateTransientFaultHandlingTestDatabaseObjects.sql
+		Tools\GlobalUsings.cs = Tools\GlobalUsings.cs
 		Tools\Key.snk = Tools\Key.snk
 	EndProjectSection
 EndProject
