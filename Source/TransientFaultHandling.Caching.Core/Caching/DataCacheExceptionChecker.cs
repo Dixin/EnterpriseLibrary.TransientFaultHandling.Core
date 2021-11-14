@@ -14,6 +14,7 @@ internal static class DataCacheExceptionChecker
     private static readonly byte[] CachePublicKeyToken = { 0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35 };
 
     private static Type? dataCacheExceptionType;
+
     private static Func<Exception, int>? getErrorCode;
 
     private static readonly int[] ErrorCodes =
@@ -92,7 +93,7 @@ internal static class DataCacheExceptionChecker
     {
         // should we also filter by version to support only 1.0.0.0 and 101.0.0.0?
         AssemblyName assemblyName = assembly.GetName();
-        if (assemblyName?.Name == "Microsoft.ApplicationServer.Caching.Core")
+        if (assemblyName?.Name is "Microsoft.ApplicationServer.Caching.Core")
         {
             byte[]? token = assemblyName.GetPublicKeyToken();
             if (token is not null && CachePublicKeyToken.SequenceEqual(token))

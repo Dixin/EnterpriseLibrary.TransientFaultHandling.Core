@@ -233,7 +233,7 @@ public sealed class ReliableSqlConnectionLegacy : IDbConnection, ICloneable
 
                 if (resultType == typeof(NonQueryResult))
                 {
-                    NonQueryResult result = new() { RecordsAffected = command.ExecuteNonQuery() };
+                    NonQueryResult result = new(command.ExecuteNonQuery());
 
                     closeOpenedConnectionOnSuccess = true;
 
@@ -384,10 +384,7 @@ public sealed class ReliableSqlConnectionLegacy : IDbConnection, ICloneable
     /// <summary>
     /// This helpers class is intended to be used exclusively for fetching the number of affected records when executing a command by using ExecuteNonQuery.
     /// </summary>
-    private sealed class NonQueryResult
-    {
-        public int RecordsAffected { get; init; }
-    }
+    private record NonQueryResult(int RecordsAffected);
 
     #endregion
 

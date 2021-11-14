@@ -9,13 +9,10 @@ using System.Xml;
 /// </summary>
 internal class SqlXmlReader : XmlReader
 {
-    #region Private members
     private readonly IDbConnection connection;
 
     private readonly XmlReader innerReader;
-    #endregion
 
-    #region Constructors
     /// <summary>
     /// Initializes a new instance of the <see cref="SqlXmlReader"/> class that is associated with the specified SQL connection and the original XML reader.
     /// </summary>
@@ -23,8 +20,6 @@ internal class SqlXmlReader : XmlReader
     /// <param name="innerReader">The original XML reader that is to be wrapped by this instance.</param>
     public SqlXmlReader(IDbConnection connection, XmlReader innerReader) => 
         (this.connection, this.innerReader) = (connection.NotNull(), innerReader.NotNull());
-
-    #endregion
 
     /// <summary>
     /// Returns the number of attributes on the current node.

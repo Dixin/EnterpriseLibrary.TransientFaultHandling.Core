@@ -11,10 +11,8 @@ public static class RetryPolicyFactory
     /// <param name="retryManager">The retry manager.</param>
     /// <param name="throwIfSet">true to throw an exception if the writer is already set; otherwise, false. Defaults to <see langword="true"/>.</param>
     /// <exception cref="InvalidOperationException">The factory is already set and <paramref name="throwIfSet"/> is true.</exception>
-    public static void SetRetryManager(RetryManager? retryManager, bool throwIfSet = true)
-    {
+    public static void SetRetryManager(RetryManager? retryManager, bool throwIfSet = true) => 
         RetryManager.SetDefault(retryManager, throwIfSet);
-    }
 
     /// <summary>
     /// Creates a retry manager from the system configuration.

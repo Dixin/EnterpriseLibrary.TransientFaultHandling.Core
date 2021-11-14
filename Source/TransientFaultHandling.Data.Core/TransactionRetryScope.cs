@@ -8,7 +8,9 @@ using System.Transactions;
 public sealed class TransactionRetryScope : IDisposable
 {
     private readonly TransactionScopeInitializer transactionScopeInit;
+
     private readonly Action unitOfWork;
+
     private TransactionScope transactionScope;
 
     #region Constructors
