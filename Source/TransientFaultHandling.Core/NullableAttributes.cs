@@ -1,57 +1,58 @@
 ﻿// https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/Diagnostics/CodeAnalysis/NullableAttributes.cs
 #define INTERNAL_NULLABLE_ATTRIBUTES
 
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4|| NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD2_0 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47 || NET471 || NET472 || NET48
+#if !NETSTANDARD2_1 && !NET5_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis;
 
+#if !NETSTANDARD2_1
 /// <summary>Specifies that null is allowed as an input even if the corresponding type disallows it.</summary>
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class AllowNullAttribute : Attribute
+        sealed class AllowNullAttribute : Attribute
 { }
 
 /// <summary>Specifies that null is disallowed as an input even if the corresponding type allows it.</summary>
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class DisallowNullAttribute : Attribute
+        sealed class DisallowNullAttribute : Attribute
 { }
 
 /// <summary>Specifies that an output may be null even if the corresponding type disallows it.</summary>
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue)]
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class MaybeNullAttribute : Attribute
+        sealed class MaybeNullAttribute : Attribute
 { }
 
 /// <summary>Specifies that an output will not be null even if the corresponding type allows it. Specifies that an input argument was not null when the call returns.</summary>
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue)]
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class NotNullAttribute : Attribute
+        sealed class NotNullAttribute : Attribute
 { }
 
 /// <summary>Specifies that when a method returns <see cref="ReturnValue"/>, the parameter may be null even if the corresponding type disallows it.</summary>
-[AttributeUsage(AttributeTargets.Parameter)]
+[AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class MaybeNullWhenAttribute : Attribute
+        sealed class MaybeNullWhenAttribute : Attribute
 {
     /// <summary>Initializes the attribute with the specified return value condition.</summary>
     /// <param name="returnValue">
@@ -64,13 +65,13 @@ internal
 }
 
 /// <summary>Specifies that when a method returns <see cref="ReturnValue"/>, the parameter will not be null even if the corresponding type allows it.</summary>
-[AttributeUsage(AttributeTargets.Parameter)]
+[AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class NotNullWhenAttribute : Attribute
+        sealed class NotNullWhenAttribute : Attribute
 {
     /// <summary>Initializes the attribute with the specified return value condition.</summary>
     /// <param name="returnValue">
@@ -83,13 +84,13 @@ internal
 }
 
 /// <summary>Specifies that the output will be non-null if the named parameter is non-null.</summary>
-[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, AllowMultiple = true, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class NotNullIfNotNullAttribute : Attribute
+        sealed class NotNullIfNotNullAttribute : Attribute
 {
     /// <summary>Initializes the attribute with the associated parameter name.</summary>
     /// <param name="parameterName">
@@ -104,21 +105,21 @@ internal
 /// <summary>Applied to a method that will never return under any circumstance.</summary>
 [AttributeUsage(AttributeTargets.Method, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class DoesNotReturnAttribute : Attribute
+        sealed class DoesNotReturnAttribute : Attribute
 { }
 
 /// <summary>Specifies that the method will not return if the associated Boolean parameter is passed the specified value.</summary>
-[AttributeUsage(AttributeTargets.Parameter)]
+[AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class DoesNotReturnIfAttribute : Attribute
+        sealed class DoesNotReturnIfAttribute : Attribute
 {
     /// <summary>Initializes the attribute with the specified parameter value.</summary>
     /// <param name="parameterValue">
@@ -130,15 +131,16 @@ internal
     /// <summary>Gets the condition parameter value.</summary>
     public bool ParameterValue { get; }
 }
+#endif
 
 /// <summary>Specifies that the method or property will ensure that the listed field and property members have not-null values.</summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class MemberNotNullAttribute : Attribute
+        sealed class MemberNotNullAttribute : Attribute
 {
     /// <summary>Initializes the attribute with a field or property member.</summary>
     /// <param name="member">
@@ -159,11 +161,11 @@ internal
 /// <summary>Specifies that the method or property will ensure that the listed field and property members have not-null values when returning with the specified return value condition.</summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
 #if SYSTEM_PRIVATE_CORELIB
-public
+    public
 #else
 internal
 #endif
-    sealed class MemberNotNullWhenAttribute : Attribute
+        sealed class MemberNotNullWhenAttribute : Attribute
 {
     /// <summary>Initializes the attribute with the specified return value condition and a field or property member.</summary>
     /// <param name="returnValue">

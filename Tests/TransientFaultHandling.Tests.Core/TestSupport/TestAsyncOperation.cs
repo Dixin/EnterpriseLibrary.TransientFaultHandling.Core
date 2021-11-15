@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport;
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.TestSupport;
 
 public class TestAsyncOperation
 {

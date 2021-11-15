@@ -3,18 +3,8 @@
 [TestClass]
 public class TransactionRetryScopeFixture
 {
-    private static readonly string TestDatabase = RetryConfiguration.GetConfiguration().GetConnectionString(nameof(TestDatabase));
-
-    private static readonly string TestServer = RetryConfiguration.GetConfiguration().GetConnectionString(nameof(TestServer));
-
     private static readonly RetryManager RetryManager = RetryConfiguration.GetRetryManager(getCustomRetryStrategy: section =>
         section.Get<TestRetryStrategyOptions>().ToTestRetryStrategy(section.Key));
-
-    [TestInitialize]
-    public void InitializeTestDatabase()
-    {
-        // TODO: Delete and create database.
-    }
 
     [TestMethod]
     public void TransactionIsCommittedWhenSomeRetriesFailAndThenSucceeds()
@@ -23,18 +13,18 @@ public class TransactionRetryScopeFixture
 
         int retryTransactionCount = 0;
         RetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy> policyForTransaction = RetryManager.GetRetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy>("Retry 5 times");
-        policyForTransaction.Retrying += (sender, args) => retryTransactionCount++;
+        policyForTransaction.Retrying += (_, _) => retryTransactionCount++;
 
         int retrySqlCommandCount = 0;
         RetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy> policyForSqlCommand = RetryManager.GetRetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy>("Retry 2 times, first retry is fast");
-        policyForSqlCommand.Retrying += (sender, args) => retrySqlCommandCount++;
+        policyForSqlCommand.Retrying += (_, _) => retrySqlCommandCount++;
 
         int transactionActionExecutedCount = 0;
         Action action = () =>
         {
             transactionActionExecutedCount++;
 
-            using SqlConnection connection = new(TestDatabase);
+            using SqlConnection connection = new(TestDatabase.TransientFaultHandlingTestDatabase);
             using SqlCommand command1 = connection.CreateCommand();
             command1.CommandType = CommandType.Text;
             command1.CommandText = "Insert Into TranscationScopeTestTable (rowId) Values (@rowId);";
@@ -81,18 +71,18 @@ public class TransactionRetryScopeFixture
 
         int retryTransactionCount = 0;
         RetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy> policyForTransaction = RetryManager.GetRetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy>("Retry 5 times");
-        policyForTransaction.Retrying += (sender, args) => retryTransactionCount++;
+        policyForTransaction.Retrying += (_, _) => retryTransactionCount++;
 
         int retrySqlCommandCount = 0;
         RetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy> policyForSqlCommand = RetryManager.GetRetryPolicy<FakeSqlAzureTransientErrorDetectionStrategy>("Retry 2 times, first retry is fast");
-        policyForSqlCommand.Retrying += (sender, args) => retrySqlCommandCount++;
+        policyForSqlCommand.Retrying += (_, _) => retrySqlCommandCount++;
 
         int transactionActionExecutedCount = 0;
         Action action = () =>
         {
             transactionActionExecutedCount++;
 
-            using SqlConnection connection = new(TestDatabase);
+            using SqlConnection connection = new(TestDatabase.TransientFaultHandlingTestDatabase);
             using SqlCommand command1 = connection.CreateCommand();
             command1.CommandType = CommandType.Text;
             command1.CommandText = "Insert Into TranscationScopeTestTable (rowId) Values (@rowId);";
@@ -135,7 +125,7 @@ public class TransactionRetryScopeFixture
 
     private int GetCountOnTransactionScopeTestTable()
     {
-        using SqlConnection connection = new(TestDatabase);
+        using SqlConnection connection = new(TestDatabase.TransientFaultHandlingTestDatabase);
         connection.Open();
         using SqlCommand command = connection.CreateCommand();
         command.CommandText = "Select Count(*) From TranscationScopeTestTable";
@@ -144,7 +134,7 @@ public class TransactionRetryScopeFixture
 
     private void DeleteAllOnTransactionScopeTestTable()
     {
-        using SqlConnection connection = new(TestDatabase);
+        using SqlConnection connection = new(TestDatabase.TransientFaultHandlingTestDatabase);
         connection.Open();
         using SqlCommand command = connection.CreateCommand();
         command.CommandText = "Delete From TranscationScopeTestTable";

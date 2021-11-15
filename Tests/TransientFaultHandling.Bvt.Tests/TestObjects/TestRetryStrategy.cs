@@ -10,9 +10,8 @@ public class TestRetryStrategy : RetryStrategy
 
     public int ShouldRetryCount { get; private set; }
 
-    public override ShouldRetry GetShouldRetry()
-    {
-        return (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
+    public override ShouldRetry GetShouldRetry() =>
+        (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
         {
             if (this.CustomProperty == currentRetryCount)
             {
@@ -24,7 +23,6 @@ public class TestRetryStrategy : RetryStrategy
             interval = TimeSpan.FromMilliseconds(1);
             return true;
         };
-    }
 }
 
 public record TestRetryStrategyOptions(bool FastFirstRetry, int CustomProperty) : RetryStrategyOptions(FastFirstRetry)

@@ -9,6 +9,6 @@ global using Microsoft.Practices.EnterpriseLibrary.Common.TestSupport.ContextBas
 global using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 global using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data;
 global using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.Properties;
-global using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.TestSupport;
+global using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.TestSupport;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;

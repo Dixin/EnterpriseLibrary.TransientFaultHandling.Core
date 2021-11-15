@@ -28,8 +28,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{36EF0A81-D4C3-40CE-A2AA-42F8A14BC43B}"
 	ProjectSection(SolutionItems) = preProject
 		Tools\AssemblyInfo.cs = Tools\AssemblyInfo.cs
-		Tools\CreateTransientFaultHandlingTestDatabase.sql = Tools\CreateTransientFaultHandlingTestDatabase.sql
-		Tools\CreateTransientFaultHandlingTestDatabaseObjects.sql = Tools\CreateTransientFaultHandlingTestDatabaseObjects.sql
+		Tools\CreateTestDatabase.sql = Tools\CreateTestDatabase.sql
+		Tools\CreateTestDatabaseObjects.sql = Tools\CreateTestDatabaseObjects.sql
 		Tools\GlobalUsings.cs = Tools\GlobalUsings.cs
 		Tools\Key.snk = Tools\Key.snk
 	EndProjectSection
@@ -37,6 +37,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Configuration.Core", "Source\TransientFaultHandling.Configuration.Core\TransientFaultHandling.Configuration.Core.csproj", "{C0A25494-07AA-4243-B770-D303AC153F67}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransientFaultHandling.Bvt.Tests.Core", "Tests\TransientFaultHandling.Bvt.Tests\TransientFaultHandling.Bvt.Tests.Core.csproj", "{39CA195A-A890-48FB-9965-9D98A463E160}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{373691FA-A7D1-40A7-B15C-0757DBD15C05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

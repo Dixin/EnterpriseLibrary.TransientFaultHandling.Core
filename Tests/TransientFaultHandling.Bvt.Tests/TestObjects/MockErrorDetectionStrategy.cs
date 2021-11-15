@@ -1,4 +1,4 @@
-﻿namespace TransientFaultHandling.Tests.TestObjects;
+﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests.TestObjects;
 
 public class MockErrorDetectionStrategy : ITransientErrorDetectionStrategy
 {
@@ -13,7 +13,7 @@ public class MockErrorDetectionStrategy : ITransientErrorDetectionStrategy
         this.ThreadIdList.Add(Thread.CurrentThread.ManagedThreadId);
         ++this.CallCount;
 
-        return this.IsTransientNonAggregate(ex is AggregateException ? ex.InnerException : ex);
+        return this.IsTransientNonAggregate(ex is AggregateException ? ex.InnerException! : ex);
     }
 
     private bool IsTransientNonAggregate(Exception ex) =>

@@ -64,6 +64,7 @@ public sealed class ReliableSqlConnection : IDbConnection, ICloneable
     {
         get => this.connectionString;
 
+        [param: AllowNull]
         set
         {
             this.connectionString = value;
@@ -244,12 +245,7 @@ public sealed class ReliableSqlConnection : IDbConnection, ICloneable
 
                     closeOpenedConnectionOnSuccess = true;
 
-                    if (result is not null)
-                    {
-                        return (T)Convert.ChangeType(result, resultType, CultureInfo.InvariantCulture);
-                    }
-
-                    return default;
+                    return (T?)Convert.ChangeType(result, resultType, CultureInfo.InvariantCulture);
                 }
             }));
 
@@ -286,7 +282,7 @@ public sealed class ReliableSqlConnection : IDbConnection, ICloneable
     /// <returns>The number of rows affected.</returns>
     public int ExecuteCommand(IDbCommand command, RetryPolicy? retryPolicy)
     {
-        NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command.NotNull(), retryPolicy) ?? throw new InvalidOperationException();
+        NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command.NotNull(), retryPolicy);
         return result.RecordsAffected;
     }
     #endregion
@@ -383,7 +379,7 @@ public sealed class ReliableSqlConnection : IDbConnection, ICloneable
     /// <summary>
     /// This helpers class is intended to be used exclusively for fetching the number of affected records when executing a command by using ExecuteNonQuery.
     /// </summary>
-    private record NonQueryResult(int RecordsAffected);
+    private record struct NonQueryResult(int RecordsAffected);
 
     #endregion
 

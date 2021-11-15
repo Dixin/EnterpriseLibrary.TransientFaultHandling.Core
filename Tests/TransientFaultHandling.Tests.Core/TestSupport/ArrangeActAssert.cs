@@ -36,8 +36,6 @@ public abstract class ArrangeActAssert
     {
     }
 
-    #region MSTEST integration methods
-
     [TestInitialize]
     public void MainSetup()
     {
@@ -50,6 +48,4 @@ public abstract class ArrangeActAssert
     {
         this.Teardown();
     }
-
-    #endregion
 }

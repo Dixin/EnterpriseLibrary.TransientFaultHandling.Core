@@ -3,12 +3,19 @@
 public class TestAsyncOperation
 {
     public bool ThrowFatalExceptionAtBegin = false;
+
     public int BeginMethodCount { get; private set; }
+
     public int EndMethodCount { get; private set; }
+
     public Exception? ExceptionToThrowAtEnd { get; set; }
+
     public Exception? ExceptionToThrowAtBegin { get; set; }
+
     public Exception? FatalException { get; set; }
+
     public int CountToThrowAtBegin { get; set; }
+
     public int CountToThrowAtEnd { get; set; }
 
     public bool ThrowException { get; set; }
@@ -30,7 +37,7 @@ public class TestAsyncOperation
         {
             if (this.FatalException is not null)
             {
-                Console.WriteLine($"Throwing exception of type {this.FatalException.GetType()}");
+                Trace.WriteLine($"Throwing exception of type {this.FatalException.GetType()}");
                 throw this.FatalException;
             }
         }
