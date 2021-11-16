@@ -8,7 +8,7 @@ public class RetryFixedIntervalTests
     {
         const int RetryCount = 5;
         TimeSpan retryInterval = TimeSpan.FromSeconds(1);
-        Counter<InvalidOperationException> counter = new(RetryCount);
+        Counter<InvalidOperationException> counter = new (RetryCount);
         int retryFuncCount = 0;
         int retryHandlerCount = 0;
         Retry.FixedInterval(

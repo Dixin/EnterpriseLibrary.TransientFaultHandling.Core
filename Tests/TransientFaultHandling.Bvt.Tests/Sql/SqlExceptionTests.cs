@@ -16,7 +16,7 @@ public class SqlExceptionTests
             {
                 await using SqlConnection connection = new (TestDatabase.TransientFaultHandlingTestDatabase);
                 await connection.OpenAsync();
-                await using SqlCommand? command = connection.CreateCommand();
+                await using SqlCommand command = connection.CreateCommand();
                 command.CommandText = $"RAISERROR('{CustomErrorMessage}', 16, 1)";
                 await command.ExecuteNonQueryAsync();
                 Assert.Fail();
@@ -46,7 +46,7 @@ public class SqlExceptionTests
             {
                 using SqlConnection connection = new (TestDatabase.TransientFaultHandlingTestDatabase);
                 connection.Open();
-                using SqlCommand? command = connection.CreateCommand();
+                using SqlCommand command = connection.CreateCommand();
                 command.CommandText = $"RAISERROR('{CustomErrorMessage}', 16, 1)";
                 command.ExecuteNonQuery();
                 Assert.Fail();
