@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 
-#if NETSTANDARD2_1 || NET5_0 || NET6_0
+#if NETSTANDARD2_1 || NET5_0_OR_GREATER
 using System.Data.Entity.Core;
 #endif
 using Microsoft.Data.SqlClient;
@@ -25,8 +25,8 @@ public sealed class SqlDatabaseTransientErrorDetectionStrategy : ITransientError
                 return false;
             case TimeoutException:
                 return true;
-#if NETSTANDARD2_1 || NET5_0 || NET6_0
-                case EntityException entityException:
+#if NETSTANDARD2_1 || NET5_0_OR_GREATER
+            case EntityException entityException:
                     return this.IsTransient(entityException.InnerException);
 #endif
             case SqlException sqlException:
