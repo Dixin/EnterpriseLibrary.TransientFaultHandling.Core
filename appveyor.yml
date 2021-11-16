@@ -3,8 +3,14 @@ image: Visual Studio 2022
 configuration:
 - Debug
 - Release
+environment:
+  TransientFaultHandlingTestDatabase: Server=(local)\SQL2019;User ID=sa;Password=Password12!;Database=TransientFaultHandlingTestDatabase
+  TransientFaultHandlingTestServer: Server=(local)\SQL2019;User ID=sa;Password=Password12!
 before_build:
-- cmd: appveyor-retry dotnet restore -v Minimal
+- cmd: >-
+    appveyor-retry dotnet restore -v Minimal
+
+    net start MSSQL$SQL2019
 build:
   parallel: true
   verbosity: normal

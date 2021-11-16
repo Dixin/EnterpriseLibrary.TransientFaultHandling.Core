@@ -6,9 +6,11 @@ using Microsoft.SqlServer.Management.Smo;
 [TestClass]
 public class TestDatabase
 {
-    internal static readonly string TransientFaultHandlingTestDatabase = RetryConfiguration.GetConfiguration().GetConnectionString(nameof(TransientFaultHandlingTestDatabase));
+    internal static readonly string TransientFaultHandlingTestDatabase = Environment.GetEnvironmentVariable(nameof(TransientFaultHandlingTestDatabase)) 
+        ?? RetryConfiguration.GetConfiguration().GetConnectionString(nameof(TransientFaultHandlingTestDatabase));
 
-    private static readonly string TransientFaultHandlingTestServer = RetryConfiguration.GetConfiguration().GetConnectionString(nameof(TransientFaultHandlingTestServer));
+    private static readonly string TransientFaultHandlingTestServer = Environment.GetEnvironmentVariable(nameof(TransientFaultHandlingTestServer))
+        ?? RetryConfiguration.GetConfiguration().GetConnectionString(nameof(TransientFaultHandlingTestServer));
 
     [AssemblyInitialize]
     public static void InitializeTestDatabase(TestContext context)
