@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>TransientFaultHandling.Configuration</PackageId>
-    <Version>2.1.0</Version>
+    <Version>3.0.0</Version>
     <Authors>Dixin Yan</Authors>
     <Company>https://DixinYan.com</Company>
     <PackageDescription>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageDescription>
@@ -19,8 +19,8 @@
     <AssemblyName>TransientFaultHandling.Configuration.Core</AssemblyName>
     <LangVersion>latest</LangVersion>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <nullable>enable</nullable>
     <NoWarn>CS0436</NoWarn>

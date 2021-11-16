@@ -5,13 +5,13 @@ Transient Fault Handling Application Block/Retry patterns for .NET Core / .NET S
 
 TransientFaultHandling.Core is retry library for transient error handling. It is ported from Microsoft Enterprise Library’s Transient Fault Handling Application Block, a library widely used with .NET Framework. 
 
-- The retry pattern APIs are ported to .NET Core/.NET Standard
-- New functional and fluent APIs added easily implement retry logic
-- The outdated configuration APIs are now up to date
+- The retry pattern APIs are ported to .NET 6 & .NET 5 & .NET Core & .NET Standard.
+- New functional and fluent APIs to easily implement retry logic.
+- The outdated configuration & APIs are replaced by modern .NET JSON/XML/INI configuration.
 
 ## Introduction
 
-With this library, the old code with retry logic based on Microsoft Enterprise Library can be ported to .NET Core/.NET Standard without modification:
+With this library, the old code with retry logic based on Microsoft Enterprise Library can be ported to .NET 6 & .NET 5 & .NET Core & .NET Standard without modification:
 ```cs
 ITransientErrorDetectionStrategy transientExceptionDetection = new MyDetection();
 RetryStrategy retryStrategy = new FixedInterval(retryCount: 5, retryInterval: TimeSpan.FromSeconds(1));
@@ -33,7 +33,7 @@ Retry
         increment: TimeSpan.FromSeconds(1))
     .Catch<OperationCanceledException>()
     .Catch<WebException>(exception =>
-        exception.Response is HttpWebResponse response && response.StatusCode == HttpStatusCode.RequestTimeout)
+        exception.Response is HttpWebResponse { StatusCode: HttpStatusCode.RequestTimeout })
     .ExecuteAction(() => webClient.DownloadString("https://DixinYan.com"));
 ```
 
