@@ -5,7 +5,7 @@ namespace System.Runtime.CompilerServices;
 /// Allows capturing of the expressions passed to a method.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-public sealed class CallerArgumentExpressionAttribute : Attribute
+internal sealed class CallerArgumentExpressionAttribute : Attribute
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="T:System.Runtime.CompilerServices.CallerArgumentExpressionAttribute" /> class.

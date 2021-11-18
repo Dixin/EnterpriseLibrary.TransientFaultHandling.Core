@@ -1,5 +1,5 @@
 # EnterpriseLibrary.TransientFaultHandling.Core
-Transient Fault Handling Application Block/Retry patterns for .NET Core / .NET Standard.
+Transient Fault Handling Application Block/Retry patterns for modern .NET.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/0abc1rtf8qcmyb97?svg=true)](https://ci.appveyor.com/project/Dixin/enterpriselibrary-transientfaulthandling-core)
 
