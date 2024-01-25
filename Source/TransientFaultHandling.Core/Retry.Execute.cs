@@ -8,7 +8,7 @@ public static partial class Retry
     /// <summary>
     /// Repetitively executes the specified action while it satisfies the specified retry strategy.
     /// </summary>
-    /// <typeparam name="TResult">he type of result expected from the executable action.</typeparam>
+    /// <typeparam name="TResult">The type of result expected from the executable action.</typeparam>
     /// <param name="func">A delegate that represents the executable action that returns the result of type <typeparamref name="TResult" />.</param>
     /// <param name="retryStrategy">The retry strategy.</param>
     /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
@@ -48,22 +48,24 @@ public static partial class Retry
     /// <summary>
     /// Repeatedly executes the specified asynchronous function while it satisfies the current retry policy.
     /// </summary>
-    /// <typeparam name="TResult">he type of result expected from the executable asynchronous function.</typeparam>
+    /// <typeparam name="TResult">The type of result expected from the executable asynchronous function.</typeparam>
     /// <param name="func">A asynchronous function that returns a started task (also known as "hot" task).</param>
     /// <param name="retryStrategy">The retry strategy.</param>
     /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
     /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
+    /// <param name="cancellationToken">The token used to cancel the retry operation. This token does not cancel the execution of the asynchronous task.</param>
     /// <returns>Returns a task that will run to completion if the original task completes successfully (either the first time or after retrying transient failures). If the task fails with a non-transient error or the retry limit is reached, the returned task will transition to a faulted state and the exception must be observed.</returns>
     /// <exception cref="ArgumentNullException">func</exception>
     public static Task<TResult> ExecuteAsync<TResult>(
         Func<Task<TResult>> func,
         RetryStrategy? retryStrategy = null,
         Func<Exception, bool>? isTransient = null,
-        EventHandler<RetryingEventArgs>? retryingHandler = null)
+        EventHandler<RetryingEventArgs>? retryingHandler = null,
+        CancellationToken cancellationToken = default)
     {
         func.NotNull();
 
-        return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func);
+        return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func, cancellationToken);
     }
 
     /// <summary>
@@ -73,16 +75,18 @@ public static partial class Retry
     /// <param name="retryStrategy">The retry strategy.</param>
     /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
     /// <param name="retryingHandler">The callback function that will be invoked whenever a retry condition is encountered.</param>
+    /// <param name="cancellationToken">The token used to cancel the retry operation. This token does not cancel the execution of the asynchronous task.</param>
     /// <returns>Returns a task that will run to completion if the original task completes successfully (either the first time or after retrying transient failures). If the task fails with a non-transient error or the retry limit is reached, the returned task will transition to a faulted state and the exception must be observed.</returns>
     /// <exception cref="ArgumentNullException">func</exception>
     public static Task ExecuteAsync(
         Func<Task> func,
         RetryStrategy? retryStrategy = null,
         Func<Exception, bool>? isTransient = null,
-        EventHandler<RetryingEventArgs>? retryingHandler = null)
+        EventHandler<RetryingEventArgs>? retryingHandler = null,
+        CancellationToken cancellationToken = default)
     {
         func.NotNull();
 
-        return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func);
+        return CreateRetryPolicy(retryStrategy, isTransient, retryingHandler).ExecuteAsync(func, cancellationToken);
     }
 }
