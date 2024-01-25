@@ -19,9 +19,9 @@ public class Context : ArrangeActAssert
         this.otherStrategy = new Incremental("other", 5, TimeSpan.FromMilliseconds(10), TimeSpan.FromMilliseconds(10));
         this.defaultSqlConnectionStrategy = new FixedInterval("defaultSqlConnection", 5, TimeSpan.FromMilliseconds(10));
         this.defaultSqlCommandStrategy = new FixedInterval("defaultSqlCommand", 5, TimeSpan.FromMilliseconds(10));
-        this.defaultAzureServiceBusStrategy = new FixedInterval("defaultAzureServiceBusStrategy", 5, TimeSpan.FromMilliseconds(10));
-        this.defaultAzureCachingStrategy = new FixedInterval("defaultAzureCachingStrategy", 5, TimeSpan.FromMilliseconds(10));
-        this.defaultAzureStorageStrategy = new FixedInterval("defaultAzureStorageStrategy", 5, TimeSpan.FromMilliseconds(10));
+        this.defaultAzureServiceBusStrategy = new FixedInterval(nameof(this.defaultAzureServiceBusStrategy), 5, TimeSpan.FromMilliseconds(10));
+        this.defaultAzureCachingStrategy = new FixedInterval(nameof(this.defaultAzureCachingStrategy), 5, TimeSpan.FromMilliseconds(10));
+        this.defaultAzureStorageStrategy = new FixedInterval(nameof(this.defaultAzureStorageStrategy), 5, TimeSpan.FromMilliseconds(10));
 
         this.managerWithAllDefaults = new RetryManager(
             new[]
@@ -36,11 +36,11 @@ public class Context : ArrangeActAssert
             "default",
             new Dictionary<string, string>
             {
-                { "SQL", "defaultSqlCommand" },
-                { "SQLConnection", "defaultSqlConnection" },
-                { "ServiceBus", "defaultAzureServiceBusStrategy" },
-                { "Caching", "defaultAzureCachingStrategy" },
-                { "WindowsAzure.Storage", "defaultAzureStorageStrategy" },
+                ["SQL"] = "defaultSqlCommand",
+                ["SQLConnection"] = "defaultSqlConnection",
+                ["ServiceBus"] = nameof(this.defaultAzureServiceBusStrategy),
+                [nameof(Caching)] = nameof(this.defaultAzureCachingStrategy),
+                ["WindowsAzure.Storage"] = nameof(this.defaultAzureStorageStrategy),
             });
 
         this.managerWithOnlyDefault = new RetryManager(
@@ -52,7 +52,7 @@ public class Context : ArrangeActAssert
                 this.otherStrategy,
                 this.defaultAzureServiceBusStrategy,
                 this.defaultAzureCachingStrategy, this.defaultAzureStorageStrategy
-            },
+},
             "default");
     }
 }

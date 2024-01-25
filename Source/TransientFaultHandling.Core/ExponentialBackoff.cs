@@ -58,19 +58,18 @@ public class ExponentialBackoff : RetryStrategy
     public ExponentialBackoff(string? name, int retryCount, TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, bool firstFastRetry) : 
         base(name, firstFastRetry)
     {
-        this.retryCount = retryCount.NotNegative();
-        this.minBackoff = minBackoff.InRange(TimeSpan.Zero, maxBackoff);
-        this.maxBackoff = maxBackoff.NotNegative();
-        this.deltaBackoff = deltaBackoff.NotNegative();
+        this.retryCount = retryCount.ThrowIfNegative();
+        this.minBackoff = minBackoff.ThrowIfOutOfRange(TimeSpan.Zero, maxBackoff);
+        this.maxBackoff = maxBackoff.ThrowIfNegative();
+        this.deltaBackoff = deltaBackoff.ThrowIfNegative();
     }
 
     /// <summary>
     /// Returns the corresponding ShouldRetry delegate.
     /// </summary>
     /// <returns>The ShouldRetry delegate.</returns>
-    public override ShouldRetry GetShouldRetry()
-    {
-        return (int currentRetryCount, Exception lastException, out TimeSpan retryInterval) =>
+    public override ShouldRetry GetShouldRetry() =>
+        (int currentRetryCount, Exception lastException, out TimeSpan retryInterval) =>
         {
             if (currentRetryCount < this.retryCount)
             {
@@ -84,5 +83,4 @@ public class ExponentialBackoff : RetryStrategy
             retryInterval = TimeSpan.Zero;
             return false;
         };
-    }
 }

@@ -21,7 +21,7 @@ public static class RetryPolicyFactory
     public static RetryManager CreateDefault(
         string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)
     {
-        RetryManager manager = RetryConfiguration.GetRetryManager(configurationFile.NotNullOrEmpty(), configurationKey.NotNullOrEmpty(), getCustomRetryStrategy);
+        RetryManager manager = RetryConfiguration.GetRetryManager(configurationFile.ThrowIfNullOrEmpty(), configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy);
         RetryManager.SetDefault(manager);
         return manager;
     }
@@ -33,7 +33,7 @@ public static class RetryPolicyFactory
     [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "As designed")]
     public static RetryPolicy GetDefaultSqlConnectionRetryPolicy(
         string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
-        GetOrCreateRetryManager(configurationKey.NotNullOrEmpty(), configurationKey, getCustomRetryStrategy)
+        GetOrCreateRetryManager(configurationKey.ThrowIfNullOrEmpty(), configurationKey, getCustomRetryStrategy)
             .GetDefaultSqlConnectionRetryPolicy();
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class RetryPolicyFactory
     [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "As designed")]
     public static RetryPolicy GetDefaultSqlCommandRetryPolicy(
         string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
-        GetOrCreateRetryManager(configurationFile.NotNullOrEmpty(nameof(configurationFile)), configurationKey.NotNullOrEmpty(), getCustomRetryStrategy)
+        GetOrCreateRetryManager(configurationFile.ThrowIfNullOrEmpty(nameof(configurationFile)), configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy)
             .GetDefaultSqlCommandRetryPolicy();
 
     // TODO.
@@ -86,7 +86,7 @@ public static class RetryPolicyFactory
     public static RetryPolicy GetRetryPolicy<T>(
         string configurationFile = RetryConfiguration.DefaultConfigurationFile, string configurationKey = nameof(RetryManager), Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) 
         where T : ITransientErrorDetectionStrategy, new() =>
-        GetOrCreateRetryManager(configurationFile.NotNullOrEmpty(), configurationKey.NotNullOrEmpty(), getCustomRetryStrategy)
+        GetOrCreateRetryManager(configurationFile.ThrowIfNullOrEmpty(), configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy)
             .GetRetryPolicy<T>();
 
     /// <summary>
@@ -102,7 +102,7 @@ public static class RetryPolicyFactory
         string configurationFile = RetryConfiguration.DefaultConfigurationFile, 
         string configurationKey = nameof(RetryManager), 
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
-        GetOrCreateRetryManager(configurationFile.NotNullOrEmpty(), configurationKey.NotNullOrEmpty(), getCustomRetryStrategy).GetRetryPolicy(errorDetectionStrategy.NotNull());
+        GetOrCreateRetryManager(configurationFile.ThrowIfNullOrEmpty(), configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy).GetRetryPolicy(errorDetectionStrategy.ThrowIfNull());
 
     /// <summary>
     /// Returns an instance of the <see cref="RetryPolicy"/> object for a given error detection strategy and retry strategy.
@@ -119,7 +119,7 @@ public static class RetryPolicyFactory
         string configurationFile = RetryConfiguration.DefaultConfigurationFile, 
         string configurationKey = nameof(RetryManager), 
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) where T : ITransientErrorDetectionStrategy, new() =>
-        GetOrCreateRetryManager(configurationFile.NotNullOrEmpty(), configurationKey.NotNullOrEmpty(), getCustomRetryStrategy).GetRetryPolicy<T>(retryStrategyName.NotNullOrEmpty());
+        GetOrCreateRetryManager(configurationFile.ThrowIfNullOrEmpty(), configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy).GetRetryPolicy<T>(retryStrategyName.ThrowIfNullOrEmpty());
 
     /// <summary>
     /// Returns an instance of the <see cref="RetryPolicy"/> object for a given error detection strategy and retry strategy.
@@ -137,7 +137,7 @@ public static class RetryPolicyFactory
         string configurationFile = RetryConfiguration.DefaultConfigurationFile, 
         string configurationKey = nameof(RetryManager), 
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
-        GetOrCreateRetryManager(configurationFile.NotNullOrEmpty(), configurationKey.NotNullOrEmpty(), getCustomRetryStrategy).GetRetryPolicy(retryStrategyName.NotNullOrEmpty(), errorDetectionStrategy.NotNull());
+        GetOrCreateRetryManager(configurationFile.ThrowIfNullOrEmpty(), configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy).GetRetryPolicy(retryStrategyName.ThrowIfNullOrEmpty(), errorDetectionStrategy.ThrowIfNull());
 
     private static RetryManager GetOrCreateRetryManager(
         string configurationFile, string configurationKey, Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null)

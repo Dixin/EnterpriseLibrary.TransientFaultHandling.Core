@@ -55,35 +55,30 @@ public class FixedInterval : RetryStrategy
     public FixedInterval(string? name, int retryCount, TimeSpan retryInterval, bool firstFastRetry) :
         base(name, firstFastRetry)
     {
-        this.retryCount = retryCount.NotNegative();
-        this.retryInterval = retryInterval.NotNegative();
+        this.retryCount = retryCount.ThrowIfNegative();
+        this.retryInterval = retryInterval.ThrowIfNegative();
     }
 
     /// <summary>
     /// Returns the corresponding ShouldRetry delegate.
     /// </summary>
     /// <returns>The ShouldRetry delegate.</returns>
-    public override ShouldRetry GetShouldRetry()
-    {
-        if (this.retryCount == 0)
-        {
-            return (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
+    public override ShouldRetry GetShouldRetry() =>
+        this.retryCount == 0
+            ? (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
             {
                 interval = TimeSpan.Zero;
                 return false;
-            };
-        }
-
-        return (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
-        {
-            if (currentRetryCount < this.retryCount)
-            {
-                interval = this.retryInterval;
-                return true;
             }
+            : (int currentRetryCount, Exception lastException, out TimeSpan interval) =>
+            {
+                if (currentRetryCount < this.retryCount)
+                {
+                    interval = this.retryInterval;
+                    return true;
+                }
 
-            interval = TimeSpan.Zero;
-            return false;
-        };
-    }
+                interval = TimeSpan.Zero;
+                return false;
+            };
 }

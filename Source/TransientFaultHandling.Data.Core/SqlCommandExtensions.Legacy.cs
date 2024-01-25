@@ -32,7 +32,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteNonQueryWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static int ExecuteNonQueryWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        command.NotNull().ConnectionNotNull();
+        command.ThrowIfNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -79,7 +79,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, RetryPolicy cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        return ExecuteReaderWithRetry(command.NotNull().ConnectionNotNull(), CommandBehavior.Default, cmdRetryPolicy, conRetryPolicy);
+        return ExecuteReaderWithRetry(command.ThrowIfNull().ConnectionNotNull(), CommandBehavior.Default, cmdRetryPolicy, conRetryPolicy);
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static SqlDataReader ExecuteReaderWithRetry(this SqlCommand command, CommandBehavior behavior, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        command.NotNull().ConnectionNotNull();
+        command.ThrowIfNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -154,7 +154,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteScalarWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static object ExecuteScalarWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        command.NotNull().ConnectionNotNull();
+        command.ThrowIfNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>
@@ -199,7 +199,7 @@ public static partial class SqlCommandExtensions
     [Obsolete("Use ExecuteXmlReaderWithRetry for Microsoft.Data.SqlClient.SqlCommand in Microsoft.Data.SqlClient.")]
     public static XmlReader ExecuteXmlReaderWithRetry(this SqlCommand command, RetryPolicy? cmdRetryPolicy, RetryPolicy? conRetryPolicy = null)
     {
-        command.NotNull().ConnectionNotNull();
+        command.ThrowIfNull().ConnectionNotNull();
 
         // Check if retry policy was specified, if not, use the default retry policy.
         return (cmdRetryPolicy ?? RetryPolicy.NoRetry).ExecuteAction(() =>

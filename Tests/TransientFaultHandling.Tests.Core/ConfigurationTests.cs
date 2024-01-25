@@ -21,7 +21,7 @@ public class ConfigurationTests
     [Ignore]    // REVIEW = Negative retry counts are not allowed by configuration.
     public void NegativeRetryCount()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "NegativeRetryCount");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.NegativeRetryCount));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -50,7 +50,7 @@ public class ConfigurationTests
     [Ignore]    // REVIEW
     public void ZeroRetryCount()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "ZeroRetryCount");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.ZeroRetryCount));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -79,7 +79,7 @@ public class ConfigurationTests
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void NegativeRetryInterval()
     {
-        RetryPolicy negativeRetryCountRetryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "NegativeRetryInterval");
+        RetryPolicy negativeRetryCountRetryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.NegativeRetryInterval));
         int execCount = 0;
 
         try
@@ -101,7 +101,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ZeroRetryInterval()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "ZeroRetryInterval");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.ZeroRetryInterval));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -130,7 +130,7 @@ public class ConfigurationTests
     [Ignore]    // REVIEW - Negative values are not allowed by configuration
     public void NegativeRetryIncrement()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "NegativeRetryIncrement");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.NegativeRetryIncrement));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -158,7 +158,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ZeroRetryIncrement()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "ZeroRetryIncrement");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.ZeroRetryIncrement));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -186,7 +186,7 @@ public class ConfigurationTests
     [TestMethod]
     public void NegativeMinBackoff()
     {
-        const string Key = "NegativeMinBackoff";
+        const string Key = nameof(this.NegativeMinBackoff);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsTrue(section.Exists());
@@ -206,7 +206,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ZeroMinBackoff()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "ZeroMinBackoff");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.ZeroMinBackoff));
         int execCount = 0;
 
         try
@@ -231,7 +231,7 @@ public class ConfigurationTests
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void NegativeMaxBackoff()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "NegativeMaxBackoff");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.NegativeMaxBackoff));
         int execCount = 0;
 
         try
@@ -253,7 +253,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ZeroMaxBackoff()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "ZeroMaxBackoff");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.ZeroMaxBackoff));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -282,7 +282,7 @@ public class ConfigurationTests
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void NegativeDeltaBackoff()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "NegativeDeltaBackoff");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.NegativeDeltaBackoff));
         int execCount = 0;
 
         try
@@ -304,7 +304,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ZeroDeltaBackoff()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "ZeroDeltaBackoff");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.ZeroDeltaBackoff));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -332,7 +332,7 @@ public class ConfigurationTests
     [TestMethod]
     public void MinBackoffEqualsMax()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "MinBackoffEqualsMax");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.MinBackoffEqualsMax));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -360,7 +360,7 @@ public class ConfigurationTests
     [TestMethod]
     public void MinBackoffGreaterThanMax()
     {
-        const string Key = "MinBackoffGreaterThanMax";
+        const string Key = nameof(this.MinBackoffGreaterThanMax);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsTrue(section.Exists());
@@ -381,7 +381,7 @@ public class ConfigurationTests
     [TestMethod]
     public void LargeDeltaBackoff()
     {
-        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: "LargeDeltaBackoff");
+        RetryPolicy retryPolicy = RetryPolicyFactory.GetRetryPolicy<SqlDatabaseTransientErrorDetectionStrategy>(retryStrategyName: nameof(this.LargeDeltaBackoff));
         int execCount = 0;
         double totalDuration = 0;
 
@@ -409,7 +409,7 @@ public class ConfigurationTests
     [TestMethod]
     public void FixedInterval_MissingRetryInterval()
     {
-        const string Key = "FixedInterval_MissingRetryInterval";
+        const string Key = nameof(this.FixedInterval_MissingRetryInterval);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsTrue(section.Exists());
@@ -429,7 +429,7 @@ public class ConfigurationTests
     [TestMethod]
     public void IncrementalInterval_MissingRetryInterval()
     {
-        const string Key = "IncrementalInterval_MissingRetryInterval";
+        const string Key = nameof(this.IncrementalInterval_MissingRetryInterval);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsTrue(section.Exists());
@@ -449,7 +449,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ExponentialInterval_MissingMinBackoff()
     {
-        const string Key = "ExponentialInterval_MissingMinBackoff";
+        const string Key = nameof(this.ExponentialInterval_MissingMinBackoff);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsTrue(section.Exists());
@@ -469,7 +469,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ExponentialInterval_MissingMaxBackoff()
     {
-        const string Key = "ExponentialInterval_MissingMaxBackoff";
+        const string Key = nameof(this.ExponentialInterval_MissingMaxBackoff);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsTrue(section.Exists());
@@ -489,7 +489,7 @@ public class ConfigurationTests
     [TestMethod]
     public void ExponentialInterval_MissingDeltaBackoff()
     {
-        const string Key = "ExponentialInterval_MissingDeltaBackoff";
+        const string Key = nameof(this.ExponentialInterval_MissingDeltaBackoff);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsTrue(section.Exists());
@@ -509,7 +509,7 @@ public class ConfigurationTests
     [TestMethod]
     public void NonExist()
     {
-        const string Key = "NonExist";
+        const string Key = nameof(this.NonExist);
         IConfigurationSection section = RetryConfiguration.GetConfiguration().GetSection("causeError").GetSection(Key);
         Assert.IsNotNull(section);
         Assert.IsFalse(section.Exists());

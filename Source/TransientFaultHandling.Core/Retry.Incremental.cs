@@ -24,7 +24,7 @@ public static partial class Retry
         TimeSpan? increment = null,
         bool? firstFastRetry = null) =>
         Execute(
-            func.NotNull(),
+            func.ThrowIfNull(),
             WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -49,7 +49,7 @@ public static partial class Retry
         TimeSpan? increment = null,
         bool? firstFastRetry = null) =>
         Execute(
-            action.NotNull(),
+            action.ThrowIfNull(),
             WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
             isTransient,
             retryingHandler);
@@ -78,7 +78,7 @@ public static partial class Retry
         bool? firstFastRetry = null,
         CancellationToken cancellationToken = default) =>
         ExecuteAsync(
-            func.NotNull(),
+            func.ThrowIfNull(),
             WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
             isTransient,
             retryingHandler,
@@ -107,7 +107,7 @@ public static partial class Retry
         bool? firstFastRetry = null,
         CancellationToken cancellationToken = default) =>
         ExecuteAsync(
-            func.NotNull(),
+            func.ThrowIfNull(),
             WithIncremental(retryCount, initialInterval, increment, firstFastRetry),
             isTransient,
             retryingHandler,

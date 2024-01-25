@@ -12,7 +12,7 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval"/> retry strategy.</returns>
     public static FixedInterval ToFixedInterval(this FixedIntervalOptions options, string name) => 
-        new (name, options.NotNull().RetryCount, options.RetryInterval, options.FastFirstRetry);
+        new (name, options.ThrowIfNull().RetryCount, options.RetryInterval, options.FastFirstRetry);
 
     /// <summary>
     /// Converts <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.IncrementalOptions"/> instance to <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental"/> retry strategy.
@@ -21,7 +21,7 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental"/> retry strategy.</returns>
     public static Incremental ToIncremental(this IncrementalOptions options, string name) => 
-        new (name, options.NotNull().RetryCount, options.InitialInterval, options.Increment, options.FastFirstRetry);
+        new (name, options.ThrowIfNull().RetryCount, options.InitialInterval, options.Increment, options.FastFirstRetry);
 
     /// <summary>
     /// Converts <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoffOptions"/> instance to <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff"/> retry strategy.
@@ -30,7 +30,7 @@ public static class RetryStrategyOptionsExtensions
     /// <param name="name">The name of the retry strategy.</param>
     /// <returns>The converted <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ExponentialBackoff"/> retry strategy.</returns>
     public static ExponentialBackoff ToExponentialBackoff(this ExponentialBackoffOptions options, string name) => 
-        new (name, options.NotNull().RetryCount, options.MinBackOff, options.MaxBackOff, options.DeltaBackOff, options.FastFirstRetry);
+        new (name, options.ThrowIfNull().RetryCount, options.MinBackOff, options.MaxBackOff, options.DeltaBackOff, options.FastFirstRetry);
 
     /// <summary>
     /// Converts <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedIntervalOptions"/> instance to <see cref="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.FixedInterval"/> retry strategy.

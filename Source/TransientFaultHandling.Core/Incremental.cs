@@ -49,9 +49,9 @@ public class Incremental : RetryStrategy
     /// <param name="firstFastRetry">true to immediately retry in the first attempt; otherwise, false. The subsequent retries will remain subject to the configured retry interval.</param>
     public Incremental(string? name, int retryCount, TimeSpan initialInterval, TimeSpan increment, bool firstFastRetry) : base(name, firstFastRetry)
     {
-        this.retryCount = retryCount.NotNegative();
-        this.initialInterval = initialInterval.NotNegative();
-        this.increment = increment.NotNegative();
+        this.retryCount = retryCount.ThrowIfNegative();
+        this.initialInterval = initialInterval.ThrowIfNegative();
+        this.increment = increment.ThrowIfNegative();
     }
 
     /// <summary>

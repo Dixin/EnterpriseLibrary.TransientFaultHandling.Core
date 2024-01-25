@@ -31,7 +31,7 @@ public static class RetryConfiguration
         string configurationFile = DefaultConfigurationFile, 
         string configurationKey = DefaultConfigurationKeyRetryStrategy, 
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
-        GetConfiguration(configurationFile.NotNullOrEmpty()).GetRetryStrategies(configurationKey.NotNullOrEmpty(), getCustomRetryStrategy);
+        GetConfiguration(configurationFile.ThrowIfNullOrEmpty()).GetRetryStrategies(configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy);
 
     /// <summary>
     /// ets the retry manager from the specified configuration file and key.
@@ -44,14 +44,14 @@ public static class RetryConfiguration
         string configurationFile = DefaultConfigurationFile, 
         string configurationKey = DefaultConfigurationKeyRetryManager, 
         Func<IConfigurationSection, RetryStrategy>? getCustomRetryStrategy = null) =>
-        GetConfiguration(configurationFile.NotNullOrEmpty()).GetRetryManager(configurationKey.NotNullOrEmpty(), getCustomRetryStrategy);
+        GetConfiguration(configurationFile.ThrowIfNullOrEmpty()).GetRetryManager(configurationKey.ThrowIfNullOrEmpty(), getCustomRetryStrategy);
 
     /// <summary>Gets the configuration from the specified file.</summary>
     /// <param name="configurationFile">The specified configuration file.</param>
     /// <returns>The configuration.</returns>
     public static IConfiguration GetConfiguration(string configurationFile = DefaultConfigurationFile)
     {
-        configurationFile.NotNullOrEmpty();
+        configurationFile.ThrowIfNullOrEmpty();
 
         IConfigurationBuilder builder = new ConfigurationBuilder();
         builder = Path.GetExtension(configurationFile).ToUpperInvariant() switch

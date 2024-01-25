@@ -29,7 +29,7 @@ public record FixedIntervalOptions(bool FastFirstRetry, int RetryCount, TimeSpan
     public int RetryCount
     {
         get => this.retryCount;
-        init => this.retryCount = value.NotNegative();
+        init => this.retryCount = value.ThrowIfNegative();
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public record FixedIntervalOptions(bool FastFirstRetry, int RetryCount, TimeSpan
     public TimeSpan RetryInterval
     {
         get => this.retryInterval;
-        init => this.retryInterval = value.NotNegative();
+        init => this.retryInterval = value.ThrowIfNegative();
     }
 }
 
@@ -66,7 +66,7 @@ public record IncrementalOptions(bool FastFirstRetry, int RetryCount, TimeSpan I
     public int RetryCount
     {
         get => this.retryCount;
-        init => this.retryCount = value.NotNegative();
+        init => this.retryCount = value.ThrowIfNegative();
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public record IncrementalOptions(bool FastFirstRetry, int RetryCount, TimeSpan I
     public TimeSpan InitialInterval
     {
         get => this.initialInterval;
-        init => this.initialInterval = value.NotNegative();
+        init => this.initialInterval = value.ThrowIfNegative();
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public record IncrementalOptions(bool FastFirstRetry, int RetryCount, TimeSpan I
     public TimeSpan Increment
     {
         get => this.increment;
-        init => this.increment = value.NotNegative();
+        init => this.increment = value.ThrowIfNegative();
     }
 }
 
@@ -115,7 +115,7 @@ public record ExponentialBackoffOptions(bool FastFirstRetry, int RetryCount, Tim
     public int RetryCount
     {
         get => this.retryCount;
-        init => this.retryCount = value.NotNegative();
+        init => this.retryCount = value.ThrowIfNegative();
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public record ExponentialBackoffOptions(bool FastFirstRetry, int RetryCount, Tim
     public TimeSpan MinBackOff
     {
         get => this.minBackOff;
-        init => this.minBackOff = value.NotNegative();
+        init => this.minBackOff = value.ThrowIfNegative();
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public record ExponentialBackoffOptions(bool FastFirstRetry, int RetryCount, Tim
     public TimeSpan MaxBackOff
     {
         get => this.maxBackOff;
-        init => this.maxBackOff = value.NotNegative();
+        init => this.maxBackOff = value.ThrowIfNegative();
     }
 
     /// <summary>
@@ -142,6 +142,6 @@ public record ExponentialBackoffOptions(bool FastFirstRetry, int RetryCount, Tim
     public TimeSpan DeltaBackOff
     {
         get => this.deltaBackOff;
-        init => this.deltaBackOff = value.NotNegative();
+        init => this.deltaBackOff = value.ThrowIfNegative();
     }
 }

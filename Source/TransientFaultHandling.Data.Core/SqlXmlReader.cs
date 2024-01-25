@@ -19,7 +19,7 @@ internal class SqlXmlReader : XmlReader
     /// <param name="connection">The SQL connection that provides access to the XML data for this reader.</param>
     /// <param name="innerReader">The original XML reader that is to be wrapped by this instance.</param>
     public SqlXmlReader(IDbConnection connection, XmlReader innerReader) => 
-        (this.connection, this.innerReader) = (connection.NotNull(), innerReader.NotNull());
+        (this.connection, this.innerReader) = (connection.ThrowIfNull(), innerReader.ThrowIfNull());
 
     /// <summary>
     /// Returns the number of attributes on the current node.

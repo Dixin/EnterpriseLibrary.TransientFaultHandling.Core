@@ -20,14 +20,14 @@ public static class RetryManagerSqlExtensions
     /// </summary>
     /// <returns>The default retry strategy for SQL commands (or the default strategy, if no default could be found).</returns>
     public static RetryStrategy GetDefaultSqlCommandRetryStrategy(this RetryManager retryManager) => 
-        retryManager.NotNull().GetDefaultRetryStrategy(DefaultStrategyCommandTechnologyName);
+        retryManager.ThrowIfNull().GetDefaultRetryStrategy(DefaultStrategyCommandTechnologyName);
 
     /// <summary>
     /// Returns the default retry policy dedicated to handling transient conditions with SQL commands.
     /// </summary>
     /// <returns>The retry policy for SQL commands with the corresponding default strategy (or the default strategy, if no retry strategy assigned to SQL commands was found).</returns>
     public static RetryPolicy GetDefaultSqlCommandRetryPolicy(this RetryManager retryManager) => 
-        new (new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.NotNull().GetDefaultSqlCommandRetryStrategy());
+        new (new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.ThrowIfNull().GetDefaultSqlCommandRetryStrategy());
 
     /// <summary>
     /// Returns the default retry strategy for SQL connections.
@@ -37,7 +37,7 @@ public static class RetryManagerSqlExtensions
     {
         try
         {
-            return retryManager.NotNull().GetDefaultRetryStrategy(DefaultStrategyConnectionTechnologyName);
+            return retryManager.ThrowIfNull().GetDefaultRetryStrategy(DefaultStrategyConnectionTechnologyName);
         }
         catch (ArgumentOutOfRangeException)
         {
@@ -50,5 +50,5 @@ public static class RetryManagerSqlExtensions
     /// </summary>
     /// <returns>The retry policy for SQL connections with the corresponding default strategy (or the default strategy, if no retry strategy for SQL connections was found).</returns>
     public static RetryPolicy GetDefaultSqlConnectionRetryPolicy(this RetryManager retryManager) => 
-        new (new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.NotNull().GetDefaultSqlConnectionRetryStrategy());
+        new (new SqlDatabaseTransientErrorDetectionStrategy(), retryManager.ThrowIfNull().GetDefaultSqlConnectionRetryStrategy());
 }

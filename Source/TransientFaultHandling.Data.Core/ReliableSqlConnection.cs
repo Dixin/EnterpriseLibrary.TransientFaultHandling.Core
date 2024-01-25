@@ -178,7 +178,7 @@ public sealed class ReliableSqlConnection : IDbConnection, ICloneable
     [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Disposed by client code")]
     public T? ExecuteCommand<T>(IDbCommand command, RetryPolicy? retryPolicy, CommandBehavior behavior = CommandBehavior.Default)
     {
-        command.NotNull();
+        command.ThrowIfNull();
 
         bool hasOpenedConnection = false;
         try
@@ -282,7 +282,7 @@ public sealed class ReliableSqlConnection : IDbConnection, ICloneable
     /// <returns>The number of rows affected.</returns>
     public int ExecuteCommand(IDbCommand command, RetryPolicy? retryPolicy)
     {
-        NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command.NotNull(), retryPolicy);
+        NonQueryResult result = this.ExecuteCommand<NonQueryResult>(command.ThrowIfNull(), retryPolicy);
         return result.RecordsAffected;
     }
     #endregion

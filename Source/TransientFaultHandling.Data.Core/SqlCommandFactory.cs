@@ -22,7 +22,7 @@ public static class SqlCommandFactory
     /// <returns>A new SQL command that is initialized with the Stored Procedure command type and initial settings.</returns>
     public static IDbCommand CreateCommand(IDbConnection connection)
     {
-        IDbCommand command = connection.NotNull().CreateCommand();
+        IDbCommand command = connection.ThrowIfNull().CreateCommand();
         command.CommandType = CommandType.StoredProcedure;
         command.CommandTimeout = DefaultCommandTimeoutSeconds;
         return command;
@@ -37,10 +37,10 @@ public static class SqlCommandFactory
     [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
     public static IDbCommand CreateCommand(IDbConnection connection, string commandText)
     {
-        IDbCommand command = CreateCommand(connection.NotNull());
+        IDbCommand command = CreateCommand(connection.ThrowIfNull());
         try
         {
-            command.CommandText = commandText.NotNullOrEmpty();
+            command.CommandText = commandText.ThrowIfNullOrEmpty();
             return command;
         }
         catch
@@ -60,7 +60,7 @@ public static class SqlCommandFactory
     [SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "As designed. User must review")]
     public static IDbCommand CreateGetContextInfoCommand(IDbConnection connection)
     {
-        IDbCommand command = CreateCommand(connection.NotNull());
+        IDbCommand command = CreateCommand(connection.ThrowIfNull());
         try
         {
             command.CommandType = CommandType.Text;
