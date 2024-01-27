@@ -22,8 +22,8 @@ internal static class FakeSqlExceptionGenerator
         return (SqlException)(Activator.CreateInstance(
             typeof(SqlException), 
             BindingFlags.NonPublic | BindingFlags.Instance, 
-            null, 
-            new object?[] { errorMessage, collection, null, Guid.Empty }, 
+            null,
+            [errorMessage, collection, null, Guid.Empty], 
             null) ?? throw new InvalidOperationException("Failed to create SqlException."));
     }
 
@@ -36,7 +36,7 @@ internal static class FakeSqlExceptionGenerator
         MethodInfo method = type.GetMethod("Add", BindingFlags.NonPublic | BindingFlags.Instance)!;
         foreach (SqlError error in errors)
         {
-            method?.Invoke(collection, new object[] { error });
+            method?.Invoke(collection, [error]);
         }
 
         return collection;
@@ -47,8 +47,7 @@ internal static class FakeSqlExceptionGenerator
             typeof(SqlError),
             BindingFlags.NonPublic | BindingFlags.Instance,
             null,
-            new object?[]
-            {
+            [
                 errorCode, // int infoNumber
                 default(byte), // byte errorState
                 default(byte), // byte errorClass
@@ -57,6 +56,6 @@ internal static class FakeSqlExceptionGenerator
                 string.Empty, // string procedure
                 0, // int lineNumber
                 null// Exception exception
-            },
+            ],
             null) ?? throw new InvalidOperationException("Failed to create SqlError"));
 }

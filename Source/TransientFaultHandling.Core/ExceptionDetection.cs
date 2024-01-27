@@ -3,18 +3,15 @@
 /// <summary>
 /// Detects specific transient conditions.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="ExceptionDetection"/> class.
+/// </remarks>
+/// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
 [Obsolete("Use Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ErrorDetectionStrategy.")]
-public class ExceptionDetection : ITransientErrorDetectionStrategy
+public class ExceptionDetection(Func<Exception, bool>? isTransient = null) : ITransientErrorDetectionStrategy
 {
-    private readonly Func<Exception, bool> isTransient;
+    private readonly Func<Exception, bool> isTransient = isTransient ?? (_ => true);
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExceptionDetection"/> class.
-    /// </summary>
-    /// <param name="isTransient">The predicate function to detect whether the specified exception is transient.</param>
-    public ExceptionDetection(Func<Exception, bool>? isTransient = null) =>
-        this.isTransient = isTransient ?? (_ => true);
-        
     /// <summary>
     /// Determines whether the specified exception is transient.
     /// </summary>

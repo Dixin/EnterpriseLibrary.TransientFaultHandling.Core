@@ -1,12 +1,8 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.TestSupport;
 
-public class TestRetryStrategy : RetryStrategy
+public class TestRetryStrategy() : RetryStrategy(nameof(TestRetryStrategy), true)
 {
-    public TestRetryStrategy()
-        : base(nameof(TestRetryStrategy), true) =>
-        this.CustomProperty = 1;
-
-    public int CustomProperty { get; }
+    public int CustomProperty { get; } = 1;
 
     public int ShouldRetryCount { get; private set; }
 

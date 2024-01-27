@@ -32,7 +32,7 @@ public class StrategyTests
     [Ignore]    // REVIEW
     public void TestSqlAzureTransientErrorDetectionStrategyWithRetryableError()
     {
-        int[] errors = { 40197, 40501, 40540, 10053, 10054, 10060, 40549, 40550, 40551, 40552, 40553, 40613, 40143, 233, 64 };
+        int[] errors = [40197, 40501, 40540, 10053, 10054, 10060, 40549, 40550, 40551, 40552, 40553, 40613, 40143, 233, 64];
         Type type = typeof(SqlDatabaseTransientErrorDetectionStrategy).GetNestedType("ProcessNetLibErrorCode", BindingFlags.NonPublic)!;
         errors = errors.AddRange((int[])Enum.GetValues(type));
 

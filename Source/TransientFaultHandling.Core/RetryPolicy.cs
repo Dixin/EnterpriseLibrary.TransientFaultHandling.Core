@@ -5,18 +5,13 @@ using static ErrorDetectionStrategy;
 /// <summary>
 /// Provides the base implementation of the retry mechanism for unreliable actions and transient conditions.
 /// </summary>
-public class RetryPolicy
+/// <remarks>
+/// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class with the specified number of retry attempts and parameters defining the progressive delay between retries.
+/// </remarks>
+/// <param name="errorDetectionStrategy">The <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> that is responsible for detecting transient conditions.</param>
+/// <param name="retryStrategy">The strategy to use for this retry policy.</param>
+public class RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, RetryStrategy retryStrategy)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class with the specified number of retry attempts and parameters defining the progressive delay between retries.
-    /// </summary>
-    /// <param name="errorDetectionStrategy">The <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy" /> that is responsible for detecting transient conditions.</param>
-    /// <param name="retryStrategy">The strategy to use for this retry policy.</param>
-    public RetryPolicy(ITransientErrorDetectionStrategy errorDetectionStrategy, RetryStrategy retryStrategy)
-    {
-        this.ErrorDetectionStrategy= errorDetectionStrategy.ThrowIfNull();
-        this.RetryStrategy = retryStrategy.ThrowIfNull();
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy" /> class with the specified number of retry attempts and default fixed time interval between retries.
@@ -95,12 +90,12 @@ public class RetryPolicy
     /// <summary>
     /// Gets the retry strategy.
     /// </summary>
-    public RetryStrategy RetryStrategy { get; }
+    public RetryStrategy RetryStrategy { get; } = retryStrategy.ThrowIfNull();
 
     /// <summary>
     /// Gets the instance of the error detection strategy.
     /// </summary>
-    public ITransientErrorDetectionStrategy ErrorDetectionStrategy { get; }
+    public ITransientErrorDetectionStrategy ErrorDetectionStrategy { get; } = errorDetectionStrategy.ThrowIfNull();
 
     /// <summary>
     /// Repetitively executes the specified action while it satisfies the current retry policy.

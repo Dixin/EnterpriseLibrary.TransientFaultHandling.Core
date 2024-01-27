@@ -1,12 +1,8 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests.TestObjects;
 
-public class TestRetryStrategy : RetryStrategy
+public class TestRetryStrategy(string name, bool firstFastRetry, int customProperty) : RetryStrategy(name, firstFastRetry)
 {
-    public TestRetryStrategy(string name, bool firstFastRetry, int customProperty)
-        : base(name, firstFastRetry) =>
-        this.CustomProperty = customProperty;
-
-    public int CustomProperty { get; }
+    public int CustomProperty { get; } = customProperty;
 
     public int ShouldRetryCount { get; private set; }
 

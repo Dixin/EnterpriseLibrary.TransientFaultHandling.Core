@@ -3,16 +3,13 @@
 /// <summary>
 /// Detects specific transient conditions.
 /// </summary>
-public class ErrorDetectionStrategy : ITransientErrorDetectionStrategy
+/// <remarks>
+/// Initializes a new instance of the <see cref="ErrorDetectionStrategy"/> class.
+/// </remarks>
+/// <param name="isTransient">The predicate function to detect whether the specified exception is transient. The default behavior is to catch all exceptions and retry.</param>
+public class ErrorDetectionStrategy(Func<Exception, bool>? isTransient = null) : ITransientErrorDetectionStrategy
 {
-    private readonly Func<Exception, bool> isTransient;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ErrorDetectionStrategy"/> class.
-    /// </summary>
-    /// <param name="isTransient">The predicate function to detect whether the specified exception is transient. The default behavior is to catch all exceptions and retry.</param>
-    public ErrorDetectionStrategy(Func<Exception, bool>? isTransient = null) =>
-        this.isTransient = isTransient ?? (_ => true);
+    private readonly Func<Exception, bool> isTransient = isTransient ?? (_ => true);
 
     /// <summary>
     /// Gets an instance of <see cref="ITransientErrorDetectionStrategy"/> that catches all exceptions as transient.

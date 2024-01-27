@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests.TestObjects;
 
-public class TestAsyncOperation
+public class TestAsyncOperation(bool throwException = false)
 {
     public bool ThrowFatalExceptionAtBegin = false;
 
@@ -18,9 +18,7 @@ public class TestAsyncOperation
 
     public int CountToThrowAtEnd { get; set; }
 
-    public bool ThrowException { get; set; }
-
-    public TestAsyncOperation(bool throwException = false) => this.ThrowException = throwException;
+    public bool ThrowException { get; set; } = throwException;
 
     public IAsyncResult BeginMethod(AsyncCallback callback, object? state)
     {

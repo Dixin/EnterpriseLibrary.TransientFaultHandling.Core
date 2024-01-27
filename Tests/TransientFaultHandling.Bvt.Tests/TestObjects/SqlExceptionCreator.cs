@@ -9,19 +9,19 @@ public class SqlExceptionCreator
 
         typeof(SqlErrorCollection)
             .GetMethod("Add", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?.Invoke(collection, new object[] { error });
+            ?.Invoke(collection, [error]);
 
         MethodInfo createException = typeof(SqlException)
             .GetMethod(
                 "CreateException",
                 BindingFlags.NonPublic | BindingFlags.Static,
                 null,
-                new Type[] { typeof(SqlErrorCollection), typeof(string) },
+                [typeof(SqlErrorCollection), typeof(string)],
                 null)!;
 
         SqlException e = (SqlException)(createException.Invoke(
-            null, 
-            new object[] { collection, "7.0.0" }) ?? throw new InvalidOperationException("Failed to create SqlException."));
+            null,
+            [collection, "7.0.0"]) ?? throw new InvalidOperationException("Failed to create SqlException."));
 
         return e;
     }
@@ -31,8 +31,7 @@ public class SqlExceptionCreator
             typeof(SqlError),
             BindingFlags.NonPublic | BindingFlags.Instance,
             null,
-            new object?[]
-            {
+            [
                 errorNumber, // int infoNumber
                 default(byte), // byte errorState
                 default(byte), // byte errorClass
@@ -41,7 +40,7 @@ public class SqlExceptionCreator
                 string.Empty, // string procedure
                 0, // int lineNumber
                 null// Exception exception
-            },
+            ],
             null) ?? throw new InvalidOperationException("Failed to create SqlError"));
 
     private static T Construct<T>(params object[] p)

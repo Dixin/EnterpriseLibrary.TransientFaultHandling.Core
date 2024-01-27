@@ -124,7 +124,7 @@ public static partial class Retry
     /// <returns>A new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Incremental" /> class.</returns>
     public static Incremental WithIncremental(
         int? retryCount = null,
-        TimeSpan? initialInterval =null, 
+        TimeSpan? initialInterval = null,
         TimeSpan? increment = null,
         bool? firstFastRetry = null,
         string? name = null) => new(

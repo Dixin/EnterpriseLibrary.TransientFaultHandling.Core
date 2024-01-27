@@ -1,12 +1,10 @@
 ﻿namespace Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Tests.TestSupport;
 
-public class TestAsyncOperation
+public class TestAsyncOperation(Exception exceptionToThrow)
 {
-    public TestAsyncOperation(Exception exceptionToThrow) => this.ExceptionToThrow = exceptionToThrow;
-
     public int BeginMethodCount { get; private set; }
     public int EndMethodCount { get; private set; }
-    public Exception ExceptionToThrow { get; set; }
+    public Exception ExceptionToThrow { get; set; } = exceptionToThrow;
 
     public IAsyncResult BeginMethod(AsyncCallback callback, object state)
     {

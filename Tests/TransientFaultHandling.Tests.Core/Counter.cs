@@ -6,7 +6,7 @@ internal class Counter<TException> where TException : Exception, new()
 
     internal Counter(int count) => this.count = count;
 
-    internal List<DateTime> Time { get; } = new();
+    internal List<DateTime> Time { get; } = [];
 
     internal void Increase()
     {
@@ -24,7 +24,7 @@ internal class Counter<TException1, TException2> where TException1 : Exception, 
 
     internal Counter(int count) => this.count = count;
 
-    internal List<DateTime> Time { get; } = new();
+    internal List<DateTime> Time { get; } = [];
 
     internal void Increase()
     {
