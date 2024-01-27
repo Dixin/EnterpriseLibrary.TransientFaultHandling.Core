@@ -2,12 +2,6 @@
 
 public class MockErrorDetectionStrategy : ITransientErrorDetectionStrategy
 {
-    public MockErrorDetectionStrategy()
-    {
-        this.CallCount = 0;
-        this.ThreadIdList = new List<int>();
-    }
-
     public bool IsTransient(Exception ex)
     {
         this.ThreadIdList.Add(Thread.CurrentThread.ManagedThreadId);
@@ -25,7 +19,7 @@ public class MockErrorDetectionStrategy : ITransientErrorDetectionStrategy
             _ => false
         };
 
-    public int CallCount { get; set; }
+    public int CallCount { get; set; } = 0;
 
-    public List<int> ThreadIdList { get; set; }
+    public List<int> ThreadIdList { get; set; } = [];
 }
