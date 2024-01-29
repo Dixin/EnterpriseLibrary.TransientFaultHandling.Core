@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.5;netstandard2.0;net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.5;netstandard2.0;net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
     <AssemblyName>TransientFaultHandling.Caching.Core</AssemblyName>
     <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
     <LangVersion>latest</LangVersion>
     <PackageId>TransientFaultHandling.Caching</PackageId>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
     <Authors>Dixin Yan</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>https://DixinYan.com</Company>
@@ -19,8 +19,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Tools/Key.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.0</AssemblyVersion>
+    <FileVersion>3.1.0.0</FileVersion>
     <LangVersion>latest</LangVersion>
     <nullable>enable</nullable>
     <NoWarn>CS0436</NoWarn>
