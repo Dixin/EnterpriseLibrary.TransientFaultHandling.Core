@@ -10,9 +10,9 @@ public abstract record RetryStrategyOptions(bool FastFirstRetry);
 /// </summary>
 public record FixedIntervalOptions(bool FastFirstRetry, int RetryCount, TimeSpan RetryInterval) : RetryStrategyOptions(FastFirstRetry)
 {
-    private readonly int retryCount;
+    private readonly int retryCount = RetryCount.ThrowIfNegative();
 
-    private readonly TimeSpan retryInterval;
+    private readonly TimeSpan retryInterval = RetryInterval.ThrowIfNegative();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FixedIntervalOptions" /> record. 
@@ -45,11 +45,11 @@ public record FixedIntervalOptions(bool FastFirstRetry, int RetryCount, TimeSpan
 /// </summary>
 public record IncrementalOptions(bool FastFirstRetry, int RetryCount, TimeSpan InitialInterval, TimeSpan Increment) : RetryStrategyOptions(FastFirstRetry)
 {
-    private readonly int retryCount;
+    private readonly int retryCount = RetryCount.ThrowIfNegative();
 
-    private readonly TimeSpan initialInterval;
+    private readonly TimeSpan initialInterval = InitialInterval.ThrowIfNegative();
 
-    private readonly TimeSpan increment;
+    private readonly TimeSpan increment = Increment.ThrowIfNegative();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IncrementalOptions" /> record. 
@@ -91,13 +91,13 @@ public record IncrementalOptions(bool FastFirstRetry, int RetryCount, TimeSpan I
 /// </summary>
 public record ExponentialBackoffOptions(bool FastFirstRetry, int RetryCount, TimeSpan MinBackOff, TimeSpan MaxBackOff, TimeSpan DeltaBackOff) : RetryStrategyOptions(FastFirstRetry)
 {
-    private readonly int retryCount;
+    private readonly int retryCount = RetryCount.ThrowIfNegative();
 
-    private readonly TimeSpan minBackOff;
+    private readonly TimeSpan minBackOff = MinBackOff.ThrowIfOutOfRange(TimeSpan.Zero, MaxBackOff);
 
-    private readonly TimeSpan maxBackOff;
+    private readonly TimeSpan maxBackOff = MaxBackOff.ThrowIfNegative();
 
-    private readonly TimeSpan deltaBackOff;
+    private readonly TimeSpan deltaBackOff = DeltaBackOff.ThrowIfNegative();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExponentialBackoffOptions" /> record. 
@@ -120,7 +120,7 @@ public record ExponentialBackoffOptions(bool FastFirstRetry, int RetryCount, Tim
     /// </summary>
     public TimeSpan MinBackOff
     {
-        get => this.minBackOff;
+        get => this.minBackOff.ThrowIfOutOfRange(TimeSpan.Zero, this.maxBackOff);
         init => this.minBackOff = value.ThrowIfNegative();
     }
 
