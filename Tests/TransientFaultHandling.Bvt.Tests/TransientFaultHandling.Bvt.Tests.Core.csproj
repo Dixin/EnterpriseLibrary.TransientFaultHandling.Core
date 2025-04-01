@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Bvt.Tests</RootNamespace>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <nullable>enable</nullable>
     <NoWarn>CS0436</NoWarn>
   </PropertyGroup>
