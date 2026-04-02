@@ -1,65 +1,77 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard1.5;netstandard2.0;net5.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
-    <AssemblyName>TransientFaultHandling.Caching.Core</AssemblyName>
-    <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
-    <LangVersion>latest</LangVersion>
-    <PackageId>TransientFaultHandling.Caching</PackageId>
-    <Version>3.1.0</Version>
-    <Authors>Dixin Yan</Authors>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Company>https://DixinYan.com</Company>
-    <PackageDescription>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageDescription>
-    <PackageLicenseUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageProjectUrl>
-    <PackageIconUrl>http://nuget.org/Media/Default/Packages/Unity/2.0/entlib_new_icon_100x100.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core.git</RepositoryUrl>
-    <PackageTags>entlib enterprise library azure retry retries transient fault exception handling failure network topaz async Transient Fault Application Block .NET Core .NETCore dotnet dotnetcore Standard .NETStandard dotnetstandard cache caching</PackageTags>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>../../Tools/Key.snk</AssemblyOriginatorKeyFile>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <AssemblyVersion>3.1.0.0</AssemblyVersion>
-    <FileVersion>3.1.0.0</FileVersion>
-    <LangVersion>preview</LangVersion>
-    <nullable>enable</nullable>
-    <NoWarn>CS0436</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard1.5;netstandard2.0;netstandard2.1;net5.0;net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+        <AssemblyName>TransientFaultHandling.Caching.Core</AssemblyName>
+        <RootNamespace>Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <PackageId>TransientFaultHandling.Caching</PackageId>
+        <Version>3.1.1</Version>
+        <Authors>Dixin Yan</Authors>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Company>https://DixinYan.com</Company>
+        <PackageDescription>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageDescription>
+        <PackageLicenseUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core</PackageProjectUrl>
+        <PackageIconUrl>http://nuget.org/Media/Default/Packages/Unity/2.0/entlib_new_icon_100x100.png</PackageIconUrl>
+        <RepositoryUrl>https://github.com/Dixin/EnterpriseLibrary.TransientFaultHandling.Core.git</RepositoryUrl>
+        <PackageTags>entlib enterprise library azure retry retries transient fault exception handling failure network topaz async Transient Fault Application Block .NET Core .NETCore dotnet dotnetcore Standard .NETStandard dotnetstandard cache caching</PackageTags>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>../../Tools/Key.snk</AssemblyOriginatorKeyFile>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+        <AssemblyVersion>3.1.1.0</AssemblyVersion>
+        <FileVersion>3.1.1.0</FileVersion>
+        <LangVersion>preview</LangVersion>
+        <nullable>enable</nullable>
+        <NoWarn>CS0436</NoWarn>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.1' And '$(TargetFramework)' != 'net5.0' And '$(TargetFramework)' != 'net6.0'">
-    <NoWarn>CS0436;CS8603;CS8604;CS8777</NoWarn>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\Tools\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\..\Tools\GlobalUsings.cs" Link="Properties\GlobalUsings.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.1' And '$(TargetFramework)' != 'net5.0' And '$(TargetFramework)' != 'net6.0'">
+        <NoWarn>CS0436;CS8603;CS8604;CS8777</NoWarn>
+    </PropertyGroup>
 
     <ItemGroup>
-    <ProjectReference Include="..\TransientFaultHandling.Core\TransientFaultHandling.Core.csproj" />
-  </ItemGroup>
+        <Compile Include="..\..\Tools\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+        <Compile Include="..\..\Tools\GlobalUsings.cs" Link="Properties\GlobalUsings.cs" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'netstandard2.1' Or '$(TargetFramework)' == 'net10.0'">
+        <PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.3" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0'">
+        <PackageReference Include="System.ServiceModel.Primitives" Version="6.1.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0'">
+        <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\TransientFaultHandling.Core\TransientFaultHandling.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Properties\Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Properties\Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
 
 </Project>
